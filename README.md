@@ -46,6 +46,31 @@ AI Film Studio Hub enables users to generate AI-powered films from text scripts.
 
 ## 🚀 Quick Start
 
+### Option 1: Docker (Recommended)
+
+The fastest way to get started is using Docker Compose:
+
+```bash
+# Clone the repository
+git clone https://github.com/AI-Empower-HQ-360/AI-Film-Studio.git
+cd AI-Film-Studio
+
+# Copy environment file and configure
+cp .env.example .env
+# Edit .env with your configuration (optional for development)
+
+# Start all services
+./start.sh
+# Or manually: docker-compose up -d
+```
+
+Services will be available at:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/api/v1/docs
+
+### Option 2: Local Development
+
 ### Prerequisites
 
 - Python 3.10+
@@ -220,6 +245,71 @@ cd worker
 # Test celery worker
 celery -A celery_app call tasks.test_task
 ```
+
+## 🐳 Docker Deployment
+
+### Using Docker Compose
+
+The project includes a complete Docker Compose setup:
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Rebuild after changes
+docker-compose up -d --build
+```
+
+### Individual Service Builds
+
+```bash
+# Build backend
+docker build -t ai-film-studio-backend ./backend
+
+# Build worker
+docker build -t ai-film-studio-worker ./worker
+
+# Build frontend
+docker build -t ai-film-studio-frontend ./frontend
+```
+
+### GPU Support in Docker
+
+To enable GPU support for the worker, uncomment the GPU section in `docker-compose.yml`:
+
+```yaml
+worker:
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]
+```
+
+Also change the environment variable:
+```yaml
+environment:
+  - DEVICE=cuda
+```
+
+### Production Deployment
+
+For production:
+1. Use a production-grade database (PostgreSQL)
+2. Set up proper secrets management
+3. Configure S3 or object storage
+4. Set up SSL/TLS certificates
+5. Use a reverse proxy (nginx)
+6. Configure monitoring and logging
+7. Set up backup strategies
 
 ## 📊 Job State Machine
 
