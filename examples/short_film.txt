@@ -1,0 +1,60 @@
+# Example: Short Film Script
+
+## Title: "The Last Frame"
+
+### Scene 1: INT. COFFEE SHOP - DAY
+
+A cozy coffee shop with warm lighting. Rain patters against the windows. 
+
+EMMA (28), a photographer, sits alone at a corner table, reviewing photos on her laptop. She has tired eyes but a determined expression.
+
+**EMMA**
+(muttering to herself)
+One more shot. Just one perfect shot.
+
+She scrolls through hundreds of similar photos, dissatisfied with each.
+
+### Scene 2: EXT. CITY STREET - LATE AFTERNOON
+
+Emma walks through the rain-soaked streets, camera in hand. She looks up at the overcast sky, then at the reflections in puddles.
+
+She raises her camera but doesn't take a shot.
+
+**EMMA**
+(sighs)
+Not quite right.
+
+### Scene 3: INT. EMMA'S APARTMENT - NIGHT
+
+A small studio apartment filled with photography equipment and prints on the walls. Emma sits on the floor, surrounded by photo albums.
+
+She opens an old album and finds a photo of herself as a child with her father, both holding cameras and smiling.
+
+**EMMA**
+(softly)
+"The perfect shot is the one that makes you feel something."
+
+She closes the album and grabs her camera with new determination.
+
+### Scene 4: EXT. CITY PARK - DAWN
+
+Emma arrives at the park as the sun begins to rise. Morning mist hangs in the air. She walks quietly through the empty paths.
+
+She stops suddenly. A single dandelion seed floats through a beam of golden sunlight.
+
+Emma raises her camera and takes the shot.
+
+**EMMA**
+(smiling)
+Perfect.
+
+FADE TO BLACK.
+
+---
+
+**Note**: This script is designed to showcase:
+- Indoor/outdoor scenes
+- Different lighting conditions (day, late afternoon, night, dawn)
+- Character emotions and introspection
+- Visual storytelling with minimal dialogue
+- Atmospheric shots suitable for AI generation
