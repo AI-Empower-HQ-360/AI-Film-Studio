@@ -1,0 +1,20 @@
+{
+  "project": {
+    "name": "AI Film Studio",
+    "version": "0.1.0"
+  },
+  "pipeline": {
+    "default_quality": "high",
+    "default_format": "mp4"
+  },
+  "output": {
+    "shots_dir": "./output/shots",
+    "video_dir": "./output/video",
+    "final_dir": "./output/final"
+  },
+  "models": {
+    "script_generator": "default",
+    "image_generator": "default",
+    "video_generator": "default"
+  }
+}
