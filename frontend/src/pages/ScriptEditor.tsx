@@ -7,7 +7,7 @@ import './ScriptEditor.css';
 
 const ScriptEditor: React.FC = () => {
   const navigate = useNavigate();
-  const { currentProject, setScript, updateScript } = useAppStore();
+  const { currentProject, setScript } = useAppStore();
   const [content, setContent] = useState(currentProject?.script?.content || '');
   const [title, setTitle] = useState(currentProject?.script?.title || '');
   const [author, setAuthor] = useState(currentProject?.script?.author || '');

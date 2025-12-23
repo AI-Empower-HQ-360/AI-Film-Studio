@@ -6,7 +6,7 @@ import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { projects, currentProject, createProject, setCurrentProject, deleteProject } = useAppStore();
+  const { projects, currentProject, createProject, setCurrentProject } = useAppStore();
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDescription, setNewProjectDescription] = useState('');
