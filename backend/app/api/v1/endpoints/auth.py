@@ -3,14 +3,13 @@ Authentication API endpoints.
 """
 from datetime import timedelta
 from fastapi import APIRouter, HTTPException, status, Depends
-from sqlalchemy.orm import Session
 
-from ...schemas import UserCreate, UserLogin, Token, TokenRefresh, UserResponse
-from ...core.security import (
+from app.schemas import UserCreate, UserLogin, Token, TokenRefresh, UserResponse
+from app.core.security import (
     verify_password, get_password_hash, 
     create_access_token, create_refresh_token, decode_token
 )
-from ...core.config import settings
+from app.core.config import settings
 
 router = APIRouter()
 

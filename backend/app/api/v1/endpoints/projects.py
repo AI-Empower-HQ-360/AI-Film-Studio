@@ -4,8 +4,8 @@ Projects API endpoints.
 from typing import List
 from fastapi import APIRouter, HTTPException, status, Depends
 
-from ...schemas import ProjectCreate, ProjectUpdate, ProjectResponse
-from ...core.security import get_current_user
+from app.schemas import ProjectCreate, ProjectUpdate, ProjectResponse
+from app.core.security import get_current_user
 
 router = APIRouter()
 
