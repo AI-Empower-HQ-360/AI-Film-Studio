@@ -53,6 +53,11 @@ class NotificationSender:
                 )
         elif isinstance(notification_type, NotificationType):
             notification_type = notification_type.value
+        else:
+            raise TypeError(
+                f"notification_type must be str or NotificationType, "
+                f"got {type(notification_type).__name__}"
+            )
         notification = {
             "message": message,
             "type": notification_type,
@@ -97,9 +102,13 @@ class NotificationSender:
             "status": status
         }
         
-        notification_type = NotificationType.SUCCESS if status == "completed" else NotificationType.INFO
-        if status == "failed":
+        # Determine notification type based on status
+        if status == "completed":
+            notification_type = NotificationType.SUCCESS
+        elif status == "failed":
             notification_type = NotificationType.ERROR
+        else:
+            notification_type = NotificationType.INFO
         
         return self.send_notification(message, notification_type, metadata)
 

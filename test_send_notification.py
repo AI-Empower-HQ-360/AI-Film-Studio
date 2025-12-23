@@ -95,11 +95,14 @@ class TestNotificationSender(unittest.TestCase):
         timestamp_str = result["timestamp"]
         
         # Should be able to parse as ISO format
-        timestamp = datetime.fromisoformat(timestamp_str)
-        self.assertIsNotNone(timestamp)
-        
-        # Should include timezone info (UTC)
-        self.assertIsNotNone(timestamp.tzinfo)
+        try:
+            timestamp = datetime.fromisoformat(timestamp_str)
+            self.assertIsNotNone(timestamp)
+            
+            # Should include timezone info (UTC)
+            self.assertIsNotNone(timestamp.tzinfo)
+        except (ValueError, TypeError) as e:
+            self.fail(f"Failed to parse timestamp '{timestamp_str}': {e}")
     
     def test_empty_notifications_initially(self):
         """Test that a new sender has no notifications."""
@@ -132,6 +135,15 @@ class TestNotificationSender(unittest.TestCase):
             )
         self.assertIn("Invalid notification_type", str(context.exception))
         self.assertIn("invalid_type", str(context.exception))
+    
+    def test_invalid_notification_type_object(self):
+        """Test that wrong type object raises TypeError."""
+        with self.assertRaises(TypeError) as context:
+            self.sender.send_notification(
+                "Test invalid type",
+                notification_type=123  # Invalid type
+            )
+        self.assertIn("must be str or NotificationType", str(context.exception))
 
 
 if __name__ == "__main__":
