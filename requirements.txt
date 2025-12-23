@@ -1,0 +1,25 @@
+# Core dependencies
+pyyaml>=6.0.1
+click>=8.1.7
+rich>=13.7.0
+
+# AI and ML
+openai>=1.12.0
+# stability-sdk>=0.8.0  # Uncomment when needed
+# anthropic>=0.18.0  # Uncomment when needed
+
+# Image processing
+Pillow>=10.2.0
+# opencv-python>=4.9.0  # Uncomment when needed
+
+# Video processing
+# moviepy>=1.0.3  # Uncomment when needed
+
+# Utilities
+requests>=2.31.0
+python-dotenv>=1.0.0
+tqdm>=4.66.1
+
+# Type checking and validation
+pydantic>=2.6.0
+typing-extensions>=4.9.0
