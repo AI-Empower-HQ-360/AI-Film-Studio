@@ -4,7 +4,7 @@ Unit tests for the notification sender module.
 
 import unittest
 from datetime import datetime, timezone
-from send_notification import NotificationSender
+from send_notification import NotificationSender, NotificationType
 
 
 class TestNotificationSender(unittest.TestCase):
@@ -114,6 +114,24 @@ class TestNotificationSender(unittest.TestCase):
         notifications = self.sender.get_notifications()
         for i in range(5):
             self.assertEqual(notifications[i]["message"], f"Message {i}")
+    
+    def test_notification_type_enum(self):
+        """Test that NotificationType enum can be used."""
+        result = self.sender.send_notification(
+            "Test with enum",
+            notification_type=NotificationType.WARNING
+        )
+        self.assertEqual(result["type"], "warning")
+    
+    def test_invalid_notification_type(self):
+        """Test that invalid notification type raises ValueError."""
+        with self.assertRaises(ValueError) as context:
+            self.sender.send_notification(
+                "Test invalid",
+                notification_type="invalid_type"
+            )
+        self.assertIn("Invalid notification_type", str(context.exception))
+        self.assertIn("invalid_type", str(context.exception))
 
 
 if __name__ == "__main__":

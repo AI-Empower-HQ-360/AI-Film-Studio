@@ -7,7 +7,16 @@ about the film production process.
 
 import json
 from datetime import datetime, timezone
+from enum import Enum
 from typing import Dict, Any, Optional
+
+
+class NotificationType(str, Enum):
+    """Valid notification types."""
+    INFO = "info"
+    WARNING = "warning"
+    ERROR = "error"
+    SUCCESS = "success"
 
 
 class NotificationSender:
@@ -20,7 +29,7 @@ class NotificationSender:
     def send_notification(
         self,
         message: str,
-        notification_type: str = "info",
+        notification_type: str = NotificationType.INFO,
         metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
@@ -34,6 +43,16 @@ class NotificationSender:
         Returns:
             Dict containing the notification details
         """
+        # Validate notification type
+        if isinstance(notification_type, str):
+            valid_types = [t.value for t in NotificationType]
+            if notification_type not in valid_types:
+                raise ValueError(
+                    f"Invalid notification_type: {notification_type}. "
+                    f"Must be one of: {', '.join(valid_types)}"
+                )
+        elif isinstance(notification_type, NotificationType):
+            notification_type = notification_type.value
         notification = {
             "message": message,
             "type": notification_type,
@@ -52,7 +71,12 @@ class NotificationSender:
         """Get all sent notifications."""
         return self.notifications
     
-    def send_update(self, stage: str, status: str, details: Optional[str] = None):
+    def send_update(
+        self,
+        stage: str,
+        status: str,
+        details: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Send a production update notification.
         
@@ -60,6 +84,9 @@ class NotificationSender:
             stage: Production stage (script, scenes, shots, video, export)
             status: Status of the stage (started, in_progress, completed, failed)
             details: Optional additional details
+        
+        Returns:
+            Dict containing the notification details
         """
         message = f"Film Studio Update: {stage} - {status}"
         if details:
@@ -70,9 +97,9 @@ class NotificationSender:
             "status": status
         }
         
-        notification_type = "success" if status == "completed" else "info"
+        notification_type = NotificationType.SUCCESS if status == "completed" else NotificationType.INFO
         if status == "failed":
-            notification_type = "error"
+            notification_type = NotificationType.ERROR
         
         return self.send_notification(message, notification_type, metadata)
 
