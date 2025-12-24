@@ -25,6 +25,22 @@ async def health_check():
         "service": "AI Film Studio"
     }
 
+@app.get("/about")
+async def about():
+    """About endpoint with application information"""
+    return {
+        "name": "AI Film Studio",
+        "version": "0.1.0",
+        "description": "End-to-end AI Film Studio: script → scenes → shots → video → MP4",
+        "author": "AI Empower HQ 360",
+        "features": [
+            "AI-powered script generation",
+            "Scene and shot creation",
+            "Video production pipeline",
+            "MP4 export"
+        ]
+    }
+
 if __name__ == "__main__":
     import uvicorn
     logger.info(f"Starting API server on {API_HOST}:{API_PORT}")
