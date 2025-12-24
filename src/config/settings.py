@@ -18,6 +18,9 @@ DATA_DIR = BASE_DIR / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
+# Generated output
+GENERATED_DIR = DATA_DIR / "generated"
+
 # Image Engine Configuration
 IMAGE_OUTPUT_DIR = DATA_DIR / "generated" / "images"
 IMAGE_DEFAULT_WIDTH = 1024
