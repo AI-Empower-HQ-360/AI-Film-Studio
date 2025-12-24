@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 # Base directory
-BASE_DIR = Path(__file__).resolve().parent.parent. parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # API Configuration
 API_HOST = os.getenv("API_HOST", "0.0.0.0")
