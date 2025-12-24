@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Film Studio - Home</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎬 AI Film Studio</h1>
+            <p class="tagline">End-to-end AI-powered film production</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2>Welcome to AI Film Studio</h2>
+            <p>Transform your scripts into stunning videos with the power of AI</p>
+        </section>
+
+        <section class="stats">
+            <h3>System Status</h3>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon">🎥</div>
+                    <div class="stat-value" id="totalProjects">-</div>
+                    <div class="stat-label">Total Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="completedProjects">-</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-value" id="processingProjects">-</div>
+                    <div class="stat-label">Processing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="apiStatus">-</div>
+                    <div class="stat-label">API Status</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <h3>Features</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h4>Script to Scenes</h4>
+                    <p>Convert your script into structured scenes automatically</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h4>Scene to Shots</h4>
+                    <p>Generate shot lists and storyboards from scenes</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎞️</div>
+                    <h4>Shots to Video</h4>
+                    <p>Create video content from individual shots</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h4>Export to MP4</h4>
+                    <p>Export your final film in high-quality MP4 format</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div id="activityList" class="activity-list">
+                <p class="loading">Loading activity data...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 AI Film Studio. All rights reserved.</p>
+            <p class="version">Version <span id="apiVersion">0.1.0</span></p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

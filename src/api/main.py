@@ -1,5 +1,9 @@
 """Main API entry point"""
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from pathlib import Path
+from datetime import datetime
 from src.utils.logger import setup_logger
 from src.config.settings import API_HOST, API_PORT
 
@@ -11,10 +15,21 @@ app = FastAPI(
     version="0.1.0"
 )
 
-@app.get("/")
-async def root():
-    """Health check endpoint"""
-    return {"message": "AI Film Studio API is running", "status": "healthy"}
+# Mount static files
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+static_dir = BASE_DIR / "static"
+templates_dir = BASE_DIR / "templates"
+
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    """Serve the home page"""
+    index_file = templates_dir / "index.html"
+    if index_file.exists():
+        return index_file.read_text()
+    return "<h1>AI Film Studio API is running</h1>"
 
 @app.get("/api/v1/health")
 async def health_check():
@@ -23,6 +38,37 @@ async def health_check():
         "status": "healthy",
         "version": "0.1.0",
         "service": "AI Film Studio"
+    }
+
+@app.get("/api/v1/data/home")
+async def get_home_data():
+    """Get data for the home page dashboard"""
+    # This would typically query a database
+    # For now, we return sample data
+    return {
+        "stats": {
+            "total_projects": 12,
+            "completed_projects": 8,
+            "processing_projects": 3,
+            "api_status": "online"
+        },
+        "recent_activity": [
+            {
+                "title": "Project 'Summer Adventure' completed",
+                "description": "Video successfully exported to MP4",
+                "timestamp": datetime.now().isoformat()
+            },
+            {
+                "title": "New project 'Documentary 2025' created",
+                "description": "Script uploaded and ready for processing",
+                "timestamp": datetime.now().isoformat()
+            },
+            {
+                "title": "Scene generation completed",
+                "description": "15 scenes generated for 'Mystery Night'",
+                "timestamp": datetime.now().isoformat()
+            }
+        ]
     }
 
 if __name__ == "__main__":
