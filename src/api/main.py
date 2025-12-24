@@ -5,10 +5,13 @@ from src.config.settings import API_HOST, API_PORT
 
 logger = setup_logger(__name__)
 
+# Version constant
+VERSION = "0.1.0"
+
 app = FastAPI(
     title="AI Film Studio API",
     description="API for AI-powered film production tools",
-    version="0.1.0"
+    version=VERSION
 )
 
 @app.get("/")
@@ -21,7 +24,7 @@ async def health_check():
     """Detailed health check"""
     return {
         "status": "healthy",
-        "version": "0.1.0",
+        "version": VERSION,
         "service": "AI Film Studio"
     }
 
@@ -30,7 +33,7 @@ async def about():
     """About endpoint with application information"""
     return {
         "name": "AI Film Studio",
-        "version": "0.1.0",
+        "version": VERSION,
         "description": "End-to-end AI Film Studio: script → scenes → shots → video → MP4",
         "author": "AI Empower HQ 360",
         "features": [
