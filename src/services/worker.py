@@ -118,6 +118,7 @@ class Worker:
         """Process a single task"""
         logger.info(f"Worker {self.worker_id} processing task {task.id} ({task.task_type})")
         
+        shot = None  # Initialize shot variable
         try:
             # Load context
             shot = self.job_store.get_shot(task.shot_id)
@@ -161,7 +162,7 @@ class Worker:
         except Exception as e:
             logger.error(f"Task {task.id} failed: {e}")
             
-            # Update shot status
+            # Update shot status if shot was loaded
             if shot:
                 shot.status = TaskStatus.FAILED
                 self.job_store.update_shot(shot)

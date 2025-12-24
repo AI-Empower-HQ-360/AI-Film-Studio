@@ -124,8 +124,8 @@ class ScriptParser:
         
         # Everything else is camera angle
         camera_angle = re.sub(r'(\d+\.?\d*)\s*s', '', header, flags=re.IGNORECASE).strip()
-        if camera_angle:
-            camera_angle = camera_angle or None
+        if not camera_angle:
+            camera_angle = None
         
         return duration, camera_angle
     

@@ -11,6 +11,9 @@ from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
+# Constants
+MIN_SCRIPT_LENGTH = 10  # Minimum characters for a valid script
+
 
 class WorkflowOrchestrator:
     """Orchestrates the automated film production workflow"""
@@ -92,8 +95,8 @@ class WorkflowOrchestrator:
         if not script or not script.strip():
             return False
         
-        # Basic validation - at least 10 characters
-        if len(script.strip()) < 10:
+        # Basic validation - at least MIN_SCRIPT_LENGTH characters
+        if len(script.strip()) < MIN_SCRIPT_LENGTH:
             return False
         
         # TODO: Add moderation check here
