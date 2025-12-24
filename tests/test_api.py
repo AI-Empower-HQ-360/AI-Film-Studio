@@ -9,7 +9,8 @@ def test_root():
     """Test root endpoint"""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json()["status"] == "healthy"
+    assert "text/html" in response.headers["content-type"]
+    assert b"AI Film Studio" in response.content
 
 def test_health_check():
     """Test health check endpoint"""
