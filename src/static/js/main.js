@@ -144,26 +144,6 @@ function deleteScene(number) {
     }
 }
 
-// Video Rendering
-function startRender() {
-    showLoading('Rendering video...');
-    
-    const progressBar = document.getElementById('render-progress');
-    if (progressBar) {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 5;
-            progressBar.style.width = `${progress}%`;
-            
-            if (progress >= 100) {
-                clearInterval(interval);
-                hideLoading();
-                showNotification('Video rendered successfully!', 'success');
-            }
-        }, 300);
-    }
-}
-
 // Project Management
 function createNewProject() {
     const projectName = prompt('Enter project name:');
@@ -305,6 +285,5 @@ window.handleScriptGeneration = handleScriptGeneration;
 window.createNewScene = createNewScene;
 window.editScene = editScene;
 window.deleteScene = deleteScene;
-window.startRender = startRender;
 window.createNewProject = createNewProject;
 window.openProject = openProject;
