@@ -1,9 +1,13 @@
 """Tests for API endpoints"""
+import os
 import pytest
 from fastapi.testclient import TestClient
 from src.api.main import app
 from src.services.storage import get_job_store
 from src.services.queue import get_task_queue
+
+# Disable background workers for testing
+os.environ["DISABLE_WORKERS"] = "true"
 
 client = TestClient(app)
 

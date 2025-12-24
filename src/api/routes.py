@@ -49,6 +49,11 @@ class JobResponse(BaseModel):
 
 def start_worker_background():
     """Start a worker in the background"""
+    # For testing, we can disable background workers
+    import os
+    if os.getenv("DISABLE_WORKERS", "false").lower() == "true":
+        return
+    
     worker = create_worker()
     worker.start(max_tasks=100)  # Process up to 100 tasks
 
@@ -78,10 +83,12 @@ async def create_job(submission: ScriptSubmission, background_tasks: BackgroundT
             title=submission.title
         )
         
-        # Start worker in background to process tasks
-        background_tasks.add_task(start_worker_background)
+        # Start worker in background to process tasks (unless disabled for testing)
+        import os
+        if os.getenv("DISABLE_WORKERS", "false").lower() != "true":
+            background_tasks.add_task(start_worker_background)
         
-        logger.info(f"Job {job.id} created and worker started")
+        logger.info(f"Job {job.id} created")
         
         return JobResponse.from_job(job)
         

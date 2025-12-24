@@ -71,6 +71,8 @@ class Worker:
         """
         self.running = True
         tasks_processed = 0
+        consecutive_empty_polls = 0
+        max_empty_polls = 5  # Stop after 5 consecutive empty polls
         
         logger.info(f"Worker {self.worker_id} started")
         
@@ -85,9 +87,14 @@ class Worker:
             
             if not task:
                 # No tasks available
+                consecutive_empty_polls += 1
+                if max_tasks and consecutive_empty_polls >= max_empty_polls:
+                    logger.info(f"Worker {self.worker_id} stopping due to empty queue")
+                    break
                 time.sleep(0.5)
                 continue
             
+            consecutive_empty_polls = 0  # Reset counter when task found
             self.current_task = task
             
             try:
