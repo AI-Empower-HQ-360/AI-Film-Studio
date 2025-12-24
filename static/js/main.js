@@ -41,8 +41,15 @@ async function apiRequest(endpoint, options = {}) {
         });
         
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Request failed');
+            let errorMessage = 'Request failed';
+            try {
+                const error = await response.json();
+                errorMessage = error.detail || errorMessage;
+            } catch (e) {
+                // Response is not JSON, use status text
+                errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
         }
         
         return await response.json();

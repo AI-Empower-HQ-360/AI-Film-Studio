@@ -252,11 +252,25 @@
         }
 
         // Copy share link
-        function copyShareLink() {
+        async function copyShareLink() {
             const input = document.getElementById('share-link');
-            input.select();
-            document.execCommand('copy');
-            showNotification('Link copied to clipboard', 'success');
+            const text = input.value;
+            
+            try {
+                // Try modern Clipboard API first
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    showNotification('Link copied to clipboard', 'success');
+                } else {
+                    // Fallback for older browsers
+                    input.select();
+                    document.execCommand('copy');
+                    showNotification('Link copied to clipboard', 'success');
+                }
+            } catch (error) {
+                console.error('Failed to copy:', error);
+                showNotification('Failed to copy link', 'error');
+            }
         }
 
         // Retry shot

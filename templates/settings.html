@@ -86,7 +86,7 @@
                 <div class="form-group">
                     <label class="form-label">API Key</label>
                     <div class="flex gap-2">
-                        <input type="password" id="api-key" class="form-input" readonly value="••••••••••••••••••••••••••••••••" style="flex: 1;">
+                        <input type="password" id="api-key" class="form-input" readonly value="" style="flex: 1;" placeholder="Click 'Show' to reveal API key">
                         <button class="btn btn-secondary" onclick="showApiKey()">Show</button>
                         <button class="btn btn-secondary" onclick="regenerateApiKey()">Regenerate</button>
                     </div>
@@ -240,7 +240,8 @@
                 }
             } else {
                 input.type = 'password';
-                input.value = '••••••••••••••••••••••••••••••••';
+                input.value = '';
+                input.placeholder = 'Click \'Show\' to reveal API key';
             }
         }
 
