@@ -33,6 +33,9 @@ data/processed/
 *.h5
 *.pkl
 
+# Exception for src/models (data models)
+!src/models/
+
 # IDE
 .vscode/
 .idea/
