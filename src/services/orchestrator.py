@@ -217,15 +217,17 @@ class WorkflowOrchestrator:
         
         # Update job status based on state
         if state.completed_shots == state.total_shots and state.total_shots > 0:
-            # All shots completed, trigger composition
-            job.status = JobStatus.COMPOSING
-            self._trigger_composition(job)
+            # All shots completed, trigger composition (only if not already composing/completed)
+            if job.status not in [JobStatus.COMPOSING, JobStatus.COMPLETED]:
+                job.status = JobStatus.COMPOSING
+                self._trigger_composition(job)
         elif state.failed_shots > 0 and state.failed_shots == state.total_shots:
             # All shots failed
             job.status = JobStatus.FAILED
             job.error_message = "All shots failed to generate"
         elif state.completed_shots > 0 or state.running_tasks > 0:
-            job.status = JobStatus.PROCESSING
+            if job.status not in [JobStatus.COMPOSING, JobStatus.COMPLETED]:
+                job.status = JobStatus.PROCESSING
         
         self.job_store.update_job(job)
     
