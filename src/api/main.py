@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from src.utils.logger import setup_logger
 from src.config.settings import API_HOST, API_PORT
 
@@ -43,8 +43,9 @@ async def health_check():
 @app.get("/api/v1/data/home")
 async def get_home_data():
     """Get data for the home page dashboard"""
-    # This would typically query a database
-    # For now, we return sample data
+    # TODO: Replace with actual database queries when DB is implemented
+    # For now, we return sample data for demonstration
+    now = datetime.now()
     return {
         "stats": {
             "total_projects": 12,
@@ -56,17 +57,17 @@ async def get_home_data():
             {
                 "title": "Project 'Summer Adventure' completed",
                 "description": "Video successfully exported to MP4",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": (now - timedelta(minutes=5)).isoformat()
             },
             {
                 "title": "New project 'Documentary 2025' created",
                 "description": "Script uploaded and ready for processing",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": (now - timedelta(hours=2)).isoformat()
             },
             {
                 "title": "Scene generation completed",
                 "description": "15 scenes generated for 'Mystery Night'",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": (now - timedelta(hours=4)).isoformat()
             }
         ]
     }
