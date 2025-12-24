@@ -2,14 +2,18 @@
 from fastapi import FastAPI
 from src.utils.logger import setup_logger
 from src.config.settings import API_HOST, API_PORT
+from src.api.routes import router as workflow_router
 
 logger = setup_logger(__name__)
 
 app = FastAPI(
     title="AI Film Studio API",
-    description="API for AI-powered film production tools",
+    description="API for AI-powered film production tools - Fully Automated Workflow",
     version="0.1.0"
 )
+
+# Include workflow routes
+app.include_router(workflow_router)
 
 @app.get("/")
 async def root():
