@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 # Base directory
-BASE_DIR = Path(__file__).resolve().parent.parent. parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # API Configuration
 API_HOST = os.getenv("API_HOST", "0.0.0.0")
@@ -17,6 +17,25 @@ MODEL_CACHE_DIR = BASE_DIR / "data" / "model_cache"
 DATA_DIR = BASE_DIR / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
+
+# Image Engine Configuration
+IMAGE_OUTPUT_DIR = DATA_DIR / "generated" / "images"
+IMAGE_DEFAULT_WIDTH = 1024
+IMAGE_DEFAULT_HEIGHT = 576
+IMAGE_DEFAULT_ASPECT_RATIO = "16:9"
+
+# Model API Keys (load from environment)
+STABILITY_API_KEY = os.getenv("STABILITY_API_KEY", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+LEONARDO_API_KEY = os.getenv("LEONARDO_API_KEY", "")
+REPLICATE_API_KEY = os.getenv("REPLICATE_API_KEY", "")
+
+# Default Model Provider
+DEFAULT_MODEL_PROVIDER = os.getenv("DEFAULT_MODEL_PROVIDER", "sdxl")
+
+# Generation Parameters
+DEFAULT_GENERATION_STEPS = int(os.getenv("DEFAULT_GENERATION_STEPS", 50))
+DEFAULT_CFG_SCALE = float(os.getenv("DEFAULT_CFG_SCALE", 7.5))
 
 # Logging
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
