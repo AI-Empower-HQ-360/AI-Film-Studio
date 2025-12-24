@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Preview - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/credits">Credits</a></li>
+                <li><a href="/settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container" style="max-width: 1000px;">
+            <div class="mb-3">
+                <a href="#" id="back-link" class="text-muted" style="text-decoration: none;">← Back to Project</a>
+                <h1 style="font-size: 2.5rem; margin-top: 0.5rem;" id="video-title">Your Film</h1>
+                <p class="text-muted" id="video-info">Loading...</p>
+            </div>
+
+            <!-- Video Player -->
+            <div class="card mb-3">
+                <div class="video-container" id="video-player-container" style="padding-bottom: 56.25%;">
+                    <video id="video-player" controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="grid grid-2 mb-3">
+                <div class="card">
+                    <h3 class="mb-2">Download</h3>
+                    <p class="text-muted mb-2">Download your film in MP4 format</p>
+                    <button class="btn btn-primary" onclick="downloadVideo()" id="download-btn">
+                        Download MP4
+                    </button>
+                </div>
+                <div class="card">
+                    <h3 class="mb-2">Regenerate</h3>
+                    <p class="text-muted mb-2">Generate a new version with different visuals</p>
+                    <button class="btn btn-secondary" onclick="regenerateVideo()">
+                        Regenerate Film
+                    </button>
+                </div>
+            </div>
+
+            <!-- Share -->
+            <div class="card mb-3">
+                <h3 class="mb-2">Share Link</h3>
+                <p class="text-muted mb-2">Share this video with others (link expires in 7 days)</p>
+                <div class="flex gap-2">
+                    <input type="text" id="share-link" class="form-input" readonly style="flex: 1;" value="Generating link...">
+                    <button class="btn btn-secondary" onclick="copyShareLink()">Copy Link</button>
+                </div>
+            </div>
+
+            <!-- Retry Failed Shots -->
+            <div id="failed-shots-card" class="card" style="display: none;">
+                <h3 class="mb-2">Failed Shots</h3>
+                <p class="text-muted mb-2">Some shots failed to generate. You can retry them individually.</p>
+                <div id="failed-shots-list"></div>
+            </div>
+
+            <!-- Video Details -->
+            <div class="card">
+                <h3 class="mb-2">Video Details</h3>
+                <div class="grid grid-2">
+                    <div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Duration:</strong>
+                            <span id="video-duration">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Style:</strong>
+                            <span id="video-style">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Resolution:</strong>
+                            <span id="video-resolution">--</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Generated:</strong>
+                            <span id="video-generated">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">File Size:</strong>
+                            <span id="video-size">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Format:</strong>
+                            <span>MP4 (H.264)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let jobId = null;
+        let videoData = null;
+
+        // Get job ID from URL
+        function getJobId() {
+            const path = window.location.pathname;
+            const match = path.match(/\/video\/(\d+)/);
+            return match ? match[1] : null;
+        }
+
+        // Load video details
+        async function loadVideo() {
+            try {
+                videoData = await getJob(jobId);
+                
+                if (videoData.status !== 'completed') {
+                    showNotification('Video is not ready yet', 'warning');
+                    setTimeout(() => window.location.href = `/job/${jobId}`, 2000);
+                    return;
+                }
+                
+                updateUI();
+            } catch (error) {
+                console.error('Failed to load video:', error);
+                showNotification('Failed to load video', 'error');
+            }
+        }
+
+        // Update UI with video data
+        function updateUI() {
+            // Update title and links
+            document.getElementById('video-title').textContent = videoData.project_title || 'Your Film';
+            document.getElementById('back-link').href = `/project/${videoData.project_id}`;
+            
+            // Set video source
+            if (videoData.video_url) {
+                const videoPlayer = document.getElementById('video-player');
+                videoPlayer.src = videoData.video_url;
+                videoPlayer.load();
+            }
+            
+            // Update info
+            document.getElementById('video-info').textContent = `Generated on ${formatDate(videoData.completed_at)}`;
+            document.getElementById('video-duration').textContent = `${videoData.duration} seconds`;
+            document.getElementById('video-style').textContent = videoData.style || '--';
+            document.getElementById('video-resolution').textContent = videoData.resolution || '1920x1080';
+            document.getElementById('video-generated').textContent = formatDate(videoData.completed_at);
+            document.getElementById('video-size').textContent = videoData.file_size 
+                ? `${(videoData.file_size / (1024 * 1024)).toFixed(2)} MB` 
+                : '--';
+            
+            // Generate share link
+            const shareLink = `${window.location.origin}/share/${videoData.share_token || jobId}`;
+            document.getElementById('share-link').value = shareLink;
+            
+            // Check for failed shots
+            if (videoData.failed_shots && videoData.failed_shots.length > 0) {
+                displayFailedShots();
+            }
+        }
+
+        // Display failed shots
+        function displayFailedShots() {
+            const card = document.getElementById('failed-shots-card');
+            const list = document.getElementById('failed-shots-list');
+            
+            card.style.display = 'block';
+            
+            const html = videoData.failed_shots.map(shot => `
+                <div class="card" style="margin-bottom: 0.5rem; padding: 1rem; background: rgba(239, 68, 68, 0.1);">
+                    <div class="flex-between">
+                        <div>
+                            <strong>Scene ${shot.scene_number}, Shot ${shot.shot_number}</strong>
+                            <p class="text-muted" style="margin-top: 0.25rem; font-size: 0.875rem;">${shot.error}</p>
+                        </div>
+                        <button class="btn btn-warning" onclick="retryShot(${shot.id})">Retry</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            list.innerHTML = html;
+        }
+
+        // Download video
+        async function downloadVideo() {
+            if (!videoData.video_url) {
+                showNotification('Video URL not available', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('download-btn');
+            btn.disabled = true;
+            btn.textContent = 'Downloading...';
+            
+            try {
+                // Request signed download URL
+                const response = await apiRequest(`/api/v1/jobs/${jobId}/download`, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                // Trigger download
+                const a = document.createElement('a');
+                a.href = response.download_url;
+                a.download = `${videoData.project_title || 'film'}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                showNotification('Download started', 'success');
+            } catch (error) {
+                showNotification('Failed to download video', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Download MP4';
+            }
+        }
+
+        // Regenerate video
+        async function regenerateVideo() {
+            if (!confirm('Generate a new version of this film? This will cost credits.')) {
+                return;
+            }
+            
+            try {
+                const result = await apiRequest('/api/v1/projects/regenerate', {
+                    method: 'POST',
+                    body: JSON.stringify({ project_id: videoData.project_id }),
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('Regeneration started!', 'success');
+                setTimeout(() => window.location.href = `/job/${result.job_id}`, 1000);
+            } catch (error) {
+                showNotification('Failed to regenerate video', 'error');
+            }
+        }
+
+        // Copy share link
+        function copyShareLink() {
+            const input = document.getElementById('share-link');
+            input.select();
+            document.execCommand('copy');
+            showNotification('Link copied to clipboard', 'success');
+        }
+
+        // Retry shot
+        async function retryShot(shotId) {
+            try {
+                await apiRequest(`/api/v1/shots/${shotId}/retry`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('Shot retry started', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } catch (error) {
+                showNotification('Failed to retry shot', 'error');
+            }
+        }
+
+        // Initialize
+        if (requireAuth()) {
+            jobId = getJobId();
+            if (jobId) {
+                loadVideo();
+            } else {
+                showNotification('Invalid video ID', 'error');
+                setTimeout(() => window.location.href = '/dashboard', 2000);
+            }
+        }
+    </script>
+</body>
+</html>

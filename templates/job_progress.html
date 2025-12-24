@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Progress - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/credits">Credits</a></li>
+                <li><a href="/settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container" style="max-width: 900px;">
+            <div class="mb-3">
+                <a href="#" id="back-link" class="text-muted" style="text-decoration: none;">← Back to Project</a>
+                <h1 style="font-size: 2.5rem; margin-top: 0.5rem;">Generating Your Film</h1>
+                <p class="text-muted" id="project-title">Loading...</p>
+            </div>
+
+            <!-- Overall Progress -->
+            <div class="card mb-3">
+                <div class="flex-between mb-2">
+                    <h2 class="card-header" style="margin-bottom: 0;">Overall Progress</h2>
+                    <span class="status-badge" id="job-status">--</span>
+                </div>
+                
+                <div class="progress-bar" style="height: 12px; margin-bottom: 1rem;">
+                    <div class="progress-fill" id="overall-progress" style="width: 0%"></div>
+                </div>
+                
+                <div class="flex-between">
+                    <span id="progress-text">0% complete</span>
+                    <span class="text-muted" id="elapsed-time">--</span>
+                </div>
+            </div>
+
+            <!-- Current Stage -->
+            <div class="card mb-3">
+                <h2 class="card-header">Current Stage</h2>
+                <div id="current-stage" class="flex gap-2" style="align-items: center; padding: 1rem; background: var(--darker-bg); border-radius: 0.5rem;">
+                    <div class="spinner"></div>
+                    <div>
+                        <strong id="stage-name">Initializing...</strong>
+                        <p class="text-muted" style="margin-top: 0.25rem;" id="stage-description">Setting up your project</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scene/Shot Breakdown -->
+            <div class="card mb-3">
+                <h2 class="card-header">Scene Breakdown</h2>
+                <div id="scenes-list">
+                    <p class="text-muted">Analyzing script and planning scenes...</p>
+                </div>
+            </div>
+
+            <!-- Error Messages -->
+            <div id="error-card" class="card" style="display: none; background: rgba(239, 68, 68, 0.1); border-color: var(--error-color);">
+                <h2 class="card-header" style="color: var(--error-color);">⚠️ Error</h2>
+                <p id="error-message"></p>
+                <div class="flex gap-2 mt-2">
+                    <button class="btn btn-warning" onclick="retryJob()">Retry Job</button>
+                    <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="success-card" class="card" style="display: none; background: rgba(16, 185, 129, 0.1); border-color: var(--success-color);">
+                <h2 class="card-header" style="color: var(--success-color);">✓ Film Generated Successfully!</h2>
+                <p>Your film is ready to watch and download.</p>
+                <div class="flex gap-2 mt-2">
+                    <a href="#" id="watch-video-link" class="btn btn-primary">Watch Video</a>
+                    <a href="#" id="back-to-project-link" class="btn btn-secondary">Back to Project</a>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card" id="actions-card">
+                <div class="flex gap-2">
+                    <button class="btn btn-error" id="cancel-btn" onclick="cancelJobAction()">Cancel Job</button>
+                    <button class="btn btn-secondary" onclick="window.location.reload()">Refresh</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let jobId = null;
+        let jobData = null;
+        let pollingInterval = null;
+
+        // Get job ID from URL
+        function getJobId() {
+            const path = window.location.pathname;
+            const match = path.match(/\/job\/(\d+)/);
+            return match ? match[1] : null;
+        }
+
+        // Load job details
+        async function loadJob() {
+            try {
+                jobData = await getJob(jobId);
+                updateUI();
+                
+                // Continue polling if job is still running
+                if (jobData.status === 'running' || jobData.status === 'queued') {
+                    if (!pollingInterval) {
+                        pollingInterval = setInterval(loadJob, 3000);
+                    }
+                } else {
+                    if (pollingInterval) {
+                        clearInterval(pollingInterval);
+                        pollingInterval = null;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load job:', error);
+                showNotification('Failed to load job status', 'error');
+            }
+        }
+
+        // Update UI with job data
+        function updateUI() {
+            // Update title and links
+            document.getElementById('project-title').textContent = jobData.project_title || '';
+            document.getElementById('back-link').href = `/project/${jobData.project_id}`;
+            document.getElementById('back-to-project-link').href = `/project/${jobData.project_id}`;
+            document.getElementById('watch-video-link').href = `/video/${jobData.id}`;
+            
+            // Update status
+            const statusBadge = document.getElementById('job-status');
+            statusBadge.textContent = jobData.status;
+            statusBadge.className = `status-badge ${getStatusBadgeClass(jobData.status)}`;
+            
+            // Update progress
+            const progress = jobData.progress || 0;
+            document.getElementById('overall-progress').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = `${progress}% complete`;
+            
+            // Update elapsed time
+            if (jobData.created_at) {
+                const elapsed = Math.floor((new Date() - new Date(jobData.created_at)) / 1000);
+                document.getElementById('elapsed-time').textContent = `Elapsed: ${formatDuration(elapsed)}`;
+            }
+            
+            // Update current stage
+            updateCurrentStage();
+            
+            // Update scenes
+            updateScenes();
+            
+            // Handle completion/error states
+            if (jobData.status === 'completed') {
+                document.getElementById('success-card').style.display = 'block';
+                document.getElementById('actions-card').style.display = 'none';
+                document.getElementById('current-stage').innerHTML = `
+                    <div style="color: var(--success-color); font-size: 2rem;">✓</div>
+                    <div>
+                        <strong style="color: var(--success-color);">Complete</strong>
+                        <p class="text-muted" style="margin-top: 0.25rem;">Your film is ready!</p>
+                    </div>
+                `;
+            } else if (jobData.status === 'failed') {
+                document.getElementById('error-card').style.display = 'block';
+                document.getElementById('error-message').textContent = jobData.error_message || 'Unknown error occurred';
+                document.getElementById('actions-card').style.display = 'none';
+                document.getElementById('current-stage').innerHTML = `
+                    <div style="color: var(--error-color); font-size: 2rem;">✗</div>
+                    <div>
+                        <strong style="color: var(--error-color);">Failed</strong>
+                        <p class="text-muted" style="margin-top: 0.25rem;">Job encountered an error</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update current stage
+        function updateCurrentStage() {
+            const stages = {
+                'initializing': { name: 'Initializing', desc: 'Setting up your project' },
+                'analyzing_script': { name: 'Analyzing Script', desc: 'Breaking down your story into scenes' },
+                'generating_scenes': { name: 'Generating Scenes', desc: 'Creating visual scenes with AI' },
+                'rendering_shots': { name: 'Rendering Shots', desc: 'Processing individual camera shots' },
+                'adding_audio': { name: 'Adding Audio', desc: 'Adding narration and music' },
+                'assembling_video': { name: 'Assembling Video', desc: 'Combining everything into final film' },
+                'finalizing': { name: 'Finalizing', desc: 'Final processing and optimization' }
+            };
+            
+            const currentStage = jobData.current_stage || 'initializing';
+            const stage = stages[currentStage] || { name: 'Processing', desc: 'Working on your film' };
+            
+            if (jobData.status === 'running') {
+                document.getElementById('stage-name').textContent = stage.name;
+                document.getElementById('stage-description').textContent = stage.desc;
+            }
+        }
+
+        // Update scenes
+        function updateScenes() {
+            if (!jobData.scenes || jobData.scenes.length === 0) {
+                return;
+            }
+            
+            const html = jobData.scenes.map((scene, index) => `
+                <div class="card" style="margin-bottom: 0.5rem; padding: 1rem;">
+                    <div class="flex-between">
+                        <div style="flex: 1;">
+                            <strong>Scene ${index + 1}</strong>
+                            <p class="text-muted" style="margin-top: 0.25rem; font-size: 0.875rem;">${scene.description}</p>
+                        </div>
+                        <div>
+                            <span class="status-badge ${getStatusBadgeClass(scene.status)}">${scene.status}</span>
+                        </div>
+                    </div>
+                    ${scene.shots && scene.shots.length > 0 ? `
+                        <div style="margin-top: 0.5rem; margin-left: 1rem;">
+                            ${scene.shots.map((shot, shotIndex) => `
+                                <div class="flex-between" style="padding: 0.5rem; margin-top: 0.25rem; background: var(--darker-bg); border-radius: 0.25rem;">
+                                    <span class="text-muted" style="font-size: 0.875rem;">Shot ${shotIndex + 1}</span>
+                                    <span class="status-badge ${getStatusBadgeClass(shot.status)}" style="font-size: 0.75rem;">${shot.status}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            document.getElementById('scenes-list').innerHTML = html;
+        }
+
+        // Cancel job
+        async function cancelJobAction() {
+            if (!confirm('Are you sure you want to cancel this job?')) {
+                return;
+            }
+            
+            try {
+                await cancelJob(jobId);
+                showNotification('Job cancelled', 'success');
+                setTimeout(() => window.location.href = `/project/${jobData.project_id}`, 1000);
+            } catch (error) {
+                showNotification('Failed to cancel job', 'error');
+            }
+        }
+
+        // Retry job
+        async function retryJob() {
+            try {
+                const result = await apiRequest(`/api/v1/jobs/${jobId}/retry`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('Job retry started!', 'success');
+                setTimeout(() => window.location.href = `/job/${result.job_id}`, 1000);
+            } catch (error) {
+                showNotification('Failed to retry job', 'error');
+            }
+        }
+
+        // Initialize
+        if (requireAuth()) {
+            jobId = getJobId();
+            if (jobId) {
+                loadJob();
+            } else {
+                showNotification('Invalid job ID', 'error');
+                setTimeout(() => window.location.href = '/dashboard', 2000);
+            }
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
+    </script>
+</body>
+</html>

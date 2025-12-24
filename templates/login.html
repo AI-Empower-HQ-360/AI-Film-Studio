@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/pricing">Pricing</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container" style="max-width: 500px;">
+            <div class="text-center mb-3">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Welcome Back</h1>
+                <p class="text-muted">Sign in to your AI Film Studio account</p>
+            </div>
+
+            <!-- Toggle between Login and Signup -->
+            <div class="card mb-3" style="padding: 0.5rem; display: flex; gap: 0.5rem;">
+                <button id="login-tab" class="btn btn-primary" style="flex: 1;" onclick="showTab('login')">
+                    Login
+                </button>
+                <button id="signup-tab" class="btn btn-secondary" style="flex: 1;" onclick="showTab('signup')">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form" class="card">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Email</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" id="login-btn">
+                        Sign In
+                    </button>
+
+                    <div class="text-center">
+                        <a href="#" class="text-muted" onclick="sendMagicLink(); return false;">
+                            Send me a magic link instead
+                        </a>
+                    </div>
+                </form>
+
+                <div style="margin: 2rem 0; text-align: center; color: var(--text-muted);">
+                    <span>───── OR ─────</span>
+                </div>
+
+                <!-- OAuth Options -->
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="loginWithOAuth('google')">
+                        <span style="margin-right: 0.5rem;">🔍</span> Continue with Google
+                    </button>
+                    <button class="btn btn-secondary" onclick="loginWithOAuth('github')">
+                        <span style="margin-right: 0.5rem;">💻</span> Continue with GitHub
+                    </button>
+                </div>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signup-form" class="card" style="display: none;">
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" class="form-input" placeholder="John Doe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="signup-email">Email</label>
+                        <input type="email" id="signup-email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="signup-password">Password</label>
+                        <input type="password" id="signup-password" class="form-input" placeholder="••••••••" required minlength="8">
+                        <small class="text-muted">Minimum 8 characters</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="signup-password-confirm">Confirm Password</label>
+                        <input type="password" id="signup-password-confirm" class="form-input" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" required style="margin-right: 0.5rem;">
+                            <span class="text-muted">I agree to the <a href="/terms" style="color: var(--primary-color);">Terms of Service</a> and <a href="/privacy" style="color: var(--primary-color);">Privacy Policy</a></span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" id="signup-btn">
+                        Create Account
+                    </button>
+                </form>
+
+                <div style="margin: 2rem 0; text-align: center; color: var(--text-muted);">
+                    <span>───── OR ─────</span>
+                </div>
+
+                <!-- OAuth Options -->
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="loginWithOAuth('google')">
+                        <span style="margin-right: 0.5rem;">🔍</span> Sign up with Google
+                    </button>
+                    <button class="btn btn-secondary" onclick="loginWithOAuth('github')">
+                        <span style="margin-right: 0.5rem;">💻</span> Sign up with GitHub
+                    </button>
+                </div>
+            </div>
+
+            <!-- Magic Link Sent -->
+            <div id="magic-link-sent" class="card" style="display: none; background: rgba(16, 185, 129, 0.1); border-color: var(--success-color);">
+                <div class="text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📧</div>
+                    <h3 style="color: var(--success-color); margin-bottom: 0.5rem;">Check Your Email</h3>
+                    <p class="text-muted">We've sent a magic link to your email. Click it to sign in instantly.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Show tab
+        function showTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                loginTab.className = 'btn btn-primary';
+                signupTab.className = 'btn btn-secondary';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                loginTab.className = 'btn btn-secondary';
+                signupTab.className = 'btn btn-primary';
+            }
+        }
+
+        // Handle login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            
+            try {
+                const response = await apiRequest('/api/v1/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: document.getElementById('login-email').value,
+                        password: document.getElementById('login-password').value,
+                    }),
+                });
+                
+                setAuthToken(response.access_token);
+                showNotification('Login successful!', 'success');
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } catch (error) {
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+                showNotification('Login failed: ' + error.message, 'error');
+            }
+        }
+
+        // Handle signup
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('signup-password').value;
+            const passwordConfirm = document.getElementById('signup-password-confirm').value;
+            
+            if (password !== passwordConfirm) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('signup-btn');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+            
+            try {
+                const response = await apiRequest('/api/v1/auth/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: document.getElementById('signup-name').value,
+                        email: document.getElementById('signup-email').value,
+                        password: password,
+                    }),
+                });
+                
+                setAuthToken(response.access_token);
+                showNotification('Account created successfully!', 'success');
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } catch (error) {
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+                showNotification('Signup failed: ' + error.message, 'error');
+            }
+        }
+
+        // Send magic link
+        async function sendMagicLink() {
+            const email = document.getElementById('login-email').value;
+            
+            if (!email) {
+                showNotification('Please enter your email', 'error');
+                return;
+            }
+            
+            try {
+                await apiRequest('/api/v1/auth/magic-link', {
+                    method: 'POST',
+                    body: JSON.stringify({ email }),
+                });
+                
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('magic-link-sent').style.display = 'block';
+            } catch (error) {
+                showNotification('Failed to send magic link', 'error');
+            }
+        }
+
+        // OAuth login
+        function loginWithOAuth(provider) {
+            window.location.href = `/api/v1/auth/oauth/${provider}`;
+        }
+
+        // Check if already logged in
+        if (isAuthenticated()) {
+            window.location.href = '/dashboard';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Film - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/credits">Credits</a></li>
+                <li><a href="/settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container" style="max-width: 800px;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Create Your Film</h1>
+            <p class="text-muted mb-3">Enter your script and customize the style to generate your cinematic film</p>
+
+            <div id="credits-display" class="card mb-3">
+                <div class="flex-between">
+                    <div>
+                        <span class="text-muted">Available Credits:</span>
+                        <strong id="credit-balance" style="font-size: 1.5rem; margin-left: 1rem;">--</strong>
+                    </div>
+                    <a href="/credits" class="btn btn-secondary">Buy Credits</a>
+                </div>
+            </div>
+
+            <form id="create-form" class="card">
+                <div class="form-group">
+                    <label class="form-label" for="project-title">Project Title *</label>
+                    <input type="text" id="project-title" class="form-input" placeholder="My Amazing Film" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="script">Script *</label>
+                    <textarea id="script" class="form-textarea" placeholder="Write your script here... 
+
+Example:
+A lone astronaut walks through a desolate alien landscape. The twin suns set behind towering crystalline formations. She discovers an ancient artifact that begins to glow with mysterious energy." required></textarea>
+                    <small class="text-muted">Minimum 50 characters, maximum 2000 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="style">Visual Style *</label>
+                    <select id="style" class="form-select" required>
+                        <option value="">Select a style</option>
+                        <option value="cinematic">Cinematic - Hollywood-quality visuals</option>
+                        <option value="anime">Anime - Vibrant anime-inspired style</option>
+                        <option value="noir">Film Noir - Classic black and white</option>
+                        <option value="fantasy">Fantasy - Magical and ethereal</option>
+                        <option value="scifi">Sci-Fi - Futuristic and high-tech</option>
+                        <option value="documentary">Documentary - Realistic and natural</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="duration">Duration (seconds) *</label>
+                    <select id="duration" class="form-select" required>
+                        <option value="30">30 seconds (3 credits)</option>
+                        <option value="45">45 seconds (5 credits)</option>
+                        <option value="60" selected>60 seconds (7 credits)</option>
+                        <option value="90">90 seconds (10 credits)</option>
+                        <option value="120">120 seconds (15 credits)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="narrator-voice">Narrator Voice (Optional)</label>
+                    <select id="narrator-voice" class="form-select">
+                        <option value="">None</option>
+                        <option value="male-deep">Male - Deep Voice</option>
+                        <option value="male-young">Male - Young Voice</option>
+                        <option value="female-soft">Female - Soft Voice</option>
+                        <option value="female-strong">Female - Strong Voice</option>
+                        <option value="neutral">Neutral Voice</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="music-mood">Music Mood (Optional)</label>
+                    <select id="music-mood" class="form-select">
+                        <option value="">No Music</option>
+                        <option value="epic">Epic</option>
+                        <option value="dramatic">Dramatic</option>
+                        <option value="suspenseful">Suspenseful</option>
+                        <option value="uplifting">Uplifting</option>
+                        <option value="melancholic">Melancholic</option>
+                        <option value="mysterious">Mysterious</option>
+                    </select>
+                </div>
+
+                <div id="moderation-warning" class="card" style="display: none; background: rgba(239, 68, 68, 0.1); border-color: var(--error-color);">
+                    <strong style="color: var(--error-color);">⚠️ Content Warning</strong>
+                    <p style="margin-top: 0.5rem;">Your script may contain content that violates our content policy. Please review and modify before submitting.</p>
+                </div>
+
+                <div class="flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary" id="generate-btn">
+                        Generate Film
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/dashboard'">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+
+            <div class="card mt-3" style="background: rgba(99, 102, 241, 0.1); border-color: var(--primary-color);">
+                <strong>💡 Tips for Better Results</strong>
+                <ul style="margin-top: 1rem; margin-left: 1.5rem;">
+                    <li>Be descriptive with visual details</li>
+                    <li>Keep scenes focused and clear</li>
+                    <li>Specify camera angles and movements</li>
+                    <li>Describe lighting and atmosphere</li>
+                    <li>Use action verbs for better motion</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Load user credits
+        async function loadCredits() {
+            try {
+                const data = await getUserCredits();
+                document.getElementById('credit-balance').textContent = formatCredits(data.balance);
+            } catch (error) {
+                console.error('Failed to load credits:', error);
+            }
+        }
+
+        // Check script for moderation
+        function checkModeration() {
+            const script = document.getElementById('script').value.toLowerCase();
+            const warning = document.getElementById('moderation-warning');
+            
+            // Simple content check (in production, this would be an API call)
+            const flaggedWords = ['violence', 'explicit', 'inappropriate'];
+            const hasFlags = flaggedWords.some(word => script.includes(word));
+            
+            warning.style.display = hasFlags ? 'block' : 'none';
+            return !hasFlags;
+        }
+
+        // Handle form submission
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!requireAuth()) return;
+            
+            // Check moderation
+            if (!checkModeration()) {
+                showNotification('Please modify your script to comply with content policy', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
+            
+            try {
+                const projectData = {
+                    title: document.getElementById('project-title').value,
+                    script: document.getElementById('script').value,
+                    style: document.getElementById('style').value,
+                    duration: parseInt(document.getElementById('duration').value),
+                    narrator_voice: document.getElementById('narrator-voice').value || null,
+                    music_mood: document.getElementById('music-mood').value || null,
+                };
+                
+                const project = await createProject(projectData);
+                showNotification('Project created successfully!', 'success');
+                
+                // Redirect to job progress page
+                setTimeout(() => {
+                    window.location.href = `/job/${project.job_id}`;
+                }, 1000);
+            } catch (error) {
+                btn.disabled = false;
+                btn.textContent = 'Generate Film';
+                showNotification('Failed to create project: ' + error.message, 'error');
+            }
+        });
+
+        // Check moderation on script change
+        document.getElementById('script').addEventListener('input', checkModeration);
+
+        // Initialize
+        if (requireAuth()) {
+            loadCredits();
+        }
+    </script>
+</body>
+</html>

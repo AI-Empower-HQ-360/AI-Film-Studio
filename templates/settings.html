@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/credits">Credits</a></li>
+                <li><a href="/settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container" style="max-width: 800px;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Settings</h1>
+            <p class="text-muted mb-3">Manage your account preferences</p>
+
+            <!-- Profile Settings -->
+            <div class="card mb-3">
+                <h2 class="card-header">Profile Information</h2>
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label class="form-label" for="profile-name">Full Name</label>
+                        <input type="text" id="profile-name" class="form-input" placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="profile-email">Email</label>
+                        <input type="email" id="profile-email" class="form-input" placeholder="your@email.com" readonly>
+                        <small class="text-muted">Contact support to change your email</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="profile-bio">Bio (Optional)</label>
+                        <textarea id="profile-bio" class="form-textarea" placeholder="Tell us about yourself" style="min-height: 100px;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="card mb-3">
+                <h2 class="card-header">Notifications</h2>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 1rem;">
+                        <input type="checkbox" id="notify-completion" style="margin-right: 0.5rem;">
+                        <span>Email me when films are completed</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 1rem;">
+                        <input type="checkbox" id="notify-failures" style="margin-right: 0.5rem;">
+                        <span>Email me when jobs fail</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 1rem;">
+                        <input type="checkbox" id="notify-credits" style="margin-right: 0.5rem;">
+                        <span>Email me when credits are low (< 10)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 1rem;">
+                        <input type="checkbox" id="notify-newsletter" style="margin-right: 0.5rem;">
+                        <span>Send me updates and tips</span>
+                    </label>
+                </div>
+                <button class="btn btn-primary" onclick="saveNotificationSettings()">Save Preferences</button>
+            </div>
+
+            <!-- API Settings (Advanced) -->
+            <div class="card mb-3">
+                <h2 class="card-header">API Access (Advanced)</h2>
+                <p class="text-muted mb-2">Use webhooks to get notified when your films are ready</p>
+                
+                <div class="form-group">
+                    <label class="form-label" for="webhook-url">Webhook URL</label>
+                    <input type="url" id="webhook-url" class="form-input" placeholder="https://your-domain.com/webhook">
+                    <small class="text-muted">We'll POST job status updates to this URL</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <div class="flex gap-2">
+                        <input type="password" id="api-key" class="form-input" readonly value="••••••••••••••••••••••••••••••••" style="flex: 1;">
+                        <button class="btn btn-secondary" onclick="showApiKey()">Show</button>
+                        <button class="btn btn-secondary" onclick="regenerateApiKey()">Regenerate</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveApiSettings()">Save API Settings</button>
+            </div>
+
+            <!-- Change Password -->
+            <div class="card mb-3">
+                <h2 class="card-header">Change Password</h2>
+                <form id="password-form">
+                    <div class="form-group">
+                        <label class="form-label" for="current-password">Current Password</label>
+                        <input type="password" id="current-password" class="form-input" placeholder="••••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="new-password">New Password</label>
+                        <input type="password" id="new-password" class="form-input" placeholder="••••••••" minlength="8">
+                        <small class="text-muted">Minimum 8 characters</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" class="form-input" placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card" style="border-color: var(--error-color);">
+                <h2 class="card-header" style="color: var(--error-color);">Danger Zone</h2>
+                <div class="mb-2">
+                    <strong>Delete Account</strong>
+                    <p class="text-muted">Permanently delete your account and all data. This action cannot be undone.</p>
+                    <button class="btn btn-error" onclick="deleteAccount()">Delete Account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Load user settings
+        async function loadSettings() {
+            try {
+                const user = await apiRequest('/api/v1/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                document.getElementById('profile-name').value = user.name || '';
+                document.getElementById('profile-email').value = user.email || '';
+                document.getElementById('profile-bio').value = user.bio || '';
+                
+                // Load notification settings
+                const settings = user.settings || {};
+                document.getElementById('notify-completion').checked = settings.notify_completion !== false;
+                document.getElementById('notify-failures').checked = settings.notify_failures !== false;
+                document.getElementById('notify-credits').checked = settings.notify_credits !== false;
+                document.getElementById('notify-newsletter').checked = settings.notify_newsletter || false;
+                
+                // Load API settings
+                document.getElementById('webhook-url').value = user.webhook_url || '';
+            } catch (error) {
+                console.error('Failed to load settings:', error);
+            }
+        }
+
+        // Save profile
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                await apiRequest('/api/v1/user/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        name: document.getElementById('profile-name').value,
+                        bio: document.getElementById('profile-bio').value,
+                    }),
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('Profile updated successfully!', 'success');
+            } catch (error) {
+                showNotification('Failed to update profile', 'error');
+            }
+        });
+
+        // Save notification settings
+        async function saveNotificationSettings() {
+            try {
+                await apiRequest('/api/v1/user/settings', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        notify_completion: document.getElementById('notify-completion').checked,
+                        notify_failures: document.getElementById('notify-failures').checked,
+                        notify_credits: document.getElementById('notify-credits').checked,
+                        notify_newsletter: document.getElementById('notify-newsletter').checked,
+                    }),
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('Notification settings saved!', 'success');
+            } catch (error) {
+                showNotification('Failed to save settings', 'error');
+            }
+        }
+
+        // Save API settings
+        async function saveApiSettings() {
+            try {
+                await apiRequest('/api/v1/user/api-settings', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        webhook_url: document.getElementById('webhook-url').value,
+                    }),
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('API settings saved!', 'success');
+            } catch (error) {
+                showNotification('Failed to save API settings', 'error');
+            }
+        }
+
+        // Show API key
+        async function showApiKey() {
+            const input = document.getElementById('api-key');
+            if (input.type === 'password') {
+                try {
+                    const response = await apiRequest('/api/v1/user/api-key', {
+                        headers: {
+                            'Authorization': `Bearer ${getAuthToken()}`,
+                        },
+                    });
+                    input.type = 'text';
+                    input.value = response.api_key;
+                } catch (error) {
+                    showNotification('Failed to load API key', 'error');
+                }
+            } else {
+                input.type = 'password';
+                input.value = '••••••••••••••••••••••••••••••••';
+            }
+        }
+
+        // Regenerate API key
+        async function regenerateApiKey() {
+            if (!confirm('Regenerate API key? This will invalidate the old key.')) {
+                return;
+            }
+            
+            try {
+                const response = await apiRequest('/api/v1/user/api-key/regenerate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                document.getElementById('api-key').type = 'text';
+                document.getElementById('api-key').value = response.api_key;
+                showNotification('API key regenerated!', 'success');
+            } catch (error) {
+                showNotification('Failed to regenerate API key', 'error');
+            }
+        }
+
+        // Change password
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            try {
+                await apiRequest('/api/v1/user/password', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        current_password: document.getElementById('current-password').value,
+                        new_password: newPassword,
+                    }),
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('Password changed successfully!', 'success');
+                document.getElementById('password-form').reset();
+            } catch (error) {
+                showNotification('Failed to change password', 'error');
+            }
+        });
+
+        // Delete account
+        async function deleteAccount() {
+            if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                return;
+            }
+            
+            if (!confirm('This will permanently delete all your projects, videos, and data. Are you absolutely sure?')) {
+                return;
+            }
+            
+            try {
+                await apiRequest('/api/v1/user/delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                clearAuthToken();
+                showNotification('Account deleted', 'success');
+                setTimeout(() => window.location.href = '/', 2000);
+            } catch (error) {
+                showNotification('Failed to delete account', 'error');
+            }
+        }
+
+        // Initialize
+        if (requireAuth()) {
+            loadSettings();
+        }
+    </script>
+</body>
+</html>

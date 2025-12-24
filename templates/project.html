@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/credits">Credits</a></li>
+                <li><a href="/settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container">
+            <div class="flex-between mb-3">
+                <div>
+                    <a href="/dashboard" class="text-muted" style="text-decoration: none;">← Back to Dashboard</a>
+                    <h1 style="font-size: 2.5rem; margin-top: 0.5rem;" id="project-title">Loading...</h1>
+                </div>
+                <button class="btn btn-primary" onclick="generateNewVersion()">Generate New Version</button>
+            </div>
+
+            <!-- Project Details -->
+            <div class="card mb-3">
+                <h2 class="card-header">Project Details</h2>
+                <div class="grid grid-2">
+                    <div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Style:</strong>
+                            <span id="project-style">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Duration:</strong>
+                            <span id="project-duration">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Created:</strong>
+                            <span id="project-created">--</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Narrator:</strong>
+                            <span id="project-narrator">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Music:</strong>
+                            <span id="project-music">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Total Versions:</strong>
+                            <span id="project-versions">--</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <strong class="text-muted">Script:</strong>
+                    <p id="project-script" style="margin-top: 0.5rem; padding: 1rem; background: var(--darker-bg); border-radius: 0.5rem; white-space: pre-wrap;">
+                        --
+                    </p>
+                </div>
+            </div>
+
+            <!-- Generated Videos (Jobs) -->
+            <div class="card">
+                <h2 class="card-header">Generated Versions</h2>
+                
+                <div id="jobs-list">
+                    <div class="flex-center" style="padding: 3rem;">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <div id="no-jobs" style="display: none; padding: 3rem; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎥</div>
+                    <h3>No Versions Generated Yet</h3>
+                    <p class="text-muted mb-2">Generate your first version to see it here</p>
+                    <button class="btn btn-primary" onclick="generateNewVersion()">Generate Now</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let projectId = null;
+        let projectData = null;
+
+        // Get project ID from URL
+        function getProjectId() {
+            const path = window.location.pathname;
+            const match = path.match(/\/project\/(\d+)/);
+            return match ? match[1] : null;
+        }
+
+        // Load project details
+        async function loadProject() {
+            try {
+                projectData = await getProject(projectId);
+                
+                // Update project details
+                document.getElementById('project-title').textContent = projectData.title;
+                document.getElementById('project-style').textContent = projectData.style;
+                document.getElementById('project-duration').textContent = `${projectData.duration} seconds`;
+                document.getElementById('project-created').textContent = formatDate(projectData.created_at);
+                document.getElementById('project-narrator').textContent = projectData.narrator_voice || 'None';
+                document.getElementById('project-music').textContent = projectData.music_mood || 'None';
+                document.getElementById('project-versions').textContent = projectData.jobs.length;
+                document.getElementById('project-script').textContent = projectData.script;
+                
+                // Update page title
+                document.title = `${projectData.title} - AI Film Studio`;
+                
+                // Display jobs
+                displayJobs();
+            } catch (error) {
+                console.error('Failed to load project:', error);
+                showNotification('Failed to load project', 'error');
+            }
+        }
+
+        // Display jobs
+        function displayJobs() {
+            if (!projectData.jobs || projectData.jobs.length === 0) {
+                document.getElementById('jobs-list').style.display = 'none';
+                document.getElementById('no-jobs').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('jobs-list').style.display = 'block';
+            document.getElementById('no-jobs').style.display = 'none';
+
+            const html = projectData.jobs.map((job, index) => `
+                <div class="card" style="margin-bottom: 1rem;">
+                    <div class="flex-between">
+                        <div style="flex: 1;">
+                            <h3 style="margin-bottom: 0.5rem;">
+                                Version ${projectData.jobs.length - index}
+                            </h3>
+                            <div class="flex gap-1 mb-2" style="align-items: center;">
+                                <span class="status-badge ${getStatusBadgeClass(job.status)}">${job.status}</span>
+                                <span class="text-muted">•</span>
+                                <span class="text-muted">${formatDate(job.created_at)}</span>
+                                ${job.completed_at ? `
+                                    <span class="text-muted">•</span>
+                                    <span class="text-muted">Completed in ${Math.floor((new Date(job.completed_at) - new Date(job.created_at)) / 1000)}s</span>
+                                ` : ''}
+                            </div>
+                            ${job.progress !== undefined ? `
+                                <div style="margin-top: 0.5rem;">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${job.progress}%"></div>
+                                    </div>
+                                    <small class="text-muted">${job.progress}% complete</small>
+                                </div>
+                            ` : ''}
+                            ${job.error_message ? `
+                                <p style="color: var(--error-color); margin-top: 0.5rem;">
+                                    Error: ${job.error_message}
+                                </p>
+                            ` : ''}
+                        </div>
+                        <div class="flex gap-1">
+                            ${job.status === 'completed' 
+                                ? `<a href="/video/${job.id}" class="btn btn-primary">Watch Video</a>` 
+                                : job.status === 'running' || job.status === 'queued'
+                                ? `<a href="/job/${job.id}" class="btn btn-primary">View Progress</a>`
+                                : job.status === 'failed'
+                                ? `<button class="btn btn-warning" onclick="retryJob(${job.id})">Retry</button>`
+                                : ''
+                            }
+                            ${job.status === 'running' || job.status === 'queued' ? `
+                                <button class="btn btn-error" onclick="cancelJobAction(${job.id})">Cancel</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('jobs-list').innerHTML = html;
+        }
+
+        // Generate new version
+        async function generateNewVersion() {
+            if (!confirm('Generate a new version of this film? This will cost credits.')) {
+                return;
+            }
+            
+            try {
+                const projectData = {
+                    project_id: projectId,
+                    regenerate: true
+                };
+                
+                const result = await apiRequest('/api/v1/projects/regenerate', {
+                    method: 'POST',
+                    body: JSON.stringify(projectData),
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('New version generation started!', 'success');
+                
+                // Redirect to job progress
+                setTimeout(() => {
+                    window.location.href = `/job/${result.job_id}`;
+                }, 1000);
+            } catch (error) {
+                showNotification('Failed to generate new version', 'error');
+            }
+        }
+
+        // Cancel job
+        async function cancelJobAction(jobId) {
+            if (!confirm('Cancel this job?')) {
+                return;
+            }
+            
+            try {
+                await cancelJob(jobId);
+                showNotification('Job cancelled', 'success');
+                loadProject();
+            } catch (error) {
+                showNotification('Failed to cancel job', 'error');
+            }
+        }
+
+        // Retry job
+        async function retryJob(jobId) {
+            if (!confirm('Retry this job? This will cost credits.')) {
+                return;
+            }
+            
+            try {
+                const result = await apiRequest(`/api/v1/jobs/${jobId}/retry`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                showNotification('Job retry started!', 'success');
+                
+                // Redirect to job progress
+                setTimeout(() => {
+                    window.location.href = `/job/${result.job_id}`;
+                }, 1000);
+            } catch (error) {
+                showNotification('Failed to retry job', 'error');
+            }
+        }
+
+        // Initialize
+        if (requireAuth()) {
+            projectId = getProjectId();
+            if (projectId) {
+                loadProject();
+                
+                // Refresh every 10 seconds if there are running jobs
+                setInterval(() => {
+                    if (projectData && projectData.jobs.some(j => j.status === 'running' || j.status === 'queued')) {
+                        loadProject();
+                    }
+                }, 10000);
+            } else {
+                showNotification('Invalid project ID', 'error');
+                setTimeout(() => window.location.href = '/dashboard', 2000);
+            }
+        }
+    </script>
+</body>
+</html>

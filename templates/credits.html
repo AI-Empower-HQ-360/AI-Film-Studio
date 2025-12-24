@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credits & Billing - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/credits">Credits</a></li>
+                <li><a href="/settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container" style="max-width: 1000px;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Credits & Billing</h1>
+            <p class="text-muted mb-3">Manage your credits and monitor usage</p>
+
+            <!-- Current Balance -->
+            <div class="card mb-3" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                <div style="text-align: center;">
+                    <div style="font-size: 1rem; opacity: 0.9; margin-bottom: 0.5rem;">Available Credits</div>
+                    <div style="font-size: 4rem; font-weight: bold;" id="credit-balance">--</div>
+                    <p style="opacity: 0.9; margin-top: 0.5rem;">1 credit ≈ 10 seconds of video</p>
+                </div>
+            </div>
+
+            <!-- Buy Credits -->
+            <div class="card mb-3">
+                <h2 class="card-header">Buy Credits</h2>
+                <div class="grid grid-3">
+                    <div class="card text-center" style="background: var(--darker-bg);">
+                        <h3>Starter Pack</h3>
+                        <div style="font-size: 2rem; margin: 1rem 0; font-weight: bold;">$9</div>
+                        <div style="font-size: 1.5rem; color: var(--primary-color); margin-bottom: 1rem;">100 Credits</div>
+                        <p class="text-muted mb-2">~16 minutes of video</p>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="buyCredits(100, 9)">Buy Now</button>
+                    </div>
+                    <div class="card text-center" style="background: var(--darker-bg); border: 2px solid var(--primary-color);">
+                        <div style="background: var(--primary-color); color: white; padding: 0.25rem; margin: -1.5rem -1.5rem 1rem; border-radius: 0.75rem 0.75rem 0 0; font-weight: bold;">
+                            BEST VALUE
+                        </div>
+                        <h3>Pro Pack</h3>
+                        <div style="font-size: 2rem; margin: 1rem 0; font-weight: bold;">$29</div>
+                        <div style="font-size: 1.5rem; color: var(--primary-color); margin-bottom: 1rem;">400 Credits</div>
+                        <p class="text-muted mb-2">~66 minutes of video</p>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="buyCredits(400, 29)">Buy Now</button>
+                    </div>
+                    <div class="card text-center" style="background: var(--darker-bg);">
+                        <h3>Enterprise Pack</h3>
+                        <div style="font-size: 2rem; margin: 1rem 0; font-weight: bold;">$99</div>
+                        <div style="font-size: 1.5rem; color: var(--primary-color); margin-bottom: 1rem;">1500 Credits</div>
+                        <p class="text-muted mb-2">~250 minutes of video</p>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="buyCredits(1500, 99)">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Breakdown -->
+            <div class="card mb-3">
+                <h2 class="card-header">Usage This Month</h2>
+                <div class="grid grid-2">
+                    <div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Films Generated:</strong>
+                            <span style="float: right;" id="films-count">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Credits Used:</strong>
+                            <span style="float: right;" id="credits-used">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Total Video Duration:</strong>
+                            <span style="float: right;" id="total-duration">--</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2">
+                            <strong class="text-muted">GPU Time:</strong>
+                            <span style="float: right;" id="gpu-time">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Average Cost/Film:</strong>
+                            <span style="float: right;" id="avg-cost">--</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted">Daily Limit:</strong>
+                            <span style="float: right;" id="daily-limit">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quotas -->
+            <div class="card mb-3">
+                <h2 class="card-header">Account Quotas</h2>
+                <div>
+                    <div class="mb-2">
+                        <div class="flex-between mb-1">
+                            <span>Films per Day</span>
+                            <span id="daily-quota">--</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="daily-quota-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="flex-between mb-1">
+                            <span>Max Duration per Film</span>
+                            <span id="max-duration">120 seconds</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="flex-between mb-1">
+                            <span>Concurrent Jobs</span>
+                            <span id="concurrent-jobs">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Credit History -->
+            <div class="card">
+                <h2 class="card-header">Credit History</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                                <th style="padding: 1rem;">Date</th>
+                                <th style="padding: 1rem;">Type</th>
+                                <th style="padding: 1rem;">Description</th>
+                                <th style="padding: 1rem; text-align: right;">Amount</th>
+                                <th style="padding: 1rem; text-align: right;">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="credit-history">
+                            <tr>
+                                <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                                    Loading...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Load credits and usage data
+        async function loadCreditsData() {
+            try {
+                const credits = await getUserCredits();
+                document.getElementById('credit-balance').textContent = formatCredits(credits.balance);
+                
+                const stats = await getUserStats();
+                document.getElementById('films-count').textContent = stats.films_this_month || 0;
+                document.getElementById('credits-used').textContent = formatCredits(stats.credits_used_this_month || 0);
+                document.getElementById('total-duration').textContent = formatDuration(stats.total_duration_this_month || 0);
+                document.getElementById('gpu-time').textContent = formatDuration(stats.gpu_time_this_month || 0);
+                document.getElementById('avg-cost').textContent = stats.films_this_month > 0 
+                    ? `${Math.round(stats.credits_used_this_month / stats.films_this_month)} credits`
+                    : '0 credits';
+                document.getElementById('daily-limit').textContent = `${stats.films_today || 0} / ${stats.daily_limit || 10}`;
+                
+                // Update quotas
+                document.getElementById('daily-quota').textContent = `${stats.films_today || 0} / ${stats.daily_limit || 10}`;
+                const dailyPercent = ((stats.films_today || 0) / (stats.daily_limit || 10)) * 100;
+                document.getElementById('daily-quota-bar').style.width = `${Math.min(dailyPercent, 100)}%`;
+                document.getElementById('concurrent-jobs').textContent = `${stats.active_jobs || 0} / ${stats.max_concurrent || 3}`;
+                
+                // Load credit history
+                loadCreditHistory();
+            } catch (error) {
+                console.error('Failed to load credits data:', error);
+            }
+        }
+
+        // Load credit history
+        async function loadCreditHistory() {
+            try {
+                const history = await apiRequest('/api/v1/user/credit-history', {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                if (history.length === 0) {
+                    document.getElementById('credit-history').innerHTML = `
+                        <tr>
+                            <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                                No credit history yet
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                const html = history.map(item => `
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 1rem;">${formatDate(item.date)}</td>
+                        <td style="padding: 1rem;">
+                            <span class="status-badge ${item.type === 'purchase' ? 'status-completed' : 'status-running'}">
+                                ${item.type}
+                            </span>
+                        </td>
+                        <td style="padding: 1rem;">${item.description}</td>
+                        <td style="padding: 1rem; text-align: right; color: ${item.amount > 0 ? 'var(--success-color)' : 'var(--error-color)'};">
+                            ${item.amount > 0 ? '+' : ''}${item.amount}
+                        </td>
+                        <td style="padding: 1rem; text-align: right;">${formatCredits(item.balance)}</td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('credit-history').innerHTML = html;
+            } catch (error) {
+                console.error('Failed to load credit history:', error);
+            }
+        }
+
+        // Buy credits
+        async function buyCredits(amount, price) {
+            if (!confirm(`Purchase ${amount} credits for $${price}?`)) {
+                return;
+            }
+            
+            try {
+                const result = await apiRequest('/api/v1/billing/purchase', {
+                    method: 'POST',
+                    body: JSON.stringify({ amount, price }),
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                    },
+                });
+                
+                if (result.checkout_url) {
+                    // Redirect to payment page
+                    window.location.href = result.checkout_url;
+                } else {
+                    showNotification('Credits purchased successfully!', 'success');
+                    loadCreditsData();
+                }
+            } catch (error) {
+                showNotification('Failed to purchase credits', 'error');
+            }
+        }
+
+        // Initialize
+        if (requireAuth()) {
+            loadCreditsData();
+        }
+    </script>
+</body>
+</html>
