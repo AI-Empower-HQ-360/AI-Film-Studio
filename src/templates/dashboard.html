@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎬</span>
+                AI Film Studio
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/script.html">Script</a></li>
+                <li><a href="/scenes.html">Scenes</a></li>
+                <li><a href="/render.html">Render</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container">
+        <div class="dashboard-header mt-4">
+            <div>
+                <h1 class="hero-title" style="font-size: 2.5rem; text-align: left;">Dashboard</h1>
+                <p class="hero-subtitle" style="text-align: left; margin: 0;">
+                    Manage your film projects and track progress
+                </p>
+            </div>
+            <button class="btn btn-primary" onclick="createNewProject()">
+                ➕ New Project
+            </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Total Projects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">7</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">24h</div>
+                <div class="stat-label">Total Runtime</div>
+            </div>
+        </div>
+
+        <!-- Recent Projects -->
+        <div class="mt-4">
+            <h2 class="section-title" style="text-align: left; font-size: 2rem;">Recent Projects</h2>
+            <div class="project-list" id="projects-list">
+                <div class="project-item">
+                    <div class="project-info">
+                        <h3>Sci-Fi Adventure</h3>
+                        <div class="project-meta">
+                            <span>📅 Dec 20, 2024</span>
+                            <span>⏱️ 2 hours ago</span>
+                            <span>🎬 15 scenes</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="badge badge-warning">Rendering</span>
+                        <button class="btn btn-primary" onclick="openProject('Sci-Fi Adventure')">Open</button>
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-info">
+                        <h3>Mystery Thriller</h3>
+                        <div class="project-meta">
+                            <span>📅 Dec 18, 2024</span>
+                            <span>⏱️ 1 day ago</span>
+                            <span>🎬 20 scenes</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="badge badge-info">In Progress</span>
+                        <button class="btn btn-primary" onclick="openProject('Mystery Thriller')">Open</button>
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-info">
+                        <h3>Romantic Comedy</h3>
+                        <div class="project-meta">
+                            <span>📅 Dec 15, 2024</span>
+                            <span>⏱️ 3 days ago</span>
+                            <span>🎬 12 scenes</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="badge badge-success">Completed</span>
+                        <button class="btn btn-primary" onclick="openProject('Romantic Comedy')">Open</button>
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-info">
+                        <h3>Action Packed</h3>
+                        <div class="project-meta">
+                            <span>📅 Dec 12, 2024</span>
+                            <span>⏱️ 5 days ago</span>
+                            <span>🎬 25 scenes</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="badge badge-success">Completed</span>
+                        <button class="btn btn-primary" onclick="openProject('Action Packed')">Open</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-4">
+            <h2 class="section-title" style="text-align: left; font-size: 2rem;">Quick Actions</h2>
+            <div class="card-grid">
+                <div class="card" onclick="window.location.href='/script.html'">
+                    <span class="card-icon">✍️</span>
+                    <h3 class="card-title">Generate Script</h3>
+                    <p class="card-description">
+                        Create a new script using AI or write your own from scratch.
+                    </p>
+                </div>
+                
+                <div class="card" onclick="window.location.href='/scenes.html'">
+                    <span class="card-icon">🎭</span>
+                    <h3 class="card-title">Manage Scenes</h3>
+                    <p class="card-description">
+                        Organize and edit scenes for your current project.
+                    </p>
+                </div>
+                
+                <div class="card" onclick="window.location.href='/render.html'">
+                    <span class="card-icon">🎥</span>
+                    <h3 class="card-title">Render Video</h3>
+                    <p class="card-description">
+                        Start rendering your project into a final video file.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
