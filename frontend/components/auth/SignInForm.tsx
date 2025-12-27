@@ -30,7 +30,7 @@ export default function SignInForm() {
         router.push('/dashboard')
         router.refresh()
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('')
@@ -10,7 +9,6 @@ export default function SignUpForm() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null)
   
-  const router = useRouter()
   const supabase = createClient()
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -35,7 +33,7 @@ export default function SignUpForm() {
           text: 'Check your email to confirm your account!' 
         })
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'An unexpected error occurred' })
     } finally {
       setLoading(false)
