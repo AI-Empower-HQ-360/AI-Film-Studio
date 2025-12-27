@@ -68,10 +68,10 @@ graph TB
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **Frontend** | Next.js on S3 + CloudFront | User interface, video preview |
-| **Backend API** | FastAPI on ECS/EKS | Job orchestration, auth, credits |
+| **Frontend** | Next.js 14 + Supabase Auth | User interface, authentication, video preview |
+| **Backend API** | FastAPI on ECS/EKS | Job orchestration, credits, film generation |
 | **Worker Plane** | Python + GPU EC2/EKS | AI generation, video composition |
-| **Database** | RDS Postgres (Multi-AZ) | Users, projects, jobs, metadata |
+| **Database** | RDS Postgres (Multi-AZ) + Supabase | Users, projects, jobs, metadata |
 | **Storage** | S3 (versioned, encrypted) | Scripts, images, videos, final MP4s |
 | **Queue** | SQS | Asynchronous job processing |
 | **CDN** | CloudFront | Global content delivery |
@@ -153,11 +153,12 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - **Celery/SQS**: Task queue processing
 
 ### **Frontend**
-- **Next.js 14**: React framework
+- **Next.js 14**: React framework with App Router
 - **TypeScript**: Type-safe development
-- **Tailwind CSS**: Styling
-- **Axios**: API client
-- **React Query**: Data fetching
+- **Supabase**: Authentication and user management
+- **@supabase/ssr**: Server-side rendering auth helpers
+- **Tailwind CSS**: Utility-first styling framework
+- **React Hooks**: Modern React patterns
 
 ### **DevOps**
 - **GitHub Actions**: CI/CD
@@ -246,9 +247,14 @@ python src/main.py
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local
+cp .env.local.example .env.local
+# Edit .env.local with your Supabase credentials
 npm run dev
 ```
+
+The frontend will be available at [http://localhost:3000](http://localhost:3000).
+
+📂 See detailed setup instructions: [`frontend/README.md`](./frontend/README.md)
 
 ### **Infrastructure Deployment**
 
