@@ -58,7 +58,7 @@ Traditional film production requires:
 ## 3. Stakeholders
 
 | Role | Name/Group | Responsibilities | Expectations |
-|------|------------|------------------|--------------||
+|------|------------|------------------|--------------|
 | **Product Owner** | AI-Empower-HQ-360 | Vision, priorities, roadmap | On-time delivery, quality |
 | **Dev Team** | Engineering | Build, test, deploy | Clear requirements |
 | **End Users** | Creators/Filmmakers | Use platform | Easy, fast, high-quality output |
