@@ -25,7 +25,7 @@ async def health_check():
         "service": "AI Film Studio"
     }
 
-@app.get("/home")
+@app.get("/api/v1/home")
 async def home_page():
     """Serve the main home page experience"""
     return {

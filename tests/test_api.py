@@ -20,7 +20,7 @@ def test_health_check():
 
 def test_home_page():
     """Test home page endpoint"""
-    response = client.get("/home")
+    response = client.get("/api/v1/home")
     assert response.status_code == 200
     data = response.json()
     assert data["page"] == "home"
