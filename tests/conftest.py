@@ -1,12 +1,12 @@
 """Pytest fixtures and configuration for AI Film Studio tests"""
-import os
+
 import sys
 from pathlib import Path
-from typing import Generator, AsyncGenerator
+from typing import AsyncGenerator, Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -28,7 +28,7 @@ def temp_dir(tmp_path) -> Path:
 def api_client() -> Generator[TestClient, None, None]:
     """FastAPI test client fixture"""
     from src.api.main import app
-    
+
     with TestClient(app) as client:
         yield client
 
@@ -36,9 +36,13 @@ def api_client() -> Generator[TestClient, None, None]:
 @pytest.fixture(scope="function")
 async def async_api_client() -> AsyncGenerator[AsyncClient, None]:
     """Async FastAPI test client fixture"""
+    from httpx import ASGITransport
+
     from src.api.main import app
-    
-    async with AsyncClient(app=app, base_url="http://test") as client:
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
         yield client
 
 
@@ -69,7 +73,7 @@ def mock_aws_credentials(monkeypatch):
 def mock_s3():
     """Mock S3 service using moto"""
     from moto import mock_s3
-    
+
     with mock_s3():
         yield
 
@@ -78,7 +82,7 @@ def mock_s3():
 def mock_sqs():
     """Mock SQS service using moto"""
     from moto import mock_sqs
-    
+
     with mock_sqs():
         yield
 
@@ -87,7 +91,7 @@ def mock_sqs():
 def mock_redis():
     """Mock Redis using fakeredis"""
     import fakeredis
-    
+
     redis_client = fakeredis.FakeStrictRedis()
     yield redis_client
     redis_client.flushall()
@@ -100,7 +104,7 @@ def sample_script_data():
         "title": "Test Film",
         "script": "A brave knight ventures into the unknown.",
         "genre": "fantasy",
-        "duration": 60
+        "duration": 60,
     }
 
 
@@ -111,7 +115,7 @@ def sample_job_data():
         "job_id": "test-job-123",
         "status": "pending",
         "script_id": "script-456",
-        "created_at": "2024-01-01T00:00:00Z"
+        "created_at": "2024-01-01T00:00:00Z",
     }
 
 
@@ -122,7 +126,7 @@ def sample_user_data():
         "user_id": "user-789",
         "email": "test@example.com",
         "username": "testuser",
-        "credits": 100
+        "credits": 100,
     }
 
 

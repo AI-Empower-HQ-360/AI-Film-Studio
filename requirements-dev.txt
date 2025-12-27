@@ -6,7 +6,7 @@ pytest-mock>=3.12.0
 pytest-xdist>=3.5.0  # Parallel test execution
 
 # HTTP testing
-httpx>=0.25.0
+httpx>=0.25.0,<0.28.0
 
 # Mocking libraries
 moto[s3,sqs]>=4.2.0  # Mock AWS services
