@@ -4,76 +4,155 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Film Studio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background: radial-gradient(circle at 20% 20%, #1f2937 0, #0b0f18 45%, #05070d 100%); }
+    :root {
+      --bg-1: #0b1224;
+      --bg-2: #070d1c;
+      --card: #111a2f;
+      --border: #1f2a44;
+      --text: #dbeafe;
+      --muted: #9fb4d1;
+      --accent: #38bdf8;
+      --accent-2: #0ea5e9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at 30% 20%, #0f172a 0, var(--bg-1) 45%, var(--bg-2) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    a { color: var(--text); text-decoration: none; }
+    .page { display: flex; width: 100%; min-height: 100vh; }
+    .sidebar {
+      width: 260px;
+      padding: 24px;
+      background: rgba(10, 16, 32, 0.7);
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+    @media (min-width: 1024px) { .sidebar { display: flex; flex-direction: column; gap: 16px; } }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-accent { background: var(--accent); color: #0b1224; }
+    .btn-accent:hover { background: var(--accent-2); color: white; }
+    .btn-ghost { background: transparent; border: 1px solid rgba(56,189,248,0.5); color: #cfe8ff; }
+    .btn-ghost:hover { border-color: var(--accent); color: white; }
+    nav .section-title { color: var(--muted); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+    nav a { display: block; padding: 10px 12px; border-radius: 10px; color: var(--text); }
+    nav a:hover { background: rgba(255,255,255,0.04); }
+    .main { flex: 1; display: flex; flex-direction: column; }
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11,18,36,0.6);
+      backdrop-filter: blur(10px);
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .logo-mark { height: 38px; width: 38px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #031225; font-weight: 900; }
+    .hero { padding: 60px 24px 32px; text-align: center; }
+    .hero h1 { margin: 0 0 12px; font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.5px; }
+    .hero p { margin: 0 auto; max-width: 720px; color: var(--muted); font-size: 18px; line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 0 24px 48px; max-width: 1200px; margin: 0 auto; width: 100%; }
+    @media (min-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(17,26,47,0.9), rgba(13,19,33,0.9));
+      padding: 16px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .placeholder {
+      width: 100%; aspect-ratio: 16/9;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(56,189,248,0.02));
+      border: 1px dashed rgba(56,189,248,0.35);
+      display: grid; place-items: center; color: var(--muted); font-size: 14px;
+    }
+    .card h3 { margin: 8px 0 6px; font-size: 20px; }
+    .card p { margin: 0; color: var(--muted); line-height: 1.5; }
+    .footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      background: rgba(11,18,36,0.7);
+      padding: 28px 24px 36px;
+    }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
+    .footer h4 { margin: 0 0 10px; }
+    .footer ul { list-style: none; padding: 0; margin: 0; color: var(--muted); }
+    .footer li { margin-bottom: 6px; }
+    .store-btn { width: 100%; border: 1px solid var(--border); background: #0f172a; color: var(--text); border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: border-color 0.2s ease; }
+    .store-btn:hover { border-color: var(--accent); }
   </style>
 </head>
-<body class="min-h-screen text-gray-100">
-  <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside class="hidden lg:flex w-64 flex-col bg-gray-900/70 backdrop-blur border-r border-gray-800 p-6 space-y-4">
-      <button class="w-full py-3 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Create with Agent</button>
-      <nav class="space-y-2 text-sm font-medium">
-        <div class="text-gray-400 uppercase tracking-wide text-xs">Explore</div>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">Image to Video</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">Text to Video</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Image</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Avatar</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Video Editor</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Music</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">Text to Speech</a>
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <button class="btn btn-accent">Create with Agent</button>
+      <nav>
+        <div class="section-title">Explore</div>
+        <a href="#">Image to Video</a>
+        <a href="#">Text to Video</a>
+        <a href="#">AI Image</a>
+        <a href="#">AI Avatar</a>
+        <a href="#">AI Video Editor</a>
+        <a href="#">AI Music</a>
+        <a href="#">Text to Speech</a>
       </nav>
     </aside>
 
-    <main class="flex-1 flex flex-col">
-      <!-- Header -->
-      <header class="flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-gray-900/60 backdrop-blur">
-        <div class="flex items-center space-x-2">
-          <div class="h-9 w-9 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold">AI</div>
-          <span class="text-lg font-semibold">AI Film Studio</span>
+    <main class="main">
+      <header class="header">
+        <div class="logo">
+          <div class="logo-mark">AI</div>
+          <span>AI Film Studio</span>
         </div>
-        <div class="flex items-center space-x-3">
-          <button class="px-4 py-2 rounded-lg border border-gray-700 text-gray-200 hover:border-gray-500 transition">Login</button>
-          <button class="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Start For Free</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-ghost">Login</button>
+          <button class="btn btn-accent">Start For Free</button>
         </div>
       </header>
 
-      <!-- Hero -->
-      <section class="px-6 py-10">
-        <div class="max-w-5xl mx-auto text-center">
-          <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">More AI Video Tools</h1>
-          <p class="text-lg text-gray-300 max-w-2xl mx-auto">Create stunning AI-powered videos from YouTube links, scripts, or custom assets. Generate, edit, and publish with cinematic quality in minutes.</p>
+      <section class="hero">
+        <h1>More AI Video Tools</h1>
+        <p>Create stunning AI-powered videos from YouTube links, scripts, or custom assets. Generate, edit, and publish with cinematic quality in minutes.</p>
+      </section>
+
+      <section class="grid">
+        <div class="card">
+          <div class="placeholder">Image Placeholder</div>
+          <h3>Video to Video</h3>
+          <p>Transform existing footage with AI-driven styles, cuts, and seamless transitions.</p>
+        </div>
+        <div class="card">
+          <div class="placeholder">Image Placeholder</div>
+          <h3>Lip Sync AI</h3>
+          <p>Generate perfectly synced lips for any dialogue, across any character or avatar.</p>
+        </div>
+        <div class="card">
+          <div class="placeholder">Image Placeholder</div>
+          <h3>AI Effect</h3>
+          <p>Apply cinematic AI effects—lighting, color grading, and VFX—on demand.</p>
         </div>
       </section>
 
-      <!-- Feature cards -->
-      <section class="px-6 pb-12">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="rounded-2xl border border-gray-800 bg-gray-900/60 p-4 space-y-3 shadow-lg hover:border-indigo-500 transition">
-            <div class="aspect-video rounded-xl bg-gray-800/70 flex items-center justify-center text-gray-500 text-sm">Image Placeholder</div>
-            <h3 class="text-xl font-semibold">Video to Video</h3>
-            <p class="text-gray-300 text-sm">Transform existing footage with AI-driven styles, cuts, and seamless transitions.</p>
-          </div>
-          <div class="rounded-2xl border border-gray-800 bg-gray-900/60 p-4 space-y-3 shadow-lg hover:border-indigo-500 transition">
-            <div class="aspect-video rounded-xl bg-gray-800/70 flex items-center justify-center text-gray-500 text-sm">Image Placeholder</div>
-            <h3 class="text-xl font-semibold">Lip Sync AI</h3>
-            <p class="text-gray-300 text-sm">Generate perfectly synced lips for any dialogue, across any character or avatar.</p>
-          </div>
-          <div class="rounded-2xl border border-gray-800 bg-gray-900/60 p-4 space-y-3 shadow-lg hover:border-indigo-500 transition">
-            <div class="aspect-video rounded-xl bg-gray-800/70 flex items-center justify-center text-gray-500 text-sm">Image Placeholder</div>
-            <h3 class="text-xl font-semibold">AI Effect</h3>
-            <p class="text-gray-300 text-sm">Apply cinematic AI effects—lighting, color grading, and VFX—on demand.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="mt-auto border-t border-gray-800 bg-gray-900/70 backdrop-blur px-6 py-8">
-        <div class="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
+      <footer class="footer">
+        <div class="footer-grid">
           <div>
-            <h4 class="font-semibold mb-3">Tools</h4>
-            <ul class="space-y-2 text-gray-300">
+            <h4>Tools</h4>
+            <ul>
               <li>Image to Video</li>
               <li>Text to Video</li>
               <li>AI Avatar</li>
@@ -81,8 +160,8 @@
             </ul>
           </div>
           <div>
-            <h4 class="font-semibold mb-3">Effects</h4>
-            <ul class="space-y-2 text-gray-300">
+            <h4>Effects</h4>
+            <ul>
               <li>Color Grading</li>
               <li>VFX</li>
               <li>Lip Sync</li>
@@ -90,18 +169,18 @@
             </ul>
           </div>
           <div>
-            <h4 class="font-semibold mb-3">Company</h4>
-            <ul class="space-y-2 text-gray-300">
+            <h4>Company</h4>
+            <ul>
               <li>About</li>
               <li>Blog</li>
               <li>Careers</li>
               <li>Support</li>
             </ul>
           </div>
-          <div class="space-y-3">
-            <h4 class="font-semibold">Get the App</h4>
-            <button class="w-full inline-flex items-center justify-center px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-500 transition">App Store</button>
-            <button class="w-full inline-flex items-center justify-center px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-500 transition">Google Play</button>
+          <div>
+            <h4>Get the App</h4>
+            <button class="store-btn">App Store</button>
+            <button class="store-btn" style="margin-top:8px;">Google Play</button>
           </div>
         </div>
       </footer>
