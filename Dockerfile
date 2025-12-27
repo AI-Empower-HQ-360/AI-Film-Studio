@@ -16,4 +16,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "-m", "src.api. main"]
+CMD ["python", "-m", "src.api.main"]
