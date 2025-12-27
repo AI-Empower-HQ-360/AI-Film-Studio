@@ -409,47 +409,41 @@ User → CloudFront → ALB → Backend API
 - Infrastructure as Code for rapid rebuild
 
 ### 8.2 Recovery Procedures
-Scenario: RDS Failure
+#### 8.2.1 Scenario: RDS Failure
+- Automatic failover to Multi-AZ standby (< 2 minutes)
+- DNS update handled by RDS
+- Backend reconnects automatically
 
-Automatic failover to Multi-AZ standby (< 2 minutes)
-DNS update handled by RDS
-Backend reconnects automatically
-
-Scenario: Region Outage
-
-Restore RDS from snapshot in alternate region
-Sync S3 data from replica
-Deploy infrastructure via Terraform
-Update Route 53 to point to new region
+#### 8.2.2 Scenario: Region Outage
+- Restore RDS from snapshot in alternate region
+- Sync S3 data from replica
+- Deploy infrastructure via Terraform
+- Update Route 53 to point to new region
 
 ---
 
 ## 9. Security Architecture
 ### 9.1 Defense in Depth
-Layer 1: Edge (CloudFront + WAF)
+#### 9.1.1 Edge (CloudFront + WAF)
+- DDoS protection
+- Geographic restrictions (optional)
+- Rate limiting
 
-DDoS protection
-Geographic restrictions (optional)
-Rate limiting
+#### 9.1.2 Network (VPC + Security Groups)
+- Subnet isolation
+- Security groups with least-privilege rules
+- No public IPs on backend/workers
 
-Layer 2: Network (VPC + Security Groups)
+#### 9.1.3 Application (Backend API)
+- JWT authentication
+- Input validation (Pydantic)
+- SQL injection prevention (SQLAlchemy ORM)
+- CORS policy
 
-Subnet isolation
-Security groups with least-privilege rules
-No public IPs on backend/workers
-
-Layer 3: Application (Backend API)
-
-JWT authentication
-Input validation (Pydantic)
-SQL injection prevention (SQLAlchemy ORM)
-CORS policy
-
-Layer 4: Data (Encryption)
-
-TLS in transit
-AES-256 at rest
-Secrets Manager for credentials
+#### 9.1.4 Data (Encryption)
+- TLS in transit
+- AES-256 at rest
+- Secrets Manager for credentials
 
 ### 9.2 IAM Roles
 **Backend Role (ai-film-studio-backend-role)**
@@ -465,25 +459,22 @@ Secrets Manager for credentials
 
 ## 10. Monitoring & Observability
 ### 10.1 CloudWatch Dashboards
-API Dashboard:
+#### 10.1.1 API Dashboard
+- Request count (by endpoint)
+- Latency (p50, p95, p99)
+- Error rate (4xx, 5xx)
+- Active connections
 
-Request count (by endpoint)
-Latency (p50, p95, p99)
-Error rate (4xx, 5xx)
-Active connections
+#### 10.1.2 Worker Dashboard
+- Queue depth
+- Active workers
+- Job processing time
+- Success/failure rate
 
-Worker Dashboard:
-
-Queue depth
-Active workers
-Job processing time
-Success/failure rate
-
-Infrastructure Dashboard:
-
-EC2 CPU, memory, disk
-RDS connections, CPU, IOPS
-S3 request rate
+#### 10.1.3 Infrastructure Dashboard
+- EC2 CPU, memory, disk
+- RDS connections, CPU, IOPS
+- S3 request rate
 
 ### 10.2 Alarms
 | Alarm           | Threshold           | Action           |
@@ -510,25 +501,25 @@ S3 request rate
 | **Total**            | -                          | **~$1,800/mo** |
 
 ### 11.2 Cost Optimization Strategies
-Use Spot instances for workers (save 60%)
-Implement S3 lifecycle policies
-Use CloudFront caching to reduce origin requests
-Right-size instances based on metrics
+- Use Spot instances for workers (save 60%)
+- Implement S3 lifecycle policies
+- Use CloudFront caching to reduce origin requests
+- Right-size instances based on metrics
 
 ---
 
 ## 12. Future Enhancements
-Phase 2
-Real-time collaboration features
-Advanced video editing tools
-Voice synthesis and audio generation
-Custom AI model training by users
+### 12.1 Phase 2
+- Real-time collaboration features
+- Advanced video editing tools
+- Voice synthesis and audio generation
+- Custom AI model training by users
 
-Phase 3
-Multi-region deployment for global redundancy
-Edge computing for faster processing (AWS Wavelength)
-Mobile native applications (React Native)
-Third-party integrations (YouTube, TikTok, social media)
+### 12.2 Phase 3
+- Multi-region deployment for global redundancy
+- Edge computing for faster processing (AWS Wavelength)
+- Mobile native applications (React Native)
+- Third-party integrations (YouTube, TikTok, social media)
 
 ---
 
