@@ -38,10 +38,12 @@ cp .env.local.example .env.local
 The file should contain:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://spfefoaeyowaojgqtxxo.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_oDObTtUno0j_-7Pz_gAaaw_KHe4vF-q
-SUPABASE_SERVICE_ROLE_KEY=sb_secret_Gnf6P-g42GzzfckiFu9gkw_E4lO8Oem
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
+
+**Note:** Replace these placeholder values with your actual Supabase project credentials from your [Supabase Dashboard](https://app.supabase.com).
 
 ### 3. Run Development Server
 
@@ -290,9 +292,9 @@ This will show any type errors that need to be fixed.
 Make sure to add these in your hosting platform:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://spfefoaeyowaojgqtxxo.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_oDObTtUno0j_-7Pz_gAaaw_KHe4vF-q
-SUPABASE_SERVICE_ROLE_KEY=sb_secret_Gnf6P-g42GzzfckiFu9gkw_E4lO8Oem
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ### Update Supabase Redirect URLs
