@@ -250,36 +250,33 @@ CREATE INDEX idx_jobs_created_at ON jobs(created_at);
 #### 4.4.2 Amazon S3
 Buckets:
 
-Frontend Bucket (ai-film-studio-frontend-{env})
+**Frontend Bucket (ai-film-studio-frontend-{env})**
+- Purpose: Host Next.js static assets
+- Versioning: Enabled
+- Access: Public read via CloudFront
 
-Purpose: Host Next.js static assets
-Versioning: Enabled
-Public read access via CloudFront
-
-Assets Bucket (ai-film-studio-assets-{env})
-
-Purpose: Store scripts, images, video clips, final films
-Versioning: Enabled
-Encryption: AES-256 (SSE-S3)
-Lifecycle: Delete objects > 30 days old
-Path structure:
-/scripts/{job_id}.txt
-/shots/{job_id}/scene_{n}_shot_{m}.png
-/films/{job_id}/final.mp4
-/thumbnails/{job_id}/thumb.jpg
+**Assets Bucket (ai-film-studio-assets-{env})**
+- Purpose: Store scripts, images, video clips, final films
+- Versioning: Enabled
+- Encryption: AES-256 (SSE-S3)
+- Lifecycle: Delete objects > 30 days old
+- Path structure:
+  - /scripts/{job_id}.txt
+  - /shots/{job_id}/scene_{n}_shot_{m}.png
+  - /films/{job_id}/final.mp4
+  - /thumbnails/{job_id}/thumb.jpg
 
 #### 4.4.3 Amazon SQS
-Queue: ai-film-studio-jobs-{env}
+**Queue:** ai-film-studio-jobs-{env}
 
-Configuration:
+**Configuration:**
+- Visibility timeout: 600 seconds (10 minutes)
+- Message retention: 14 days
+- Dead Letter Queue (DLQ): After 3 retries
+- Max message size: 256 KB
 
-Visibility timeout: 600 seconds (10 minutes)
-Message retention: 14 days
-Dead Letter Queue (DLQ): After 3 retries
-Max message size: 256 KB
-Message Format:
-
-JSON
+**Message Format (JSON):**
+```json
 {
   "job_id": "uuid",
   "user_id": "uuid",
@@ -289,6 +286,7 @@ JSON
   "duration_target": 60,
   "timestamp": "ISO8601"
 }
+```
 
 ## 5. Network Architecture
 ### 5.1 VPC Design
@@ -314,25 +312,21 @@ VPC: 10.0.0.0/16 (ai-film-studio-vpc)
 ```
 
 ### 5.2 Security Groups
-ALB Security Group (sg-alb)
+**ALB Security Group (sg-alb)**
+- Inbound: 443 (HTTPS) from 0.0.0.0/0
+- Outbound: All traffic
 
-Inbound: 443 (HTTPS) from 0.0.0.0/0
-Outbound: All traffic
+**Backend Security Group (sg-backend)**
+- Inbound: 8000 (FastAPI) from ALB SG
+- Outbound: 443 (HTTPS), 5432 (Postgres to RDS SG)
 
-Backend Security Group (sg-backend)
+**Worker Security Group (sg-worker)**
+- Inbound: None
+- Outbound: 443 (HTTPS for S3, SQS), 5432 (Postgres to RDS SG)
 
-Inbound: 8000 (FastAPI) from ALB SG
-Outbound: 443 (HTTPS), 5432 (Postgres to RDS SG)
-
-Worker Security Group (sg-worker)
-
-Inbound: None
-Outbound: 443 (HTTPS for S3, SQS), 5432 (Postgres to RDS SG)
-
-RDS Security Group (sg-rds)
-
-Inbound: 5432 from Backend SG, Worker SG
-Outbound: None
+**RDS Security Group (sg-rds)**
+- Inbound: 5432 from Backend SG, Worker SG
+- Outbound: None
 
 ---
 
@@ -385,47 +379,34 @@ User → CloudFront → ALB → Backend API
 
 ## 7. Scaling Strategy
 ### 7.1 Backend Auto-Scaling
-Metrics:
-
-Target CPU: 70%
-Target Memory: 75%
-Scale-out: Add 1 instance if avg > threshold for 2 minutes
-Scale-in: Remove 1 instance if avg < 50% for 10 minutes
-Min: 2 instances
-Max: 10 instances
+- Target CPU: 70%
+- Target Memory: 75%
+- Scale-out: Add 1 instance if averages exceed thresholds for 2 minutes
+- Scale-in: Remove 1 instance if averages drop below 50% for 10 minutes
+- Capacity: Minimum 2 instances, maximum 10 instances
 
 ### 7.2 Worker Auto-Scaling
-Metrics:
-
-SQS ApproximateNumberOfMessagesVisible
-Target: 5 messages per worker
-Scale-out: If queue depth > 5 * current workers
-Scale-in: If queue depth < 2 * current workers (wait 10 min)
-Min: 1 worker (Dev), 2 workers (Prod)
-Max: 20 workers
-Cost Optimization:
-
-Use Spot instances for workers (60-70% cost savings)
-Spot interruption handling: Gracefully finish current job, then terminate
+- Metric: SQS ApproximateNumberOfMessagesVisible
+- Target: 5 messages per worker
+- Scale-out: If queue depth > 5 × current workers
+- Scale-in: If queue depth < 2 × current workers (after 10 minutes)
+- Capacity: Minimum 1 worker (Dev), 2 workers (Prod); maximum 20 workers
+- Cost optimization: Use Spot instances (60-70% savings) with graceful interruption handling
 
 ---
 
 ## 8. Disaster Recovery
 ### 8.1 Backup Strategy
-RDS:
+**RDS**
+- Automated daily snapshots (7-day retention)
+- Point-in-time recovery enabled
+- Manual snapshots before major changes
 
-Automated daily snapshots (7-day retention)
-Point-in-time recovery enabled
-Manual snapshots before major changes
-
-S3:
-
-Versioning enabled
-Cross-region replication (optional for critical data)
-Configuration:
-
-Terraform state in S3 with versioning
-Infrastructure as Code for rapid rebuild
+**S3**
+- Versioning enabled
+- Cross-region replication (optional for critical data)
+- Terraform state stored in S3 with versioning
+- Infrastructure as Code for rapid rebuild
 
 ### 8.2 Recovery Procedures
 Scenario: RDS Failure
@@ -471,17 +452,14 @@ AES-256 at rest
 Secrets Manager for credentials
 
 ### 9.2 IAM Roles
-Backend Role (ai-film-studio-backend-role)
+**Backend Role (ai-film-studio-backend-role)**
+- Permissions: S3 read/write, SQS publish, RDS connect, Secrets Manager read
 
-Permissions: S3 read/write, SQS publish, RDS connect, Secrets Manager read
+**Worker Role (ai-film-studio-worker-role)**
+- Permissions: SQS consume, S3 read/write, RDS connect
 
-Worker Role (ai-film-studio-worker-role)
-
-Permissions: SQS consume, S3 read/write, RDS connect
-
-ECS Task Execution Role (ecs-task-execution-role)
-
-Permissions: ECR pull, CloudWatch Logs write
+**ECS Task Execution Role (ecs-task-execution-role)**
+- Permissions: ECR pull, CloudWatch Logs write
 
 ---
 
