@@ -10,6 +10,9 @@ env:
   PYTHON_VERSION: "3.12"
   TERRAFORM_DIR: infrastructure/terraform/environments/dev
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     name: Lint & test
