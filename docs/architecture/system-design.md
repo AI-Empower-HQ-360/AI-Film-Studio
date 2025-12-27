@@ -36,9 +36,28 @@ The AI Film Studio platform is a cloud-native, microservices-based system design
 
 ## 3. High-Level Architecture
 
-┌─────────────────────────────────────────────────────────────────┐ │ User Layer │ │ ┌──────────┐ │ │ │ Browser │ ─── HTTPS ───> CloudFront CDN │ │ └──────────┘ │ │ └─────────────────────────────────────┼───────────────────────────┘ │ ┌─────────────────────────────────────┼───────────────────────────┐ │ Presentation Layer │ │ ▼ │ │ ┌────────────────────────┐ │ │ │ S3 Static Website │ │ │ │ (Next.js Frontend) │ │ │ └────────────────────────┘ │ └──────────────────────────────────────────────────────────────────┘ │ ┌─────────────────────────────────────┼───────────────────────────┐ │ API Gateway Layer │ │ ▼ │ │ ┌────────────────────────┐ │ │ │ Application Load │ │ │ │ Balancer (ALB) │ │ │ └────────────┬───────────┘ │ └─────────────────────────────────┼───────────────────────────────┘ │ ┌─────────────────────────────────┼───────────────────────────────┐ │ Application Layer │ │ ▼ │ │ ┌───────────────────────────────────┐ │ │ │ ECS/EKS Cluster │ │ │ │ ┌─────────────────────────┐ │ │ │ │ │ FastAPI Backend (3+) │ │ │ │ │ │ - Auth Service │ │ │ │ │ │ - Job Orchestrator │ │ │ │ │ │ - Project Manager │ │ │ │ │ └───────────┬─────────────┘ │ │ │ └──────────────┼───────────────────┘ │ └────────────────────────┼──────────────────────────────────────┘ │ ┌───────────────┼─────────────────┐ │ │ │ ▼ ▼ ▼ ┌────────────┐ ┌────────────┐ ┌────────────┐ │ RDS │ │ SQS │ │ S3 │ │ PostgreSQL │ │ Queue │ │ Bucket │ │ (Multi-AZ) │ │ │ │ (Assets) │ └────────────┘ └─────┬──────┘ └────────────┘ │ ┌─────────────────────┼───────────────────────────────────────────┐ │ │ Execution Layer │ │ ▼ │ │ ┌───────────────────────────────────┐ │ │ │ ECS/EKS GPU Worker Cluster │ │ │ │ ┌─────────────────────────┐ │ │ │ │ │ Worker Pods (g4dn/g5) │ │ │ │ │ │ - SQS Consumer │ │ │ │ │ │ - AI Pipeline │ │ │ │ │ │ - FFmpeg Compositor │ │ │ │ │ └───────────┬─────────────┘ │ │ │ └──────────────┼───────────────────┘ │ │ │ │ │ └─────────> S3 (Upload Results) │ └──────────────────────────────────────────────────────────────────┘
+```
+User Layer
+  Browser --HTTPS--> CloudFront CDN
 
-Code
+Presentation Layer
+  CloudFront -> S3 Static Website (Next.js Frontend)
+
+API Gateway Layer
+  CloudFront -> Application Load Balancer (ALB)
+
+Application Layer
+  ALB -> ECS/EKS Cluster (FastAPI backend: Auth, Job Orchestrator, Project Manager)
+
+Data Layer
+  FastAPI <-> RDS (PostgreSQL, Multi-AZ)
+  FastAPI <-> SQS (job queue)
+  FastAPI <-> S3 (assets)
+
+Execution Layer
+  SQS -> ECS/EKS GPU Worker Pods (g4dn/g5)
+  Worker Pods -> S3 (upload results)
+```
 
 ---
 
@@ -274,7 +293,7 @@ JSON
 ## 5. Network Architecture
 ### 5.1 VPC Design
 
-Code
+```
 VPC: 10.0.0.0/16 (ai-film-studio-vpc)
 
 ├── Public Subnets (Internet-facing)
@@ -292,6 +311,7 @@ VPC: 10.0.0.0/16 (ai-film-studio-vpc)
 └── Private Subnets (Data Layer)
     ├── 10.0.30.0/24 (us-east-1a) - RDS Primary
     └── 10.0.31.0/24 (us-east-1b) - RDS Standby
+```
 
 ### 5.2 Security Groups
 ALB Security Group (sg-alb)
@@ -319,7 +339,7 @@ Outbound: None
 ## 6. Data Flow Diagrams
 ### 6.1 User Registration Flow
 
-Code
+```
 User → CloudFront → ALB → Backend API
                               │
                               ├─> Validate input
@@ -327,10 +347,11 @@ User → CloudFront → ALB → Backend API
                               ├─> Insert into RDS
                               ├─> Assign 100 credits
                               └─> Return JWT token
+```
 
 ### 6.2 Film Generation Flow
 
-Code
+```
 1. User submits script via Frontend
    ↓
 2. Backend validates script, checks credits
@@ -358,6 +379,7 @@ Code
 11. User polls /api/v1/jobs/{job_id}, receives output_url
    ↓
 12. User downloads film via presigned S3 URL
+```
 
 ---
 
