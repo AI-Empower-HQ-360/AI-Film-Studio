@@ -52,7 +52,11 @@ Covers all user-facing features, APIs, data models, workflows, and acceptance cr
 - [ ] Assign initial 3 credits
 
 **API Endpoint**:
-POST /api/v1/auth/register Body: { "email": "string", "password": "string" } Response: { "userId": "uuid", "email": "string", "tier": "free" }
+```
+POST /api/v1/auth/register
+Body: { "email": "string", "password": "string" }
+Response: { "userId": "uuid", "email": "string", "tier": "free" }
+```
 
 
 ---
@@ -68,7 +72,11 @@ POST /api/v1/auth/register Body: { "email": "string", "password": "string" } Res
 - [ ] Support "Remember Me" option
 
 **API Endpoint**:
-POST /api/v1/auth/login Body: { "email": "string", "password": "string" } Response: { "accessToken": "jwt", "refreshToken": "jwt", "expiresIn": 86400 }
+```
+POST /api/v1/auth/login
+Body: { "email": "string", "password": "string" }
+Response: { "accessToken": "jwt", "refreshToken": "jwt", "expiresIn": 86400 }
+```
 
 
 ---
@@ -83,7 +91,11 @@ POST /api/v1/auth/login Body: { "email": "string", "password": "string" } Respon
 - [ ] Invalidate old sessions
 
 **API Endpoint**:
-POST /api/v1/auth/forgot-password Body: { "email": "string" } Response: { "message": "Reset link sent" }
+```
+POST /api/v1/auth/forgot-password
+Body: { "email": "string" }
+Response: { "message": "Reset link sent" }
+```
 
 
 ---
@@ -101,7 +113,12 @@ POST /api/v1/auth/forgot-password Body: { "email": "string" } Response: { "messa
 - [ ] Link project to user account
 
 **API Endpoint**:
-POST /api/v1/projects Headers: { "Authorization": "Bearer <token>" } Body: { "title": "string", "script": "string" } Response: { "projectId": "uuid", "status": "draft", "createdAt": "timestamp" }
+```
+POST /api/v1/projects
+Headers: { "Authorization": "Bearer <token>" }
+Body: { "title": "string", "script": "string" }
+Response: { "projectId": "uuid", "status": "draft", "createdAt": "timestamp" }
+```
 
 
 ---
@@ -116,7 +133,21 @@ POST /api/v1/projects Headers: { "Authorization": "Bearer <token>" } Body: { "ti
 - [ ] Include thumbnail for completed films
 
 **API Endpoint**:
-GET /api/v1/projects?page=1&status=all Response: { "projects": [ { "projectId": "uuid", "title": "string", "status": "string", "thumbnail": "url" } ], "totalCount": 42, "page": 1 }
+```
+GET /api/v1/projects?page=1&status=all
+Response: {
+  "projects": [
+    {
+      "projectId": "uuid",
+      "title": "string",
+      "status": "string",
+      "thumbnail": "url"
+    }
+  ],
+  "totalCount": 42,
+  "page": 1
+}
+```
 
 
 ---
@@ -130,7 +161,11 @@ GET /api/v1/projects?page=1&status=all Response: { "projects": [ { "projectId": 
 - [ ] Version history saved (optional for MVP)
 
 **API Endpoint**:
-PATCH /api/v1/projects/{projectId} Body: { "title": "new title", "script": "updated script" } Response: { "projectId": "uuid", "updatedAt": "timestamp" }
+```
+PATCH /api/v1/projects/{projectId}
+Body: { "title": "new title", "script": "updated script" }
+Response: { "projectId": "uuid", "updatedAt": "timestamp" }
+```
 
 
 ---
@@ -144,7 +179,10 @@ PATCH /api/v1/projects/{projectId} Body: { "title": "new title", "script": "upda
 - [ ] Cannot delete if job is processing
 
 **API Endpoint**:
-DELETE /api/v1/projects/{projectId} Response: { "message": "Project deleted" }
+```
+DELETE /api/v1/projects/{projectId}
+Response: { "message": "Project deleted" }
+```
 
 
 ---
@@ -162,7 +200,10 @@ DELETE /api/v1/projects/{projectId} Response: { "message": "Project deleted" }
 - [ ] Return job ID for tracking
 
 **API Endpoint**:
-POST /api/v1/projects/{projectId}/generate Response: { "jobId": "uuid", "status": "queued", "estimatedTime": "3-5 minutes" }
+```
+POST /api/v1/projects/{projectId}/generate
+Response: { "jobId": "uuid", "status": "queued", "estimatedTime": "3-5 minutes" }
+```
 
 
 ---
@@ -177,7 +218,16 @@ POST /api/v1/projects/{projectId}/generate Response: { "jobId": "uuid", "status"
 - [ ] Estimate time remaining
 
 **API Endpoint**:
-GET /api/v1/jobs/{jobId} Response: { "jobId": "uuid", "status": "processing", "progress": 65, "currentStep": "scene_generation", "estimatedTimeRemaining": "90 seconds" }
+```
+GET /api/v1/jobs/{jobId}
+Response: {
+  "jobId": "uuid",
+  "status": "processing",
+  "progress": 65,
+  "currentStep": "scene_generation",
+  "estimatedTimeRemaining": "90 seconds"
+}
+```
 
 
 ---
@@ -192,7 +242,10 @@ GET /api/v1/jobs/{jobId} Response: { "jobId": "uuid", "status": "processing", "p
 - [ ] Log download event for analytics
 
 **API Endpoint**:
-GET /api/v1/jobs/{jobId}/download Response: { "downloadUrl": "https://s3.amazonaws.com/...", "expiresIn": 3600 }
+```
+GET /api/v1/jobs/{jobId}/download
+Response: { "downloadUrl": "https://s3.amazonaws.com/...", "expiresIn": 3600 }
+```
 
 
 ---
@@ -207,7 +260,11 @@ GET /api/v1/jobs/{jobId}/download Response: { "downloadUrl": "https://s3.amazona
 - [ ] Create new job
 
 **API Endpoint**:
-POST /api/v1/projects/{projectId}/regenerate Body: { "style": "anime", "pacing": "fast" } Response: { "jobId": "uuid", "status": "queued" }
+```
+POST /api/v1/projects/{projectId}/regenerate
+Body: { "style": "anime", "pacing": "fast" }
+Response: { "jobId": "uuid", "status": "queued" }
+```
 
 
 ---
@@ -223,7 +280,22 @@ POST /api/v1/projects/{projectId}/regenerate Body: { "style": "anime", "pacing":
 - [ ] Display usage history (last 10 transactions)
 
 **API Endpoint**:
-GET /api/v1/users/me/credits Response: { "balance": 15, "tier": "pro", "resetDate": "2026-01-01", "history": [ { "date": "2025-12-20", "type": "deduction", "amount": -1, "description": "Film generated" } ] }
+```
+GET /api/v1/users/me/credits
+Response: {
+  "balance": 15,
+  "tier": "pro",
+  "resetDate": "2026-01-01",
+  "history": [
+    {
+      "date": "2025-12-20",
+      "type": "deduction",
+      "amount": -1,
+      "description": "Film generated"
+    }
+  ]
+}
+```
 
 
 ---
@@ -238,7 +310,11 @@ GET /api/v1/users/me/credits Response: { "balance": 15, "tier": "pro", "resetDat
 - [ ] Send confirmation email
 
 **API Endpoint**:
-POST /api/v1/credits/purchase Body: { "quantity": 10 } Response: { "stripeSessionId": "cs_test_...", "redirectUrl": "https://stripe.com/..." }
+```
+POST /api/v1/credits/purchase
+Body: { "quantity": 10 }
+Response: { "stripeSessionId": "cs_test_...", "redirectUrl": "https://stripe.com/..." }
+```
 
 
 ---
@@ -268,7 +344,10 @@ POST /api/v1/credits/purchase Body: { "quantity": 10 } Response: { "stripeSessio
 - [ ] Grant manual credits
 
 **API Endpoint**:
-GET /api/v1/admin/users?search=email@example.com Response: { "users": [...] }
+```
+GET /api/v1/admin/users?search=email@example.com
+Response: { "users": [...] }
+```
 
 
 ---
@@ -386,11 +465,11 @@ sequenceDiagram
 
 ## 6. Non-Functional Requirements (Summary)
 
-Performance: API response time <200ms (p95)  
-Scalability: Support 100 concurrent jobs  
-Availability: 99.9% uptime  
-Security: JWT auth, HTTPS, encrypted storage  
-Compliance: GDPR, CCPA compliant
+- Performance: API response time <200ms (p95)
+- Scalability: Support 100 concurrent jobs
+- Availability: 99.9% uptime
+- Security: JWT auth, HTTPS, encrypted storage
+- Compliance: GDPR, CCPA compliant
 
 ---
 
@@ -398,27 +477,26 @@ Compliance: GDPR, CCPA compliant
 
 For each feature:
 
- Unit tests pass
- Integration tests pass
- API documentation updated
- UI/UX reviewed
- Security review completed
- Performance benchmarks met
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] API documentation updated
+- [ ] UI/UX reviewed
+- [ ] Security review completed
+- [ ] Performance benchmarks met
 
 ---
 
 ## 8. Out of Scope (MVP)
 
-Real-time collaboration  
-Advanced video editing tools  
-Mobile apps (iOS/Android)  
-Multi-language support  
-Custom AI model training  
+- Real-time collaboration
+- Advanced video editing tools
+- Mobile apps (iOS/Android)
+- Multi-language support
+- Custom AI model training
 
 ---
 
-Document Control
+## Document Control
 
-Next Review Date: 2026-01-27  
-Change History: Version 1.0 - Initial release
-
+**Next Review Date:** 2026-01-27  
+**Change History:** Version 1.0 - Initial release
