@@ -22,6 +22,7 @@
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Contributing](#contributing)
 - [License](#license)
+- [Contact](#-contact)
 
 ---
 
