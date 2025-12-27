@@ -179,6 +179,7 @@ flowchart TB
 - Retry logic: 3 attempts
 - Exponential backoff
 - Log errors to CloudWatch
+- Stage failures short-circuit the pipeline, capture error context, and update job status with details
 - Update job status → FAILED with error message
 
 ---
@@ -301,8 +302,8 @@ flowchart TB
       b2["10.0.11.0/24 (us-east-1b)\nBackend ECS/EKS"]
     end
     subgraph Worker["Private Subnets - Worker Layer"]
-      c1["10.0.20.0/24 (us-east-1a)\nGPU Workers"]
-      c2["10.0.21.0/24 (us-east-1b)\nGPU Workers"]
+      c1["10.0.20.0/22 (us-east-1a)\nGPU Workers"]
+      c2["10.0.24.0/22 (us-east-1b)\nGPU Workers"]
     end
     subgraph Data["Private Subnets - Data Layer"]
       d1["10.0.30.0/24 (us-east-1a)\nRDS Primary"]
@@ -317,6 +318,8 @@ flowchart TB
   b1 --> d1
   b2 --> d2
 ```
+
+Worker and data subnets are isolated from each other, with the worker layer widened to /22 blocks to ensure sufficient IP capacity for GPU autoscaling.
 
 ### 5.2 Security Groups
 **ALB Security Group (sg-alb)**
@@ -504,7 +507,7 @@ sequenceDiagram
 ### 11.1 Monthly AWS Costs (Production)
 | Service              | Configuration              | Cost          |
 |----------------------|----------------------------|---------------|
-| EC2 (Backend)        | 3 × t3.medium              | $90           |
+| ECS (Backend Fargate)| 3 tasks (1 vCPU/2GB)       | $90           |
 | EC2 (Workers)        | 5 × g4dn.xlarge (avg)      | $1,200        |
 | RDS                  | db.m5.large Multi-AZ       | $300          |
 | S3                   | 1TB storage + requests     | $30           |
