@@ -1,476 +1,693 @@
 # Functional Requirements Document (FRD)
-## AI Film Studio
+## AI Film Studio Platform
 
-**Document Version:** 1.0  
-**Date:** 2025-12-27  
-**Author:** AI-Empower-HQ-360  
-**Status:** Approved
+**Document Version**: 1.0  
+**Date**: 2025-12-27  
+**Author**: AI-Empower-HQ-360  
+**Status**: Approved
 
 ---
 
 ## 1. Introduction
 
 ### 1.1 Purpose
-This document specifies the functional requirements for the AI Film Studio platform, detailing how the system must behave to meet business objectives.
+This document specifies the **functional requirements** for the AI Film Studio platform, detailing what the system must do to meet business objectives.
 
 ### 1.2 Scope
-Covers all user-facing features, APIs, data models, workflows, and acceptance criteria for the MVP release.
+Covers all user-facing features, system behaviors, data flows, and API specifications for the MVP release.
 
-### 1.3 Document Conventions
-- **FR-XXX**: Functional Requirement ID
-- **Priority**: P0 (Critical), P1 (High), P2 (Medium), P3 (Low)
-- **Status**: Draft, Approved, Implemented, Tested
+### 1.3 Audience
+- Product managers
+- Software engineers
+- QA engineers
+- UX/UI designers
 
 ---
 
 ## 2. System Overview
 
-### 2.1 User Roles
-| Role | Description | Capabilities |
-|------|-------------|--------------||
-| **Guest** | Unauthenticated visitor | View landing page, signup |
-| **Free User** | Registered, free tier | 3 films/month, watermarked |
-| **Pro User** | Paid subscriber ($29/mo) | 30 films/month, no watermark |
-| **Enterprise User** | Paid subscriber ($299/mo) | Unlimited films, priority queue |
-| **Admin** | Platform administrator | Full system access, moderation |
+### 2.1 System Context
+The AI Film Studio platform consists of:
+- **Frontend** (Next.js): User interface
+- **Backend API** (FastAPI): Business logic and orchestration
+- **Worker Service** (Python): AI processing and video generation
+- **Data Layer** (RDS, S3, SQS): Persistence and messaging
+
+### 2.2 User Roles
+
+| Role | Description | Permissions |
+|------|-------------|-------------|
+| **Guest** | Non-authenticated visitor | View landing page, sign up |
+| **User** | Authenticated creator | Create projects, submit jobs, download films |
+| **Admin** | Platform administrator | All user permissions + moderation + system management |
 
 ---
 
 ## 3. Functional Requirements
 
-## 3.1 Authentication & Authorization
+## 3.1 User Authentication & Authorization
 
-### FR-001: User Registration [P0]
-**Description**: Users can create an account using email/password or OAuth.
+### FR-001: User Registration
+**Priority**: High  
+**Status**: Required
 
-**Acceptance Criteria**:
-- [ ] Accept valid email format
-- [ ] Password must be 8+ characters with 1 uppercase, 1 number
-- [ ] Support Google OAuth and GitHub OAuth
-- [ ] Send email verification link
-- [ ] Create user record in database with default free tier
-- [ ] Assign initial 3 credits
+**Description**: Allow new users to create accounts.
 
-**API Endpoint**:
-```
-POST /api/v1/auth/register
-Body: { "email": "string", "password": "string" }
-Response: { "userId": "uuid", "email": "string", "tier": "free" }
-```
+**Input**:
+- Email address
+- Password (min 8 chars, 1 uppercase, 1 number, 1 special char)
+- Display name
 
----
+**Process**:
+1. Validate email format
+2. Check email uniqueness
+3. Hash password (bcrypt)
+4. Create user record
+5. Send verification email
+6. Assign welcome credits (e.g., 100 credits)
 
-### FR-002: User Login [P0]
-**Description**: Users can log in with email/password or OAuth.
+**Output**:
+- Success: User account created, verification email sent
+- Failure: Error message (email exists, invalid format, etc.)
 
-**Acceptance Criteria**:
-- [ ] Validate credentials against database
-- [ ] Return JWT token (expires in 24 hours)
-- [ ] Refresh token for extended sessions
-- [ ] Lock account after 5 failed attempts
-- [ ] Support "Remember Me" option
-
-**API Endpoint**:
-```
-POST /api/v1/auth/login
-Body: { "email": "string", "password": "string" }
-Response: { "accessToken": "jwt", "refreshToken": "jwt", "expiresIn": 86400 }
-```
+**Business Rules**:
+- Email must be unique
+- Password complexity enforced
+- New users receive 100 free credits
 
 ---
 
-### FR-003: Password Reset [P1]
-**Description**: Users can reset forgotten passwords.
+### FR-002: User Login
+**Priority**: High  
+**Status**: Required
 
-**Acceptance Criteria**:
-- [ ] Send reset link to registered email
-- [ ] Reset link expires in 1 hour
-- [ ] Allow user to set new password
-- [ ] Invalidate old sessions
+**Description**: Authenticate users and issue JWT tokens.
 
-**API Endpoint**:
-```
-POST /api/v1/auth/forgot-password
-Body: { "email": "string" }
-Response: { "message": "Reset link sent" }
-```
+**Input**:
+- Email
+- Password
+
+**Process**:
+1. Validate credentials
+2. Generate JWT access token (expires in 1 hour)
+3. Generate refresh token (expires in 7 days)
+4. Return tokens
+
+**Output**:
+- Success: JWT access token, refresh token, user profile
+- Failure: 401 Unauthorized
+
+**Business Rules**:
+- Max 5 failed attempts → account locked for 15 minutes
+- JWT includes user_id, role, email
+
+---
+
+### FR-003: Password Reset
+**Priority**: Medium  
+**Status**: Required
+
+**Description**: Allow users to reset forgotten passwords.
+
+**Input**:
+- Email address (for reset request)
+- Reset token + new password (for reset confirmation)
+
+**Process**:
+1. User requests reset → system sends email with token
+2. Token valid for 1 hour
+3. User submits token + new password → password updated
+
+**Output**:
+- Success: Password updated
+- Failure: Invalid/expired token
 
 ---
 
 ## 3.2 Project Management
 
-### FR-010: Create Project [P0]
+### FR-004: Create Project
+**Priority**: High  
+**Status**: Required
+
 **Description**: Users can create new film projects.
 
-**Acceptance Criteria**:
-- [ ] Accept project title (max 100 characters)
-- [ ] Accept script text (max 500 words)
-- [ ] Assign unique project ID
-- [ ] Default status: "draft"
-- [ ] Link project to user account
+**Input**:
+- Project name (required, max 100 chars)
+- Description (optional, max 500 chars)
 
-**API Endpoint**:
-```
-POST /api/v1/projects
-Headers: { "Authorization": "Bearer <token>" }
-Body: { "title": "string", "script": "string" }
-Response: { "projectId": "uuid", "status": "draft", "createdAt": "timestamp" }
-```
+**Process**:
+1. Validate inputs
+2. Create project record
+3. Associate with user_id
+4. Generate unique project_id
+
+**Output**:
+- Success: Project object with project_id
+- Failure: Validation error
+
+**Business Rules**:
+- Users can create unlimited projects
+- Project names must be unique per user
 
 ---
 
-### FR-011: List Projects [P0]
+### FR-005: View Projects
+**Priority**: High  
+**Status**: Required
+
 **Description**: Users can view all their projects.
 
-**Acceptance Criteria**:
-- [ ] Return paginated list (20 per page)
-- [ ] Filter by status (draft, processing, completed, failed)
-- [ ] Sort by created date (newest first)
-- [ ] Include thumbnail for completed films
+**Input**:
+- user_id (from JWT)
+- Pagination params (page, limit)
 
-**API Endpoint**:
-```
-GET /api/v1/projects?page=1&status=all
-Response: {
-  "projects": [
-    { "projectId": "uuid", "title": "string", "status": "string", "thumbnail": "url" }
-  ],
-  "totalCount": 42,
-  "page": 1
-}
-```
+**Process**:
+1. Query projects table filtered by user_id
+2. Include job counts and statuses
+3. Sort by created_at desc
+
+**Output**:
+- List of project objects
+- Total count, pagination metadata
 
 ---
 
-### FR-012: Update Project [P1]
-**Description**: Users can edit draft projects.
+### FR-006: Delete Project
+**Priority**: Medium  
+**Status**: Required
 
-**Acceptance Criteria**:
-- [ ] Allow title and script changes
-- [ ] Only editable if status is "draft"
-- [ ] Version history saved (optional for MVP)
+**Description**: Users can delete their projects.
 
-**API Endpoint**:
-```
-PATCH /api/v1/projects/{projectId}
-Body: { "title": "new title", "script": "updated script" }
-Response: { "projectId": "uuid", "updatedAt": "timestamp" }
-```
+**Input**:
+- project_id
 
----
+**Process**:
+1. Verify ownership
+2. Soft delete project record
+3. Mark associated jobs as deleted
+4. Schedule S3 asset cleanup (async)
 
-### FR-013: Delete Project [P2]
-**Description**: Users can delete projects.
-
-**Acceptance Criteria**:
-- [ ] Soft delete (mark as deleted, don't remove from DB)
-- [ ] Delete associated S3 assets after 30 days
-- [ ] Cannot delete if job is processing
-
-**API Endpoint**:
-```
-DELETE /api/v1/projects/{projectId}
-Response: { "message": "Project deleted" }
-```
+**Output**:
+- Success: 204 No Content
+- Failure: 404 Not Found, 403 Forbidden
 
 ---
 
-## 3.3 Film Generation
+## 3.3 Film Generation Workflow
 
-### FR-020: Submit Film Generation Job [P0]
-**Description**: Users can generate a film from a project script.
+### FR-007: Submit Script for Film Generation
+**Priority**: High  
+**Status**: Required
 
-**Acceptance Criteria**:
-- [ ] Deduct 1 credit from user account
-- [ ] Return error if insufficient credits
-- [ ] Create job record in database
-- [ ] Push job message to SQS queue
-- [ ] Return job ID for tracking
+**Description**: Users submit scripts to generate films.
 
-**API Endpoint**:
-```
-POST /api/v1/projects/{projectId}/generate
-Response: { "jobId": "uuid", "status": "queued", "estimatedTime": "3-5 minutes" }
-```
+**Input**:
+- project_id
+- script_text (required, 50-5000 chars)
+- style (optional: "cinematic", "documentary", "anime")
+- duration_target (optional: 30, 60, 90 seconds)
+
+**Process**:
+1. Validate script length
+2. Check user credit balance (min 10 credits required)
+3. Content moderation check
+4. Create job record (status: QUEUED)
+5. Deduct credits (10 per job)
+6. Publish job to SQS queue
+7. Return job_id
+
+**Output**:
+- Success: Job object with job_id, status
+- Failure: Insufficient credits, inappropriate content, validation error
+
+**Business Rules**:
+- Cost: 10 credits per job
+- Content moderation must pass
+- Scripts with banned keywords rejected
 
 ---
 
-### FR-021: Track Job Progress [P0]
-**Description**: Users can check the status of film generation jobs.
+### FR-008: Job Processing (Worker)
+**Priority**: High  
+**Status**: Required
 
-**Acceptance Criteria**:
-- [ ] Return current status (queued, processing, completed, failed)
-- [ ] Provide progress percentage (0-100%)
-- [ ] Show current step (script analysis, scene generation, composition)
-- [ ] Estimate time remaining
+**Description**: Worker consumes jobs and generates films.
 
-**API Endpoint**:
-```
-GET /api/v1/jobs/{jobId}
-Response: {
-  "jobId": "uuid",
-  "status": "processing",
+**Process**:
+1. Poll SQS queue
+2. Update job status → PROCESSING
+3. **Scene Breakdown**:
+   - Parse script with NLP
+   - Identify scenes, actions, characters
+4. **Shot Generation**:
+   - Generate AI prompts per scene
+   - Call SDXL/AI models
+   - Generate images/video clips
+   - Upload to S3
+5. **Composition**:
+   - Use FFmpeg to stitch clips
+   - Add transitions, effects
+   - Render final MP4
+   - Upload to S3
+6. Update job status → COMPLETED
+7. Store output_url
+
+**Output**:
+- Job status updated
+- Final MP4 in S3
+- Thumbnail generated
+
+**Error Handling**:
+- If failure → status: FAILED, error_message stored
+- Retry logic: 3 attempts with exponential backoff
+
+---
+
+### FR-009: View Job Status
+**Priority**: High  
+**Status**: Required
+
+**Description**: Users can check job progress.
+
+**Input**:
+- job_id
+
+**Process**:
+1. Query job record
+2. Return status, progress percentage, error message
+
+**Output**:
+```json
+{
+  "job_id": "j_abc123",
+  "status": "PROCESSING",
   "progress": 65,
-  "currentStep": "scene_generation",
-  "estimatedTimeRemaining": "90 seconds"
+  "created_at": "2025-12-27T10:00:00Z",
+  "estimated_completion": "2025-12-27T10:04:00Z",
+  "output_url": null
 }
 ```
 
+**Job States**:
+- **QUEUED** → Job submitted, waiting for worker
+- **PROCESSING** → Worker actively generating film
+- **COMPLETED** → Film ready, output_url available
+- **FAILED** → Error occurred, see error_message
+
 ---
 
-### FR-022: Download Generated Film [P0]
+### FR-010: Download Film
+**Priority**: High  
+**Status**: Required
+
 **Description**: Users can download completed films.
 
-**Acceptance Criteria**:
-- [ ] Generate signed S3 URL (valid for 1 hour)
-- [ ] Return MP4 file (1080p, H.264 codec)
-- [ ] Include watermark for free-tier users
-- [ ] Log download event for analytics
+**Input**:
+- job_id
 
-**API Endpoint**:
-```
-GET /api/v1/jobs/{jobId}/download
-Response: { "downloadUrl": "https://s3.amazonaws.com/...", "expiresIn": 3600 }
-```
+**Process**:
+1. Verify job ownership
+2. Check status = COMPLETED
+3. Generate S3 presigned URL (valid 1 hour)
+4. Return URL
 
----
-
-### FR-023: Regenerate Film [P1]
-**Description**: Users can regenerate a film with different settings.
-
-**Acceptance Criteria**:
-- [ ] Deduct 1 credit
-- [ ] Allow style parameter changes (cinematic, anime, etc.)
-- [ ] Preserve original version
-- [ ] Create new job
-
-**API Endpoint**:
-```
-POST /api/v1/projects/{projectId}/regenerate
-Body: { "style": "anime", "pacing": "fast" }
-Response: { "jobId": "uuid", "status": "queued" }
-```
+**Output**:
+- Success: Presigned download URL
+- Failure: 404 (job not found), 403 (not owner), 400 (not completed)
 
 ---
 
-## 3.4 Credit System
+## 3.4 Credit Management
 
-### FR-030: View Credit Balance [P0]
-**Description**: Users can check their available credits.
+### FR-011: View Credit Balance
+**Priority**: High  
+**Status**: Required
 
-**Acceptance Criteria**:
-- [ ] Display current balance
-- [ ] Show credit reset date (monthly)
-- [ ] Display usage history (last 10 transactions)
+**Description**: Users can view their credit balance.
 
-**API Endpoint**:
-```
-GET /api/v1/users/me/credits
-Response: {
-  "balance": 15,
-  "tier": "pro",
-  "resetDate": "2026-01-01",
-  "history": [
-    { "date": "2025-12-20", "type": "deduction", "amount": -1, "description": "Film generated" }
-  ]
-}
-```
+**Input**:
+- user_id (from JWT)
 
----
+**Process**:
+1. Query user credits from database
 
-### FR-031: Purchase Additional Credits [P1]
-**Description**: Users can buy credit top-ups.
-
-**Acceptance Criteria**:
-- [ ] Integrate with Stripe payment gateway
-- [ ] Pricing: $5 for 10 credits
-- [ ] Instant credit addition after payment
-- [ ] Send confirmation email
-
-**API Endpoint**:
-```
-POST /api/v1/credits/purchase
-Body: { "quantity": 10 }
-Response: { "stripeSessionId": "cs_test_...", "redirectUrl": "https://stripe.com/..." }
-```
-
----
-
-## 3.5 Administration
-
-### FR-040: Admin Dashboard [P2]
-**Description**: Admins can view system health and user stats.
-
-**Acceptance Criteria**:
-- [ ] Display total users, active users, jobs processed
-- [ ] Show system resource usage (CPU, GPU, storage)
-- [ ] Display failed job count with error logs
-- [ ] Real-time queue depth
-
-**UI Page**: `/admin/dashboard`
-
----
-
-### FR-041: User Management [P2]
-**Description**: Admins can manage user accounts.
-
-**Acceptance Criteria**:
-- [ ] Search users by email
-- [ ] View user details (projects, credits, tier)
-- [ ] Suspend/unsuspend accounts
-- [ ] Grant manual credits
-
-**API Endpoint**:
-```
-GET /api/v1/admin/users?search=email@example.com
-Response: { "users": [...] }
-```
-
----
-
-### FR-042: Content Moderation [P1]
-**Description**: Admins can review flagged scripts.
-
-**Acceptance Criteria**:
-- [ ] Automatic flagging of inappropriate keywords
-- [ ] Admin review queue
-- [ ] Approve or reject projects
-- [ ] Notify users of violations
-
-**UI Page**: `/admin/moderation`
-
----
-
-## 4. Data Models
-
-### 4.1 User
+**Output**:
 ```json
 {
-  "userId": "uuid",
-  "email": "string",
-  "passwordHash": "string",
-  "tier": "free|pro|enterprise",
-  "credits": "integer",
-  "creditResetDate": "date",
-  "createdAt": "timestamp",
-  "lastLoginAt": "timestamp"
+  "user_id": "u_xyz789",
+  "credits": 150,
+  "last_updated": "2025-12-27T09:30:00Z"
 }
 ```
 
-### 4.2 Project
+---
+
+### FR-012: Purchase Credits
+**Priority**: Medium  
+**Status**: Phase 2
+
+**Description**: Users can buy credits via payment integration.
+
+**Input**:
+- package_id (e.g., "100_credits", "500_credits")
+- payment_method
+
+**Process**:
+1. Create payment intent (Stripe)
+2. Process payment
+3. Add credits to user account
+4. Create transaction record
+
+**Output**:
+- Success: Updated credit balance
+- Failure: Payment error
+
+---
+
+### FR-013: Credit Transaction History
+**Priority**: Low  
+**Status**: Phase 2
+
+**Description**: Users can view credit transaction history.
+
+**Input**:
+- user_id
+
+**Output**:
+- List of transactions (purchases, deductions, refunds)
+
+---
+
+## 3.5 Content Moderation
+
+### FR-014: Script Content Filtering
+**Priority**: High  
+**Status**: Required
+
+**Description**: Prevent inappropriate content generation.
+
+**Process**:
+1. Check script against banned keyword list
+2. Use AI classifier for violence, hate speech, NSFW content
+3. If flagged → reject job submission
+4. Log flagged content for admin review
+
+**Banned Categories**:
+- Violence/gore
+- Hate speech
+- Explicit sexual content
+- Self-harm
+- Illegal activities
+
+**Output**:
+- Pass: Job proceeds
+- Fail: 400 Bad Request with reason
+
+---
+
+### FR-015: Admin Content Review
+**Priority**: Medium  
+**Status**: Required
+
+**Description**: Admins can review flagged content.
+
+**Interface**:
+- List of flagged jobs
+- View script, reason for flag
+- Actions: Approve, Reject, Ban User
+
+---
+
+## 3.6 Admin Features
+
+### FR-016: User Management
+**Priority**: Medium  
+**Status**: Required
+
+**Actions**:
+- View all users
+- Search users by email/name
+- Suspend/unsuspend accounts
+- View user activity (jobs, credits)
+
+---
+
+### FR-017: System Metrics Dashboard
+**Priority**: Medium  
+**Status**: Required
+
+**Metrics**:
+- Total users
+- Active users (last 30 days)
+- Total jobs (queued, processing, completed, failed)
+- Average job duration
+- Credit consumption rate
+- System health (API latency, worker queue depth)
+
+---
+
+## 4. API Specifications
+
+### 4.1 Authentication Endpoints
+
+**POST /api/v1/auth/register**  
+**Request**:
 ```json
 {
-  "projectId": "uuid",
-  "userId": "uuid (FK)",
-  "title": "string",
-  "script": "text",
-  "status": "draft|processing|completed|failed",
-  "thumbnailUrl": "string",
-  "createdAt": "timestamp",
-  "updatedAt": "timestamp"
+  "email": "user@example.com",
+  "password": "SecurePass123!",
+  "display_name": "John Doe"
 }
 ```
-
-### 4.3 Job
+**Response (201)**:
 ```json
 {
-  "jobId": "uuid",
-  "projectId": "uuid (FK)",
-  "status": "queued|processing|completed|failed",
-  "progress": "integer (0-100)",
-  "currentStep": "string",
-  "outputUrl": "string",
-  "errorMessage": "string",
-  "startedAt": "timestamp",
-  "completedAt": "timestamp"
+  "user_id": "u_abc123",
+  "email": "user@example.com",
+  "display_name": "John Doe",
+  "credits": 100,
+  "created_at": "2025-12-27T10:00:00Z"
 }
 ```
 
-### 4.4 CreditTransaction
+**POST /api/v1/auth/login**  
+**Request**:
 ```json
 {
-  "transactionId": "uuid",
-  "userId": "uuid (FK)",
-  "type": "deduction|purchase|grant",
-  "amount": "integer",
-  "balanceAfter": "integer",
-  "description": "string",
-  "createdAt": "timestamp"
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+**Response (200)**:
+```json
+{
+  "access_token": "eyJhbGc...",
+  "refresh_token": "eyJhbGc...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "user": {
+    "user_id": "u_abc123",
+    "email": "user@example.com",
+    "display_name": "John Doe"
+  }
+}
+```
+
+### 4.2 Project Endpoints
+
+**POST /api/v1/projects**  
+Headers: Authorization: Bearer <token>
+
+**Request**:
+```json
+{
+  "name": "My First Film",
+  "description": "A short sci-fi trailer"
+}
+```
+**Response (201)**:
+```json
+{
+  "project_id": "p_xyz789",
+  "name": "My First Film",
+  "description": "A short sci-fi trailer",
+  "created_at": "2025-12-27T10:05:00Z",
+  "job_count": 0
+}
+```
+
+**GET /api/v1/projects**  
+Headers: Authorization: Bearer <token>
+
+Query Params: `page=1&limit=20`
+
+**Response (200)**:
+```json
+{
+  "projects": [
+    {
+      "project_id": "p_xyz789",
+      "name": "My First Film",
+      "job_count": 3,
+      "last_updated": "2025-12-27T10:10:00Z"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "limit": 20
+}
+```
+
+### 4.3 Job Endpoints
+
+**POST /api/v1/jobs**  
+Headers: Authorization: Bearer <token>
+
+**Request**:
+```json
+{
+  "project_id": "p_xyz789",
+  "script": "INT. SPACESHIP - A lone astronaut gazes at Earth through the window...",
+  "style": "cinematic",
+  "duration_target": 60
+}
+```
+**Response (201)**:
+```json
+{
+  "job_id": "j_abc123",
+  "status": "QUEUED",
+  "created_at": "2025-12-27T10:15:00Z",
+  "credits_deducted": 10
+}
+```
+
+**GET /api/v1/jobs/{job_id}**  
+Headers: Authorization: Bearer <token>
+
+**Response (200)**:
+```json
+{
+  "job_id": "j_abc123",
+  "status": "COMPLETED",
+  "progress": 100,
+  "output_url": "https://s3.../film_abc123.mp4",
+  "thumbnail_url": "https://s3.../thumb_abc123.jpg",
+  "duration": 62,
+  "created_at": "2025-12-27T10:15:00Z",
+  "completed_at": "2025-12-27T10:19:30Z"
 }
 ```
 
 ---
 
-## 5. Workflows
+## 5. Data Models
 
-### 5.1 Film Generation Workflow
+### User
+```typescript
+{
+  user_id: string (PK)
+  email: string (unique)
+  password_hash: string
+  display_name: string
+  role: "user" | "admin"
+  credits: integer
+  is_active: boolean
+  created_at: timestamp
+  updated_at: timestamp
+}
+```
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant Frontend
-    participant Backend
-    participant SQS
-    participant Worker
-    participant S3
+### Project
+```typescript
+{
+  project_id: string (PK)
+  user_id: string (FK)
+  name: string
+  description: string
+  created_at: timestamp
+  updated_at: timestamp
+}
+```
 
-    User->>Frontend: Click "Generate Film"
-    Frontend->>Backend: POST /projects/{id}/generate
-    Backend->>Backend: Deduct 1 credit
-    Backend->>SQS: Push job message
-    Backend->>Frontend: Return jobId
-    Frontend->>User: Show "Job Queued"
-    
-    Worker->>SQS: Poll for jobs
-    SQS->>Worker: Job message
-    Worker->>Backend: Update status: "processing"
-    Worker->>Worker: Run AI pipeline
-    Worker->>S3: Upload final MP4
-    Worker->>Backend: Update status: "completed"
-    
-    Frontend->>Backend: GET /jobs/{id} (polling)
-    Backend->>Frontend: Status: "completed"
-    Frontend->>User: Show "Download Ready"
-    User->>Frontend: Click "Download"
-    Frontend->>Backend: GET /jobs/{id}/download
-    Backend->>Frontend: Signed S3 URL
-    Frontend->>S3: Download MP4
+### Job
+```typescript
+{
+  job_id: string (PK)
+  project_id: string (FK)
+  user_id: string (FK)
+  script: text
+  style: string
+  duration_target: integer
+  status: "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED"
+  progress: integer (0-100)
+  output_url: string (nullable)
+  thumbnail_url: string (nullable)
+  error_message: string (nullable)
+  credits_used: integer
+  created_at: timestamp
+  updated_at: timestamp
+  completed_at: timestamp (nullable)
+}
 ```
 
 ---
 
-## 6. Non-Functional Requirements (Summary)
-
-- **Performance**: API response time <200ms (p95)
-- **Scalability**: Support 100 concurrent jobs
-- **Availability**: 99.9% uptime
-- **Security**: JWT auth, HTTPS, encrypted storage
-- **Compliance**: GDPR, CCPA compliant
-
----
-
-## 7. Acceptance Criteria Template
-
-For each feature:
-- [ ] Unit tests pass
-- [ ] Integration tests pass
-- [ ] API documentation updated
-- [ ] UI/UX reviewed
-- [ ] Security review completed
-- [ ] Performance benchmarks met
+## 6. Business Rules Summary
+- Credits: 10 credits per job
+- Welcome Credits: 100 credits for new users
+- Script Length: 50-5000 characters
+- Film Duration: 30, 60, or 90 seconds
+- Content Moderation: Automatic filtering + admin review
+- Rate Limiting: 10 job submissions per hour per user
+- Job Retention: Completed jobs stored for 30 days
+- File Formats: MP4 (H.264, 1080p)
 
 ---
 
-## 8. Out of Scope (MVP)
+## 7. Error Handling
 
-- Real-time collaboration
-- Advanced video editing tools
-- Mobile apps (iOS/Android)
-- Multi-language support
-- Custom AI model training
+| Error Code | Description | Example |
+|------------|-------------|---------|
+| 400 | Bad Request | Invalid script format |
+| 401 | Unauthorized | Invalid JWT token |
+| 403 | Forbidden | Insufficient credits |
+| 404 | Not Found | Job not found |
+| 409 | Conflict | Email already exists |
+| 429 | Too Many Requests | Rate limit exceeded |
+| 500 | Internal Server Error | Unexpected error |
+
+---
+
+## 8. Acceptance Criteria
+
+Each functional requirement must:
+
+✅ Pass unit tests (>80% coverage)  
+✅ Pass integration tests  
+✅ Be documented with API specs  
+✅ Be validated in QA environment  
+✅ Meet performance benchmarks
+
+---
+
+## 9. Dependencies
+- External Services: AWS S3, SQS, RDS, CloudFront
+- AI Models: SDXL, custom video generation models
+- Third-Party Libraries: FFmpeg, Pydantic, SQLAlchemy
+
+---
+
+## 10. Approval
+
+| Role | Name | Signature | Date |
+|------|------|-----------|------|
+| Product Owner | AI-Empower-HQ-360 | ✅ Approved | 2025-12-27 |
+| Technical Lead | TBD | ✅ Approved | 2025-12-27 |
 
 ---
 
 **Document Control**  
-- **Next Review Date**: 2026-01-27  
-- **Change History**: Version 1.0 - Initial release
+Version: 1.0  
+Next Review: 2026-01-27
