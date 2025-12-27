@@ -35,9 +35,9 @@ Notes:
 - `scripts`: id pk, project_id fk, youtube_url, raw_transcript, normalized_script, language, created_at.
 - `characters`: id pk, user_id fk (nullable for pre-made), name, style, image_url, model_ref, is_premade bool, created_at.
 - `assets`: id pk, user_id fk, type (image|video|thumbnail), s3_key or supabase_path, metadata jsonb, created_at.
-- `jobs`: id pk, project_id fk, type (import|generation|upload), status (queued|running|failed|succeeded), progress int, error_code, error_message, result_s3_key, result_cf_url, created_at, updated_at.
-- `job_scenes`: id pk, job_id fk, scene_index, status, progress, s3_key, error_code, prompt jsonb.
-- `oauth_tokens`: id pk, user_id fk, provider (google), scope, access_token (encrypted), refresh_token (encrypted), expires_at, created_at.
+- `jobs`: id pk, project_id fk, type (import|generation|upload), status (queued|running|failed|succeeded), progress int, error_code (varchar(50)), error_message (text), result_s3_key, result_cf_url, created_at, updated_at.
+- `job_scenes`: id pk, job_id fk, scene_index, status, progress, s3_key, error_code (varchar(50)), error_message (text), prompt jsonb.
+- `oauth_tokens`: id pk, user_id fk, provider (google), scope, access_token (encrypted), refresh_token (encrypted), expires_at, revoked_at, created_at.
 
 Indexes: by user_id, status, created_at. RLS: per-user on user-owned rows; premade characters readable by all.
 
@@ -66,6 +66,16 @@ Indexes: by user_id, status, created_at. RLS: per-user on user-owned rows; prema
 - Error taxonomy: `TRANSCRIPT_MISSING`, `AI_PROVIDER_FAILURE`, `UPLOAD_FAILED`, `OAUTH_EXPIRED`, `SCENE_TIMEOUT`, etc.  
 - Jobs record both fatal and per-scene errors; retries for transient provider/FFmpeg/S3 errors.  
 - User-facing messages sanitized; internal details in logs/CloudWatch.
+
+Example error codes (extend as needed):
+| Code | Meaning | Suggested user action |
+| --- | --- | --- |
+| TRANSCRIPT_MISSING | Transcript unavailable from YouTube and Whisper failed | Retry with clearer audio or different link |
+| AI_PROVIDER_FAILURE | External AI API returned error/timeout | Retry; if persistent, switch provider/region |
+| SCENE_TIMEOUT | Scene generation exceeded time budget | Retry; reduce scene length/complexity |
+| OAUTH_EXPIRED | Stored OAuth token invalid/expired | Re-connect Google/YouTube account |
+| UPLOAD_FAILED | YouTube upload failed (quota/auth/network) | Retry; verify OAuth scope/quota |
+| STITCH_FAILED | FFmpeg stitching failed | Retry; verify scene assets intact |
 
 ## 8) Security & Production Readiness
 - Supabase RLS for user-owned tables; premade characters read-only public.  
