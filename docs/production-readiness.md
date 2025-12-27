@@ -6,7 +6,7 @@
 ## Current snapshot (observed)
 - Backend is a minimal FastAPI app with only two health endpoints; no domain models, persistence, auth, background jobs, or business logic.
 - Worker, frontend, and most service code described in the README are absent. Infrastructure code is limited to Terraform variable stubs with no modules or resources.
-- No CI/CD workflows exist (no `.github/workflows/`). Dockerfile entrypoint is incorrect (`python -m src.api. main`) and not using a production ASGI server configuration.
+- No CI/CD workflows exist (no `.github/workflows/`). Dockerfile entrypoint in `./Dockerfile` is malformed (currently `CMD ["python", "-m", "src.api. main"]`; it needs the space removed → `src.api.main` and a production ASGI server configuration).
 - No environment template (`.env.example`) or secrets management wiring. Logging is basic and not structured; no metrics/tracing hooks.
 - Tests only cover health checks; no linting configuration, coverage enforcement, or performance/resilience tests. No lockfile to pin transitive dependencies.
 
@@ -39,7 +39,7 @@
    - Add seed data and local dev tooling (docker-compose) to run API + worker + DB locally.
 
 ## Immediate next steps (suggested order)
-1. Stand up CI lint/test workflow and fix Dockerfile entrypoint to use `uvicorn` (ASGI) with the correct module path.
+1. Stand up CI lint/test workflow and fix the `./Dockerfile` entrypoint to use `uvicorn src.api.main:app --host 0.0.0.0 --port 8000` (ASGI) with the correct module path.
 2. Add `.env.example`, settings schema, and secrets loading strategy.
 3. Define minimal database schema + Alembic migrations and wire FastAPI to a Postgres instance.
 4. Implement core job lifecycle (enqueue → worker → status updates) with SQS placeholders and unit tests.
