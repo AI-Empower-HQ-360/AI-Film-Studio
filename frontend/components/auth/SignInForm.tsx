@@ -26,7 +26,7 @@ export default function SignInForm() {
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -37,7 +37,7 @@ export default function SignInForm() {
         router.push('/dashboard')
         router.refresh()
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
