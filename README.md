@@ -22,7 +22,7 @@
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Contributing](#contributing)
 - [License](#license)
-- [Contact](#-contact)
+- [Contact](#contact)
 
 ---
 
@@ -313,6 +313,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ---
 
+<a id="contact"></a>
 ## 📞 Contact
 
 **Author**: AI-Empower-HQ-360  
