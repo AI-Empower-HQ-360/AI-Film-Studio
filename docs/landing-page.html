@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Film Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: radial-gradient(circle at 20% 20%, #1f2937 0, #0b0f18 45%, #05070d 100%); }
+  </style>
+</head>
+<body class="min-h-screen text-gray-100">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="hidden lg:flex w-64 flex-col bg-gray-900/70 backdrop-blur border-r border-gray-800 p-6 space-y-4">
+      <button class="w-full py-3 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Create with Agent</button>
+      <nav class="space-y-2 text-sm font-medium">
+        <div class="text-gray-400 uppercase tracking-wide text-xs">Explore</div>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">Image to Video</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">Text to Video</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Image</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Avatar</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Video Editor</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">AI Music</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800">Text to Speech</a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-gray-900/60 backdrop-blur">
+        <div class="flex items-center space-x-2">
+          <div class="h-9 w-9 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold">AI</div>
+          <span class="text-lg font-semibold">AI Film Studio</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button class="px-4 py-2 rounded-lg border border-gray-700 text-gray-200 hover:border-gray-500 transition">Login</button>
+          <button class="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition">Start For Free</button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="px-6 py-10">
+        <div class="max-w-5xl mx-auto text-center">
+          <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">More AI Video Tools</h1>
+          <p class="text-lg text-gray-300 max-w-2xl mx-auto">Create stunning AI-powered videos from YouTube links, scripts, or custom assets. Generate, edit, and publish with cinematic quality in minutes.</p>
+        </div>
+      </section>
+
+      <!-- Feature cards -->
+      <section class="px-6 pb-12">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="rounded-2xl border border-gray-800 bg-gray-900/60 p-4 space-y-3 shadow-lg hover:border-indigo-500 transition">
+            <div class="aspect-video rounded-xl bg-gray-800/70 flex items-center justify-center text-gray-500 text-sm">Image Placeholder</div>
+            <h3 class="text-xl font-semibold">Video to Video</h3>
+            <p class="text-gray-300 text-sm">Transform existing footage with AI-driven styles, cuts, and seamless transitions.</p>
+          </div>
+          <div class="rounded-2xl border border-gray-800 bg-gray-900/60 p-4 space-y-3 shadow-lg hover:border-indigo-500 transition">
+            <div class="aspect-video rounded-xl bg-gray-800/70 flex items-center justify-center text-gray-500 text-sm">Image Placeholder</div>
+            <h3 class="text-xl font-semibold">Lip Sync AI</h3>
+            <p class="text-gray-300 text-sm">Generate perfectly synced lips for any dialogue, across any character or avatar.</p>
+          </div>
+          <div class="rounded-2xl border border-gray-800 bg-gray-900/60 p-4 space-y-3 shadow-lg hover:border-indigo-500 transition">
+            <div class="aspect-video rounded-xl bg-gray-800/70 flex items-center justify-center text-gray-500 text-sm">Image Placeholder</div>
+            <h3 class="text-xl font-semibold">AI Effect</h3>
+            <p class="text-gray-300 text-sm">Apply cinematic AI effects—lighting, color grading, and VFX—on demand.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="mt-auto border-t border-gray-800 bg-gray-900/70 backdrop-blur px-6 py-8">
+        <div class="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
+          <div>
+            <h4 class="font-semibold mb-3">Tools</h4>
+            <ul class="space-y-2 text-gray-300">
+              <li>Image to Video</li>
+              <li>Text to Video</li>
+              <li>AI Avatar</li>
+              <li>AI Music</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-3">Effects</h4>
+            <ul class="space-y-2 text-gray-300">
+              <li>Color Grading</li>
+              <li>VFX</li>
+              <li>Lip Sync</li>
+              <li>Enhance</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-3">Company</h4>
+            <ul class="space-y-2 text-gray-300">
+              <li>About</li>
+              <li>Blog</li>
+              <li>Careers</li>
+              <li>Support</li>
+            </ul>
+          </div>
+          <div class="space-y-3">
+            <h4 class="font-semibold">Get the App</h4>
+            <button class="w-full inline-flex items-center justify-center px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-500 transition">App Store</button>
+            <button class="w-full inline-flex items-center justify-center px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-500 transition">Google Play</button>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
