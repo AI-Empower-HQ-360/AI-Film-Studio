@@ -36,27 +36,25 @@ The AI Film Studio platform is a cloud-native, microservices-based system design
 
 ## 3. High-Level Architecture
 
-```text
-User Layer
-  Browser --HTTPS--> CloudFront CDN
+```mermaid
+flowchart TB
+  user[Browser]
+  cf[CloudFront CDN]
+  s3site[S3 Static Website (Next.js Frontend)]
+  alb[Application Load Balancer (ALB)]
+  api[ECS/EKS FastAPI Backend\n- Auth\n- Job Orchestrator\n- Project Manager]
+  rds[RDS PostgreSQL (Multi-AZ)]
+  sqs[SQS Queue]
+  s3assets[S3 Assets Bucket]
+  workers[GPU Worker Pods (g4dn/g5)]
 
-Presentation Layer
-  CloudFront -> S3 Static Website (Next.js Frontend)
-
-API Gateway Layer
-  CloudFront -> Application Load Balancer (ALB)
-
-Application Layer
-  ALB -> ECS/EKS Cluster (FastAPI backend: Auth, Job Orchestrator, Project Manager)
-
-Data Layer
-  FastAPI <-> RDS (PostgreSQL, Multi-AZ)
-  FastAPI <-> SQS (job queue)
-  FastAPI <-> S3 (assets)
-
-Execution Layer
-  SQS -> ECS/EKS GPU Worker Pods (g4dn/g5)
-  Worker Pods -> S3 (upload results)
+  user --> cf --> s3site
+  cf --> alb --> api
+  api --> rds
+  api --> sqs
+  api --> s3assets
+  sqs --> workers
+  workers --> s3assets
 ```
 
 ---
@@ -291,24 +289,33 @@ Buckets:
 ## 5. Network Architecture
 ### 5.1 VPC Design
 
-```text
-VPC: 10.0.0.0/16 (ai-film-studio-vpc)
+```mermaid
+flowchart TB
+  subgraph VPC["VPC: 10.0.0.0/16"]
+    subgraph Public_Subnets["Public Subnets"]
+      a1["10.0.1.0/24 (us-east-1a)\nALB, NAT Gateway"]
+      a2["10.0.2.0/24 (us-east-1b)\nALB, NAT Gateway"]
+    end
+    subgraph Private_App["Private Subnets - Application Layer"]
+      b1["10.0.10.0/24 (us-east-1a)\nBackend ECS/EKS"]
+      b2["10.0.11.0/24 (us-east-1b)\nBackend ECS/EKS"]
+    end
+    subgraph Worker["Private Subnets - Worker Layer"]
+      c1["10.0.20.0/24 (us-east-1a)\nGPU Workers"]
+      c2["10.0.21.0/24 (us-east-1b)\nGPU Workers"]
+    end
+    subgraph Data["Private Subnets - Data Layer"]
+      d1["10.0.30.0/24 (us-east-1a)\nRDS Primary"]
+      d2["10.0.31.0/24 (us-east-1b)\nRDS Standby"]
+    end
+  end
 
-├── Public Subnets (Internet-facing)
-│   ├── 10.0.1.0/24 (us-east-1a) - ALB, NAT Gateway
-│   └── 10.0.2.0/24 (us-east-1b) - ALB, NAT Gateway
-│
-├── Private Subnets (Application Layer)
-│   ├── 10.0.10.0/24 (us-east-1a) - Backend ECS/EKS
-│   └── 10.0.11.0/24 (us-east-1b) - Backend ECS/EKS
-│
-├── Private Subnets (Worker Layer)
-│   ├── 10.0.20.0/24 (us-east-1a) - GPU Workers
-│   └── 10.0.21.0/24 (us-east-1b) - GPU Workers
-│
-└── Private Subnets (Data Layer)
-    ├── 10.0.30.0/24 (us-east-1a) - RDS Primary
-    └── 10.0.31.0/24 (us-east-1b) - RDS Standby
+  a1 --> b1
+  a2 --> b2
+  b1 --> c1
+  b2 --> c2
+  b1 --> d1
+  b2 --> d2
 ```
 
 ### 5.2 Security Groups
@@ -333,46 +340,52 @@ VPC: 10.0.0.0/16 (ai-film-studio-vpc)
 ## 6. Data Flow Diagrams
 ### 6.1 User Registration Flow
 
-```text
-User → CloudFront → ALB → Backend API
-                              │
-                              ├─> Validate input
-                              ├─> Hash password
-                              ├─> Insert into RDS
-                              ├─> Assign 100 credits
-                              └─> Return JWT token
+```mermaid
+sequenceDiagram
+    participant User
+    participant CloudFront
+    participant ALB
+    participant Backend
+    participant RDS
+
+    User->>CloudFront: Submit registration
+    CloudFront->>ALB: Route HTTPS request
+    ALB->>Backend: Forward to FastAPI
+    Backend->>Backend: Validate input
+    Backend->>Backend: Hash password
+    Backend->>RDS: Insert user record
+    Backend->>Backend: Assign 100 credits
+    Backend-->>User: JWT token
 ```
 
 ### 6.2 Film Generation Flow
 
-```text
-1. User submits script via Frontend
-   ↓
-2. Backend validates script, checks credits
-   ↓
-3. Backend creates job record in RDS (status: QUEUED)
-   ↓
-4. Backend publishes job to SQS
-   ↓
-5. Backend returns job_id to user
-   ↓
-6. Worker polls SQS, receives job
-   ↓
-7. Worker updates job status → PROCESSING
-   ↓
-8. Worker executes AI pipeline:
-   - Script analysis
-   - Scene breakdown
-   - Shot generation (SDXL)
-   - Composition (FFmpeg)
-   ↓
-9. Worker uploads final MP4 to S3
-   ↓
-10. Worker updates job status → COMPLETED, stores output_url
-   ↓
-11. User polls /api/v1/jobs/{job_id}, receives output_url
-   ↓
-12. User downloads film via presigned S3 URL
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant SQS
+    participant Worker
+    participant S3
+    participant RDS
+
+    User->>Frontend: Submit script
+    Frontend->>Backend: Send job request
+    Backend->>Backend: Validate script & credits
+    Backend->>RDS: Create job (QUEUED)
+    Backend->>SQS: Publish job message
+    Backend-->>User: Return job_id
+    Worker->>SQS: Poll queue
+    SQS-->>Worker: Deliver job message
+    Worker->>RDS: Fetch job details
+    Worker->>Worker: Run AI pipeline (analysis, shots, composition)
+    Worker->>S3: Upload final MP4
+    Worker->>RDS: Update status to COMPLETED
+    User->>Backend: Poll job status
+    Backend->>RDS: Read job status/output_url
+    Backend-->>User: Provide output_url (presigned S3)
+    User->>S3: Download film
 ```
 
 ---
