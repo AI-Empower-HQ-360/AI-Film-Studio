@@ -17,3 +17,11 @@ def test_health_check():
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
     assert response.json()["version"] == "0.1.0"
+
+def test_home_page():
+    """Test home page endpoint"""
+    response = client.get("/home")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["page"] == "home"
+    assert "title" in data

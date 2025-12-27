@@ -25,6 +25,16 @@ async def health_check():
         "service": "AI Film Studio"
     }
 
+@app.get("/home")
+async def home_page():
+    """Serve the main home page experience"""
+    return {
+        "page": "home",
+        "title": "AI Film Studio",
+        "subtitle": "Transform scripts into cinematic short films with AI",
+        "primary_cta": "Start creating"
+    }
+
 if __name__ == "__main__":
     import uvicorn
     logger.info(f"Starting API server on {API_HOST}:{API_PORT}")
