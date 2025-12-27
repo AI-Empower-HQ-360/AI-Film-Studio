@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/credits">Credits</a></li>
+                <li><a href="/settings">Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding: 3rem 0;">
+        <div class="container">
+            <div class="flex-between mb-3">
+                <div>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Dashboard</h1>
+                    <p class="text-muted">Manage your projects and track your usage</p>
+                </div>
+                <a href="/create" class="btn btn-primary">Create New Film</a>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-3 mb-3">
+                <div class="card">
+                    <div class="text-muted mb-1">Credits Remaining</div>
+                    <div style="font-size: 2rem; font-weight: bold;" id="credits-remaining">--</div>
+                </div>
+                <div class="card">
+                    <div class="text-muted mb-1">Projects Today</div>
+                    <div style="font-size: 2rem; font-weight: bold;" id="projects-today">--</div>
+                </div>
+                <div class="card">
+                    <div class="text-muted mb-1">Total GPU Time</div>
+                    <div style="font-size: 2rem; font-weight: bold;" id="gpu-time">--</div>
+                </div>
+            </div>
+
+            <!-- Usage Chart (Placeholder) -->
+            <div class="card mb-3">
+                <h2 class="card-header">Usage This Month</h2>
+                <div style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                    <div id="usage-chart">
+                        <p>📊 Usage visualization coming soon</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects List -->
+            <div class="card">
+                <div class="flex-between mb-2">
+                    <h2 class="card-header" style="margin-bottom: 0;">Your Projects</h2>
+                    <div class="flex gap-1">
+                        <button class="btn btn-secondary" onclick="filterProjects('all')" id="filter-all">All</button>
+                        <button class="btn btn-secondary" onclick="filterProjects('completed')" id="filter-completed">Completed</button>
+                        <button class="btn btn-secondary" onclick="filterProjects('running')" id="filter-running">Running</button>
+                        <button class="btn btn-secondary" onclick="filterProjects('failed')" id="filter-failed">Failed</button>
+                    </div>
+                </div>
+
+                <div id="projects-list">
+                    <div class="flex-center" style="padding: 3rem;">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <div id="no-projects" style="display: none; padding: 3rem; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎬</div>
+                    <h3>No Projects Yet</h3>
+                    <p class="text-muted mb-2">Create your first film to get started</p>
+                    <a href="/create" class="btn btn-primary">Create Film</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let allProjects = [];
+        let currentFilter = 'all';
+
+        // Load user stats
+        async function loadStats() {
+            try {
+                const stats = await getUserStats();
+                document.getElementById('credits-remaining').textContent = formatCredits(stats.credits_remaining);
+                document.getElementById('projects-today').textContent = stats.projects_today;
+                document.getElementById('gpu-time').textContent = formatDuration(stats.total_gpu_time);
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        // Load projects
+        async function loadProjects() {
+            try {
+                allProjects = await getProjects();
+                displayProjects();
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+                document.getElementById('projects-list').innerHTML = `
+                    <div style="padding: 2rem; text-align: center; color: var(--error-color);">
+                        Failed to load projects. Please try again.
+                    </div>
+                `;
+            }
+        }
+
+        // Display projects
+        function displayProjects() {
+            const filtered = currentFilter === 'all' 
+                ? allProjects 
+                : allProjects.filter(p => p.status === currentFilter);
+
+            if (filtered.length === 0) {
+                document.getElementById('projects-list').style.display = 'none';
+                document.getElementById('no-projects').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('projects-list').style.display = 'block';
+            document.getElementById('no-projects').style.display = 'none';
+
+            const html = filtered.map(project => `
+                <div class="card" style="margin-bottom: 1rem;">
+                    <div class="flex-between">
+                        <div style="flex: 1;">
+                            <h3 style="margin-bottom: 0.5rem;">
+                                <a href="/project/${project.id}" style="color: var(--text-primary); text-decoration: none;">
+                                    ${project.title}
+                                </a>
+                            </h3>
+                            <p class="text-muted" style="margin-bottom: 0.5rem;">
+                                ${project.script.substring(0, 100)}${project.script.length > 100 ? '...' : ''}
+                            </p>
+                            <div class="flex gap-1" style="align-items: center;">
+                                <span class="status-badge ${getStatusBadgeClass(project.status)}">${project.status}</span>
+                                <span class="text-muted">•</span>
+                                <span class="text-muted">${project.style}</span>
+                                <span class="text-muted">•</span>
+                                <span class="text-muted">${project.duration}s</span>
+                                <span class="text-muted">•</span>
+                                <span class="text-muted">${formatDate(project.created_at)}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <a href="/project/${project.id}" class="btn btn-secondary">View</a>
+                            ${project.status === 'completed' 
+                                ? `<a href="/video/${project.latest_job_id}" class="btn btn-primary">Watch</a>` 
+                                : project.status === 'running' 
+                                ? `<a href="/job/${project.latest_job_id}" class="btn btn-primary">Progress</a>`
+                                : `<a href="/project/${project.id}" class="btn btn-primary">Retry</a>`
+                            }
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('projects-list').innerHTML = html;
+        }
+
+        // Filter projects
+        function filterProjects(filter) {
+            currentFilter = filter;
+            
+            // Update button states
+            ['all', 'completed', 'running', 'failed'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filter) {
+                    btn.style.background = 'var(--primary-color)';
+                    btn.style.borderColor = 'var(--primary-color)';
+                } else {
+                    btn.style.background = 'var(--dark-bg)';
+                    btn.style.borderColor = 'var(--border-color)';
+                }
+            });
+            
+            displayProjects();
+        }
+
+        // Initialize
+        if (requireAuth()) {
+            loadStats();
+            loadProjects();
+            
+            // Refresh every 30 seconds
+            setInterval(loadProjects, 30000);
+        }
+    </script>
+</body>
+</html>
