@@ -44,6 +44,14 @@
 - Educational institutions
 - Corporate training departments
 
+### **🎥 Live Demo**
+
+> **Coming Soon!** The live demo will be available once the initial deployment is complete.
+> 
+> Stay tuned for updates, or [watch this repository](https://github.com/AI-Empower-HQ-360/AI-Film-Studio) to be notified when the demo goes live.
+>
+> 📌 **Interested in early access?** Open an [issue](https://github.com/AI-Empower-HQ-360/AI-Film-Studio/issues) or contact us!
+
 ---
 
 ## 🏗️ Architecture
@@ -104,21 +112,21 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - Kubernetes manifests
 - Unit testing
 
-📂 See: [`backend/`](./backend/), [`worker/`](./worker/), [`frontend/`](./frontend/), [`infrastructure/`](./infrastructure/)
+📂 See: [`src/`](./src/), [`infrastructure/`](./infrastructure/)
 
 ### **4️⃣ Testing Phase**
 - Unit, integration, and security testing
 - Performance and load testing
 - Resilience testing
 
-📂 See: Test directories in each component
+📂 See: [`tests/`](./tests/)
 
 ### **5️⃣ Deployment Phase**
 - CI/CD pipelines (GitHub Actions)
 - Blue-green and canary deployments
 - Rollback strategies
 
-📂 See: [`.github/workflows/`](./.github/workflows/)
+📂 See: CI/CD workflows (to be implemented in `.github/workflows/`)
 
 ### **6️⃣ Operations & Maintenance**
 - Monitoring and alerting (CloudWatch)
@@ -126,7 +134,7 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - Cost optimization
 - Security patching
 
-📂 See: [`docs/operations/`](./docs/operations/)
+📂 See: Operations documentation (to be added in `docs/operations/`)
 
 ---
 
@@ -178,28 +186,25 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 ai-film-studio/
 ├── docs/                          # Documentation
 │   ├── requirements/              # BRD, FRD, NFR
-│   ├── architecture/              # System design, diagrams
-│   └── operations/                # Runbooks, incident response
+│   └── architecture/              # System design, diagrams
 ├── infrastructure/                # Infrastructure as Code
-│   ├── terraform/                 # Terraform modules
-│   │   ├── environments/          # Dev, Test, Prod configs
-│   │   └── modules/               # Reusable modules
-│   └── kubernetes/                # K8s manifests and Helm charts
-├── backend/                       # FastAPI backend
-│   ├── src/                       # Source code
-│   ├── tests/                     # Unit and integration tests
-│   └── Dockerfile                 # Container image
-├── worker/                        # GPU worker
-│   ├── src/                       # AI pipeline code
-│   ├── tests/                     # Worker tests
-│   └── Dockerfile                 # Container image
-├── frontend/                      # Next.js frontend
-│   ├── src/                       # React components
-│   └── package.json               # Dependencies
-├── .github/                       # GitHub Actions workflows
-│   └── workflows/                 # CI/CD pipelines
-└── scripts/                       # Utility scripts
+│   └── terraform/                 # Terraform modules
+│       ├── environments/          # Dev, Test, Prod configs
+│       └── modules/               # Reusable modules
+├── src/                           # Application source code
+│   ├── api/                       # FastAPI backend endpoints
+│   ├── config/                    # Configuration files
+│   ├── services/                  # Business logic services
+│   └── utils/                     # Utility functions
+├── tests/                         # Unit and integration tests
+├── scripts/                       # Utility scripts
+├── Dockerfile                     # Container image definition
+├── requirements.txt               # Python dependencies
+└── README.md                      # This file
 ```
+
+> **Note**: The project structure is currently in the initial development phase. 
+> Additional directories for frontend, workers, and CI/CD pipelines will be added as the project evolves.
 
 ---
 
@@ -223,32 +228,21 @@ git clone https://github.com/AI-Empower-HQ-360/AI-Film-Studio.git
 cd AI-Film-Studio
 ```
 
-#### **2. Set up backend**
+#### **2. Set up the application**
 ```bash
-cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env  # Configure your environment variables
-uvicorn src.main:app --reload
 ```
 
-#### **3. Set up worker**
+#### **3. Run the application**
 ```bash
-cd worker
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python src/main.py
+# Start the FastAPI backend
+uvicorn src.api.main:app --reload
 ```
 
-#### **4. Set up frontend**
-```bash
-cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
-```
+> **Note**: Frontend and worker components are in development and will be added in future releases.
 
 ### **Infrastructure Deployment**
 
@@ -293,16 +287,25 @@ terraform apply tfplan
 6. **Deploy to Prod** → Blue-green deployment with manual approval
 
 ### **Pipeline Files**
-- `.github/workflows/backend-ci-cd.yml` — Backend deployment
-- `.github/workflows/worker-ci-cd.yml` — Worker deployment
-- `.github/workflows/frontend-ci-cd.yml` — Frontend deployment
-- `.github/workflows/terraform-deploy.yml` — Infrastructure deployment
+> **Note**: CI/CD pipeline files will be added in `.github/workflows/` directory as the project progresses:
+> - Backend deployment pipeline
+> - Worker deployment pipeline
+> - Frontend deployment pipeline
+> - Infrastructure deployment pipeline
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+We welcome contributions! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+For more detailed guidelines, see the [issues](https://github.com/AI-Empower-HQ-360/AI-Film-Studio/issues) page.
 
 ---
 
