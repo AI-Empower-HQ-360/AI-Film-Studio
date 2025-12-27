@@ -75,3 +75,78 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "public_subnet_cidrs" {
+  description = "CIDR blocks for public subnets"
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+}
+
+variable "private_subnet_cidrs" {
+  description = "CIDR blocks for private subnets"
+  type        = list(string)
+  default     = ["10.0.11.0/24", "10.0.12.0/24"]
+}
+
+variable "worker_subnet_cidrs" {
+  description = "CIDR blocks for worker subnets"
+  type        = list(string)
+  default     = ["10.0.21.0/24", "10.0.22.0/24"]
+}
+
+variable "database_subnet_cidrs" {
+  description = "CIDR blocks for database subnets"
+  type        = list(string)
+  default     = ["10.0.31.0/24", "10.0.32.0/24"]
+}
+
+variable "db_username" {
+  description = "Master database username"
+  type        = string
+  default     = "postgres"
+}
+
+variable "db_password" {
+  description = "Master database password"
+  type        = string
+  sensitive   = true
+}
+
+variable "alb_certificate_arn" {
+  description = "ACM certificate ARN for ALB HTTPS listener (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "ecr_backend_repository" {
+  description = "ECR repository URI for backend service image"
+  type        = string
+}
+
+variable "ecr_worker_repository" {
+  description = "ECR repository URI for worker service image"
+  type        = string
+}
+
+variable "cloudfront_aliases" {
+  description = "Optional domain aliases for CloudFront distribution"
+  type        = list(string)
+  default     = []
+}
+
+variable "cloudfront_certificate_arn" {
+  description = "ACM certificate ARN for CloudFront aliases (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "jwt_secret" {
+  description = "JWT signing secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "alert_email" {
+  description = "Email address for SNS alert subscriptions"
+  type        = string
+}
