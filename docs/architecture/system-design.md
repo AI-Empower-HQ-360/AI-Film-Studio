@@ -36,7 +36,7 @@ The AI Film Studio platform is a cloud-native, microservices-based system design
 
 ## 3. High-Level Architecture
 
-```
+```text
 User Layer
   Browser --HTTPS--> CloudFront CDN
 
@@ -293,7 +293,7 @@ JSON
 ## 5. Network Architecture
 ### 5.1 VPC Design
 
-```
+```text
 VPC: 10.0.0.0/16 (ai-film-studio-vpc)
 
 ├── Public Subnets (Internet-facing)
@@ -339,7 +339,7 @@ Outbound: None
 ## 6. Data Flow Diagrams
 ### 6.1 User Registration Flow
 
-```
+```text
 User → CloudFront → ALB → Backend API
                               │
                               ├─> Validate input
@@ -351,7 +351,7 @@ User → CloudFront → ALB → Backend API
 
 ### 6.2 Film Generation Flow
 
-```
+```text
 1. User submits script via Frontend
    ↓
 2. Backend validates script, checks credits
@@ -508,26 +508,28 @@ RDS connections, CPU, IOPS
 S3 request rate
 
 ### 10.2 Alarms
-Alarm	Threshold	Action
-API error rate	> 5% for 5 min	SNS → Slack
-Job failure rate	> 10% for 10 min	SNS → PagerDuty
-RDS CPU	> 80% for 5 min	SNS → Slack
-Queue depth	> 100 for 10 min	SNS → Slack
-Disk usage	> 85%	SNS → Email
+| Alarm           | Threshold           | Action           |
+|-----------------|---------------------|------------------|
+| API error rate  | > 5% for 5 min      | SNS → Slack      |
+| Job failure rate| > 10% for 10 min    | SNS → PagerDuty  |
+| RDS CPU         | > 80% for 5 min     | SNS → Slack      |
+| Queue depth     | > 100 for 10 min    | SNS → Slack      |
+| Disk usage      | > 85%               | SNS → Email      |
 
 ---
 
 ## 11. Cost Estimation
 ### 11.1 Monthly AWS Costs (Production)
-Service	Configuration	Cost
-EC2 (Backend)	3 × t3.medium	$90
-EC2 (Workers)	5 × g4dn.xlarge (avg)	$1,200
-RDS	db.m5.large Multi-AZ	$300
-S3	1TB storage + requests	$30
-CloudFront	1TB egress	$85
-ALB	1 ALB	$25
-SQS, CloudWatch, etc.	-	$70
-Total	-	~$1,800/month
+| Service              | Configuration              | Cost          |
+|----------------------|----------------------------|---------------|
+| EC2 (Backend)        | 3 × t3.medium              | $90           |
+| EC2 (Workers)        | 5 × g4dn.xlarge (avg)      | $1,200        |
+| RDS                  | db.m5.large Multi-AZ       | $300          |
+| S3                   | 1TB storage + requests     | $30           |
+| CloudFront           | 1TB egress                 | $85           |
+| ALB                  | 1 ALB                      | $25           |
+| SQS, CloudWatch, etc.| -                          | $70           |
+| **Total**            | -                          | **~$1,800/mo** |
 
 ### 11.2 Cost Optimization Strategies
 Use Spot instances for workers (save 60%)
@@ -553,6 +555,7 @@ Third-party integrations (YouTube, TikTok, social media)
 ---
 
 ## 13. Approval
-Role	Name	Signature	Date
-Chief Architect	AI-Empower-HQ-360	✅ Approved	2025-12-27
-DevOps Lead	TBD	✅ Approved	2025-12-27
+| Role            | Name               | Signature     | Date       |
+|-----------------|--------------------|---------------|------------|
+| Chief Architect | AI-Empower-HQ-360  | ✅ Approved   | 2025-12-27 |
+| DevOps Lead     | TBD                | ✅ Approved   | 2025-12-27 |
