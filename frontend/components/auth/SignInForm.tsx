@@ -99,7 +99,7 @@ export default function SignInForm() {
       </div>
 
       <div className="text-sm text-center">
-        <span className="text-gray-600">Don't have an account? </span>
+        <span className="text-gray-600">Don&apos;t have an account? </span>
         <Link href="/signup" className="font-medium text-primary-600 hover:text-primary-500">
           Sign up
         </Link>
