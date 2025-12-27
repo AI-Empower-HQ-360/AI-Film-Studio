@@ -80,12 +80,12 @@ module "rds" {
     module.ecs_worker.worker_security_group_id
   ]
   
-  instance_class       = var.db_instance_class
-  allocated_storage    = var.db_allocated_storage
+  instance_class       = var.rds_instance_class
+  allocated_storage    = var.rds_allocated_storage
   engine_version       = "15.4"
   multi_az             = false  # Single AZ for dev
   
-  database_name        = var.db_name
+  database_name        = var.rds_database_name
   master_username      = var.db_username
   master_password      = var.db_password  # Use AWS Secrets Manager in prod
   
@@ -138,8 +138,8 @@ module "sqs" {
   
   queue_name              = "${local.project_name}-jobs-${local.environment}"
   visibility_timeout      = 600  # 10 minutes for job processing
-  message_retention       = 1209600  # 14 days
-  max_message_size        = 262144  # 256 KB
+  message_retention       = 14 * 24 * 60 * 60  # 14 days
+  max_message_size        = 256 * 1024  # 256 KB
   receive_wait_time       = 20  # Long polling
   
   # Dead Letter Queue
@@ -192,8 +192,8 @@ module "ecs_backend" {
   
   # Secrets from AWS Secrets Manager
   secrets = {
-    DATABASE_PASSWORD = "${module.rds.db_secret_arn}:password::"
-    JWT_SECRET        = "${aws_secretsmanager_secret.jwt_secret.arn}:secret::"
+    DATABASE_PASSWORD = module.rds.db_secret_arn
+    JWT_SECRET        = aws_secretsmanager_secret.jwt_secret.arn
   }
   
   # Container Image
@@ -221,7 +221,7 @@ module "ecs_worker" {
   
   # Use EC2 launch type for GPU instances
   launch_type    = "EC2"
-  instance_type  = var.worker_instance_type  # g4dn.xlarge
+  instance_type  = var.worker_gpu_instance_type  # g4dn.xlarge
   
   # ECS Service Configuration
   task_cpu           = 4096
@@ -250,7 +250,7 @@ module "ecs_worker" {
   
   # Secrets
   secrets = {
-    DATABASE_PASSWORD = "${module.rds.db_secret_arn}:password::"
+    DATABASE_PASSWORD = module.rds.db_secret_arn
   }
   
   # Container Image
