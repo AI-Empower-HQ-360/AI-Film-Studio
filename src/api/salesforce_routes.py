@@ -213,14 +213,20 @@ async def salesforce_webhook(
     Webhook endpoint to receive updates from Salesforce.
     This can be used for bi-directional sync when Salesforce data changes.
     
-    Note: In production, you should validate the webhook signature.
+    Note: In production, webhook signature validation should be implemented.
+    This is a placeholder for future implementation.
     """
     try:
         logger.info(f"Received Salesforce webhook: {payload.event_type} for {payload.object_type}")
         
-        # TODO: Validate webhook signature
-        # if x_salesforce_signature:
-        #     validate_salesforce_signature(payload, x_salesforce_signature)
+        # TODO: Implement webhook signature validation for production use
+        # Webhook signature validation helps ensure requests are from Salesforce
+        # and not from unauthorized sources. Implement this before production deployment.
+        # Example validation:
+        # if not x_salesforce_signature:
+        #     raise HTTPException(status_code=401, detail="Missing webhook signature")
+        # if not validate_salesforce_signature(payload, x_salesforce_signature):
+        #     raise HTTPException(status_code=401, detail="Invalid webhook signature")
         
         # Handle different event types
         if payload.event_type == "created":

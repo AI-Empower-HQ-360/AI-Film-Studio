@@ -172,7 +172,9 @@ class SalesforceClient:
         Returns:
             Record data if found, None otherwise
         """
-        soql = f"SELECT Id FROM {sobject_type} WHERE {external_id_field} = '{external_id}' LIMIT 1"
+        # Escape single quotes in external_id to prevent SOQL injection
+        escaped_id = external_id.replace("'", "\\'")
+        soql = f"SELECT Id FROM {sobject_type} WHERE {external_id_field} = '{escaped_id}' LIMIT 1"
         results = self.query(soql)
         
         if results and results.get('totalSize', 0) > 0:

@@ -8,8 +8,7 @@ from .models import (
     ContactModel, 
     AIProjectModel, 
     AICreditModel, 
-    YouTubeIntegrationModel,
-    CreditTransactionModel
+    YouTubeIntegrationModel
 )
 
 logger = logging.getLogger(__name__)
@@ -47,6 +46,7 @@ class SalesforceSyncService:
             last_name = user_data.get('last_name') or (name_parts[1] if len(name_parts) > 1 else 'User')
             
             # Build contact data
+            last_login = user_data.get('last_login_at')
             contact_data = {
                 'FirstName': first_name,
                 'LastName': last_name,
@@ -54,7 +54,7 @@ class SalesforceSyncService:
                 'Plan_Type__c': user_data.get('plan_type') or user_data.get('tier', 'free'),
                 'Credits__c': user_data.get('credits', 0),
                 'User_External_Id__c': user_id,
-                'Last_Login__c': user_data.get('last_login_at', datetime.now(timezone.utc)).isoformat()
+                'Last_Login__c': (last_login if last_login else datetime.now(timezone.utc)).isoformat()
             }
             
             # Remove None values
@@ -105,8 +105,11 @@ class SalesforceSyncService:
             contact_id = contact.get('Id')
             
             # Build project data
+            title = project_data.get('title', 'Untitled Project')
+            error_msg = project_data.get('error_message', '')
+            
             project_sf_data = {
-                'Name': project_data.get('title')[:80],  # Salesforce Name field usually has length limit
+                'Name': title[:80] if title else 'Untitled Project',
                 'Script__c': project_data.get('script', ''),
                 'Status__c': project_data.get('status', 'draft'),
                 'Duration__c': project_data.get('duration'),
@@ -122,8 +125,8 @@ class SalesforceSyncService:
                 project_sf_data['Completed_Date__c'] = project_data.get('completed_at')
             
             # Add error message if failed
-            if project_data.get('status') == 'failed' and project_data.get('error_message'):
-                project_sf_data['Error_Message__c'] = project_data.get('error_message')[:255]
+            if project_data.get('status') == 'failed' and error_msg:
+                project_sf_data['Error_Message__c'] = error_msg[:255] if error_msg else ''
             
             # Remove None values
             project_sf_data = {k: v for k, v in project_sf_data.items() if v is not None}
@@ -180,7 +183,8 @@ class SalesforceSyncService:
                     update_data['Video_URL__c'] = kwargs['video_url']
             
             if status == 'failed' and kwargs.get('error_message'):
-                update_data['Error_Message__c'] = kwargs['error_message'][:255]
+                error_msg = kwargs['error_message']
+                update_data['Error_Message__c'] = error_msg[:255] if error_msg else ''
             
             # Update the record
             success = self.client.update_record('AI_Project__c', sf_record_id, update_data)
