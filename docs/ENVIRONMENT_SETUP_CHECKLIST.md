@@ -25,6 +25,8 @@
 
 This document provides a comprehensive checklist for setting up all required accounts, credentials, and environment configurations for the AI Film Studio platform across Dev, Sandbox, Staging, and Production environments.
 
+> 📘 **Need help with environment variables?** Check out the [**Environment Configuration Guide**](./ENVIRONMENT_CONFIGURATION_GUIDE.md) for detailed explanations of all configuration options.
+
 **Important Notes:**
 - Complete each section sequentially
 - Mark items as complete using checkboxes
