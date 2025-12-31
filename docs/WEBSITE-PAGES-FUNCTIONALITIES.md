@@ -239,6 +239,7 @@ The functionalities are organized into three phases:
   - POST /api/v1/projects (create new)
   - DELETE /api/v1/projects/{id} (soft delete)
 
+---
 
 ### 4️⃣ New Project Page
 
