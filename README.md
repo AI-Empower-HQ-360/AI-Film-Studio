@@ -14,6 +14,7 @@
 
 - [Overview](#overview)
 - [Architecture](#architecture)
+- [Website Pages & Functionalities](#-website-pages--functionalities)
 - [SDLC Phases](#sdlc-phases)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
@@ -78,6 +79,36 @@ graph TB
 
 ---
 
+## 🌐 Website Pages & Functionalities
+
+**AI Film Studio** provides a comprehensive web application with 10 core pages designed to deliver a seamless user experience from script input to video distribution.
+
+### **Core Pages (Phase-1 / MVP)**
+
+1. **🏠 Landing / Home Page** — Marketing page with hero section, key features, demo videos, pricing teaser, testimonials, and call-to-action
+2. **🔐 Sign Up / Login** — User authentication with email/password and OAuth (Google, YouTube), email verification, and password reset
+3. **📊 Dashboard** — Central hub for project management with grid/list views, status tracking, credits balance, notifications, and analytics
+4. **➕ New Project Page** — Create AI videos with script input, character upload, voice selection, music integration, duration settings, and credit calculation
+5. **🎬 Project Detail / Video Page** — View project details, track processing status, download videos, regenerate, share, and upload to YouTube
+6. **💳 Credits / Pricing Page** — Display subscription plans (Free, Creator, Pro, Enterprise), credit system, payment integration, and plan management
+7. **📹 YouTube / Distribution Page** *(Phase-2)* — Manage YouTube uploads, playlists, thumbnails, scheduling, and analytics
+8. **⚙️ Settings / Profile Page** — Account management, security settings, connected accounts, subscription management, billing, and notifications
+9. **❓ Help / Docs / Tutorials** — Comprehensive documentation, video tutorials, FAQs, troubleshooting guides, and support contact
+10. **🔧 Admin Panel** *(Phase-3)* — Platform management with user management, system monitoring, content moderation, analytics, and CRM integration
+
+### **Additional Functionalities**
+
+- **Multi-Language UI** *(Phase-2)* — Support for 8+ languages with full localization
+- **AI Voice Customization** *(Phase-3)* — Custom voice cloning and personalization
+- **Team Collaboration** *(Phase-3)* — Shared workspaces and collaborative editing
+- **Marketplace** *(Phase-3)* — Buy/sell voices, music, and assets
+- **Mobile Apps** *(Phase-3)* — Native iOS and Android applications
+- **Advanced Analytics** *(Phase-2/3)* — Revenue, engagement, and content analytics dashboards
+
+📂 **Full Documentation**: See [`docs/WEBSITE-PAGES-FUNCTIONALITIES.md`](./docs/WEBSITE-PAGES-FUNCTIONALITIES.md) for detailed specifications of all pages, features, and technical implementation notes.
+
+---
+
 ## 📊 SDLC Phases
 
 This project follows a complete **Software Development Life Cycle (SDLC)** with DevOps integration:
@@ -95,8 +126,9 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - Cloud service selection
 - Network and security design
 - Environment strategy
+- **Website pages and functionalities design**
 
-📂 See: [`docs/architecture/`](./docs/architecture/)
+📂 See: [`docs/architecture/`](./docs/architecture/), [`docs/WEBSITE-PAGES-FUNCTIONALITIES.md`](./docs/WEBSITE-PAGES-FUNCTIONALITIES.md)
 
 ### **3️⃣ Development Phase**
 - Application development (Backend, Worker, Frontend)
@@ -179,6 +211,7 @@ ai-film-studio/
 ├── docs/                          # Documentation
 │   ├── requirements/              # BRD, FRD, NFR
 │   ├── architecture/              # System design, diagrams
+│   ├── WEBSITE-PAGES-FUNCTIONALITIES.md  # Website pages and features documentation
 │   └── operations/                # Runbooks, incident response
 ├── infrastructure/                # Infrastructure as Code
 │   ├── terraform/                 # Terraform modules
