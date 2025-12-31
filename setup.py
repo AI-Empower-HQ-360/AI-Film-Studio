@@ -12,7 +12,6 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(where="backend") + find_packages(where="ai"),
-    package_dir={"": "backend", "ai": "ai"},
     python_requires=">=3.8",
     install_requires=[
         "fastapi>=0.104.1",
