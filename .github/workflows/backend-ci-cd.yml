@@ -26,6 +26,13 @@ env:
   ECR_REPOSITORY: ai-film-studio-backend
   PYTHON_VERSION: '3.11'
 
+# Default permissions for GITHUB_TOKEN
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+  security-events: write
+
 jobs:
   lint-and-test:
     name: Lint and Test

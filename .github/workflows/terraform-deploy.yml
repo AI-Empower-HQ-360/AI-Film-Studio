@@ -37,6 +37,12 @@ env:
   TF_VERSION: '1.6.0'
   AWS_REGION: 'us-east-1'
 
+# Default permissions for GITHUB_TOKEN
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
 jobs:
   terraform-validate:
     name: Terraform Validate
