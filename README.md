@@ -272,12 +272,48 @@ terraform apply tfplan
 
 ## 🌍 Environments
 
-| Environment | Purpose | Infrastructure |
-|-------------|---------|---------------|
-| **Dev** | Rapid development and testing | Small instances, single AZ |
-| **Test/QA** | Integration and performance testing | Mirrors prod, scaled down |
-| **Staging** | Pre-production validation | Prod-like, blue-green ready |
-| **Production** | Live user traffic | Multi-AZ, auto-scaling, HA |
+AI Film Studio uses a comprehensive **four-tier environment strategy** to ensure safe development, thorough testing, and reliable production deployment.
+
+| Environment | Purpose | Infrastructure | Cost |
+|-------------|---------|---------------|------|
+| **Development** | Local development and feature coding | Localhost or minimal cloud | $0-100/mo |
+| **Testing/QA (Sandbox)** | Feature testing, user simulation, AI validation | Small RDS, 1 GPU instance, basic services | ~$335/mo |
+| **Staging** | Pre-production validation and final QA | Production mirror, scaled down | ~$800-1,200/mo |
+| **Production** | Live platform for users | Multi-AZ, auto-scaling, full HA | ~$2,600/mo |
+
+### **Detailed Environment Documentation**
+
+📂 **Complete Environment Setup Guide**: [`docs/architecture/environments.md`](./docs/architecture/environments.md)
+- Comprehensive infrastructure specifications for each environment
+- Service mapping and configuration details
+- Environment interaction flows
+- Deployment procedures and best practices
+
+📂 **Environment Architecture Diagrams**: [`docs/architecture/environment-diagram.md`](./docs/architecture/environment-diagram.md)
+- Visual representations of all environments
+- Data flow and service interaction diagrams
+- Network architecture and security layers
+- CI/CD pipeline visualization
+
+### **Quick Environment Access**
+
+```bash
+# Development
+npm run dev              # Frontend (localhost:3000)
+uvicorn src.main:app --reload  # Backend (localhost:5000)
+
+# Testing/QA
+URL: https://sandbox.ai-filmstudio.com
+API: https://api-sandbox.ai-filmstudio.com
+
+# Staging
+URL: https://staging.ai-filmstudio.com
+API: https://api-staging.ai-filmstudio.com
+
+# Production
+URL: https://www.ai-filmstudio.com
+API: https://api.ai-filmstudio.com
+```
 
 ---
 

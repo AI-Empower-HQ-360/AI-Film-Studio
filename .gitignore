@@ -44,9 +44,14 @@ data/processed/
 logs/
 *.log
 
-# Environment
-. env
+# Environment files (keep .example files)
+.env
 .env.local
+.env.dev
+.env.sandbox
+.env.staging
+.env.production
+.env.test
 
 # OS
 .DS_Store
