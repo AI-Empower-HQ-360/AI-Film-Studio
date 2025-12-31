@@ -159,7 +159,7 @@ terraform output > outputs.txt
 
 ### Option 2: Manual Setup via AWS Console
 
-Follow the detailed guide: [docs/setup/AWS_SETUP_GUIDE.md](./AWS_SETUP_GUIDE.md)
+Follow the detailed guide in the [Environment Setup Master Checklist](./ENVIRONMENT_SETUP_MASTER_CHECKLIST.md#2️⃣-aws-account-setup)
 
 ---
 
@@ -326,23 +326,23 @@ python -c "import torch; print(torch.cuda.is_available())"
 
 ### For Developers
 
-1. Review [Coding Standards](../development/coding-standards.md)
-2. Read [API Documentation](../api/README.md)
+1. Review Coding Standards (coming soon)
+2. Read API Documentation (coming soon)
 3. Explore [Architecture Design](../architecture/system-design.md)
-4. Check [Testing Guide](../development/testing-guide.md)
+4. Check Testing Guide (coming soon)
 
 ### For DevOps
 
-1. Complete [AWS Setup Guide](./AWS_SETUP_GUIDE.md)
-2. Configure [CI/CD Pipelines](../../.github/workflows/README.md)
-3. Set up [Monitoring](../operations/monitoring.md)
-4. Review [Deployment Strategy](../operations/deployment.md)
+1. Complete AWS Setup Guide (follow [Environment Setup Checklist](./ENVIRONMENT_SETUP_MASTER_CHECKLIST.md#2️⃣-aws-account-setup))
+2. Configure CI/CD Pipelines (coming soon)
+3. Set up Monitoring (follow [Environment Setup Checklist](./ENVIRONMENT_SETUP_MASTER_CHECKLIST.md#23-monitoring--logging))
+4. Review Deployment Strategy (coming soon)
 
 ### For QA
 
-1. Set up [Sandbox Environment](./ENVIRONMENT_SETUP_MASTER_CHECKLIST.md#sandbox-environment)
-2. Review [Test Cases](../testing/test-cases.md)
-3. Configure [Test Data](../testing/test-data.md)
+1. Set up [Sandbox Environment](./ENVIRONMENT_SETUP_MASTER_CHECKLIST.md#9️⃣-environment-mapping-summary)
+2. Review Test Cases (coming soon)
+3. Configure Test Data (coming soon)
 
 ---
 

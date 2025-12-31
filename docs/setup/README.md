@@ -171,8 +171,8 @@ Follow this recommended workflow for complete setup:
 
 **Week 1: Deeper Understanding**
 4. ✅ Review [Architecture Documentation](../architecture/system-design.md)
-5. ✅ Read [API Documentation](../api/README.md)
-6. ✅ Study [Coding Standards](../development/coding-standards.md)
+5. ✅ Read API Documentation (coming soon)
+6. ✅ Study Coding Standards (coming soon)
 
 ### For DevOps Engineers
 

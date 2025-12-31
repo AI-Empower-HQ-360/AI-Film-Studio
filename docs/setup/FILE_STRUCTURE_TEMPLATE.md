@@ -547,8 +547,6 @@ __pycache__/
 env/
 venv/
 ENV/
-build/
-dist/
 *.egg-info/
 
 # AI/ML
@@ -579,9 +577,9 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Build
-dist/
+# Build artifacts
 build/
+dist/
 .next/
 node_modules/
 
