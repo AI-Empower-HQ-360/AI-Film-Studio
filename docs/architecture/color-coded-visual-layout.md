@@ -312,7 +312,7 @@ The color-coding system helps stakeholders quickly identify:
 ---
 
 ### 7. 📊 Salesforce CRM Layer
-**Color:** Light Green 🟢  
+**Color:** Light Green 💚  
 **Purpose:** Customer relationship management and business intelligence
 
 **Salesforce Objects:**
@@ -563,12 +563,12 @@ The AI pipeline is script and culture dependent, ensuring:
 |-------|------|-------|---------|-------------|
 | **User Layer** | 👤 | Blue | U+1F464 | `&#128100;` |
 | **Frontend** | 💻 | Light Blue | U+1F4BB | `&#128187;` |
-| **Backend** | ⚙️ | Green | U+2699 | `&#9881;` |
+| **Backend** | ⚙️ | Green | U+002699 | `&#9881;` |
 | **Database** | 🗄️ | Yellow | U+1F5C4 | `&#128452;` |
 | **AI/ML** | 🤖 | Orange | U+1F916 | `&#129302;` |
-| **Cloud** | ☁️ | Purple | U+2601 | `&#9729;` |
+| **Cloud** | ☁️ | Purple | U+002601 | `&#9729;` |
 | **Salesforce CRM** | 📊 | Light Green | U+1F4CA | `&#128202;` |
-| **YouTube/Output** | ▶️ | Red | U+25B6 | `&#9654;` |
+| **YouTube/Output** | ▶️ | Red | U+0025B6 | `&#9654;` |
 
 ### Additional Icons for Features
 
@@ -591,8 +591,14 @@ The AI pipeline is script and culture dependent, ensuring:
 
 ### Color-Coded Component Interaction
 
+<!-- 
+    This diagram shows the high-level interaction between all 8 system layers
+    using color coding for visual clarity. Each layer is represented by its
+    designated color and icon for easy identification.
+-->
+
 ```mermaid
-graph TB
+graph TD
     %% User Layer (Blue)
     U[👤 User Layer<br/>Blue]
     style U fill:#4A90E2,stroke:#2E5C8A,color:#FFFFFF

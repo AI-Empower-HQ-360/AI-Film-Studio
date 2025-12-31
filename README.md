@@ -111,7 +111,7 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - Environment strategy
 - Color-coded visual layout plan
 
-📂 See: [`docs/architecture/`](./docs/architecture/)  
+📂 See: [`docs/architecture/`](./docs/architecture/)
 📂 See: [Color-Coded Visual Layout](./docs/architecture/color-coded-visual-layout.md)
 
 ### **3️⃣ Development Phase**
