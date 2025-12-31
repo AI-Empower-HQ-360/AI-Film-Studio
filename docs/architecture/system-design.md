@@ -9,7 +9,7 @@
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
-2. [AI Film Studio – Master Blueprint (ASCII Mockup)](#-ai-film-studio--master-blueprint-ascii-mockup)
+2. [AI Film Studio – Master Blueprint (ASCII Mockup)](#ai-film-studio--master-blueprint-ascii-mockup)
 3. [High-Level Architecture](#high-level-architecture)
 4. [Component Specifications](#component-specifications)
 5. [Network Architecture](#network-architecture)
