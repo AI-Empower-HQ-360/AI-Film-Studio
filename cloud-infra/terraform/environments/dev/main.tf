@@ -62,30 +62,6 @@ locals {
 }
 
 # ============================================================================
-# Variables
-# ============================================================================
-
-variable "db_username" {
-  description = "RDS master username"
-  type        = string
-  default     = "filmstudio_admin"
-  sensitive   = true
-}
-
-variable "db_password" {
-  description = "RDS master password"
-  type        = string
-  sensitive   = true
-  default     = ""  # Should be provided via environment variable or secrets manager
-}
-
-variable "alert_email" {
-  description = "Email address for CloudWatch alerts"
-  type        = string
-  default     = "alerts@ai-empower-hq.com"
-}
-
-# ============================================================================
 # Random Password Generation
 # ============================================================================
 
