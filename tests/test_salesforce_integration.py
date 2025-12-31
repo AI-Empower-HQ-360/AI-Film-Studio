@@ -64,21 +64,22 @@ class TestSalesforceClient:
     
     def test_create_record_success(self, salesforce_client):
         """Test creating a record in Salesforce"""
-        mock_contact = Mock()
-        mock_contact.create.return_value = {'success': True, 'id': 'test_id_123'}
-        salesforce_client.Contact = mock_contact
+        # Mock the object API
+        mock_sobject = Mock()
+        mock_sobject.create = Mock(return_value={'success': True, 'id': 'test_id_123'})
+        salesforce_client._client.Contact = mock_sobject
         
         data = {'FirstName': 'John', 'LastName': 'Doe', 'Email': 'john@example.com'}
         record_id = salesforce_client.create_record('Contact', data)
         
         assert record_id == 'test_id_123'
-        mock_contact.create.assert_called_once_with(data)
+        mock_sobject.create.assert_called_once_with(data)
     
     def test_create_record_failure(self, salesforce_client):
         """Test failed record creation"""
-        mock_contact = Mock()
-        mock_contact.create.return_value = {'success': False, 'errors': ['Error message']}
-        salesforce_client.Contact = mock_contact
+        mock_sobject = Mock()
+        mock_sobject.create = Mock(return_value={'success': False, 'errors': ['Error message']})
+        salesforce_client._client.Contact = mock_sobject
         
         data = {'FirstName': 'John'}
         record_id = salesforce_client.create_record('Contact', data)
@@ -87,21 +88,21 @@ class TestSalesforceClient:
     
     def test_update_record_success(self, salesforce_client):
         """Test updating a record"""
-        mock_contact = Mock()
-        mock_contact.update.return_value = None  # Update returns 204 No Content
-        salesforce_client.Contact = mock_contact
+        mock_sobject = Mock()
+        mock_sobject.update = Mock(return_value=None)  # Update returns 204 No Content
+        salesforce_client._client.Contact = mock_sobject
         
         data = {'Email': 'newemail@example.com'}
         result = salesforce_client.update_record('Contact', 'test_id_123', data)
         
         assert result is True
-        mock_contact.update.assert_called_once_with('test_id_123', data)
+        mock_sobject.update.assert_called_once_with('test_id_123', data)
     
     def test_get_record_success(self, salesforce_client):
         """Test retrieving a record"""
-        mock_contact = Mock()
-        mock_contact.get.return_value = {'Id': 'test_id_123', 'Email': 'john@example.com'}
-        salesforce_client.Contact = mock_contact
+        mock_sobject = Mock()
+        mock_sobject.get = Mock(return_value={'Id': 'test_id_123', 'Email': 'john@example.com'})
+        salesforce_client._client.Contact = mock_sobject
         
         record = salesforce_client.get_record('Contact', 'test_id_123')
         
@@ -111,10 +112,10 @@ class TestSalesforceClient:
     
     def test_query_success(self, salesforce_client):
         """Test SOQL query execution"""
-        salesforce_client.query.return_value = {
+        salesforce_client._client.query = Mock(return_value={
             'totalSize': 1,
             'records': [{'Id': 'test_id_123', 'Name': 'Test'}]
-        }
+        })
         
         results = salesforce_client.query("SELECT Id, Name FROM Contact WHERE Email = 'test@example.com'")
         

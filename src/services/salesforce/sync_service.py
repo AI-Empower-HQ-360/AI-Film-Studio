@@ -1,7 +1,7 @@
 """Service for synchronizing data between AI Film Studio and Salesforce CRM"""
 import logging
 from typing import Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .client import SalesforceClient
 from .models import (
@@ -54,7 +54,7 @@ class SalesforceSyncService:
                 'Plan_Type__c': user_data.get('plan_type') or user_data.get('tier', 'free'),
                 'Credits__c': user_data.get('credits', 0),
                 'User_External_Id__c': user_id,
-                'Last_Login__c': user_data.get('last_login_at', datetime.utcnow()).isoformat()
+                'Last_Login__c': user_data.get('last_login_at', datetime.now(timezone.utc)).isoformat()
             }
             
             # Remove None values
@@ -175,7 +175,7 @@ class SalesforceSyncService:
             update_data = {'Status__c': status}
             
             if status == 'completed':
-                update_data['Completed_Date__c'] = kwargs.get('completed_at', datetime.utcnow()).isoformat()
+                update_data['Completed_Date__c'] = kwargs.get('completed_at', datetime.now(timezone.utc)).isoformat()
                 if kwargs.get('video_url'):
                     update_data['Video_URL__c'] = kwargs['video_url']
             
@@ -349,6 +349,8 @@ class SalesforceSyncService:
             
             if youtube_data.get('upload_date'):
                 youtube_sf_data['Upload_Date__c'] = youtube_data['upload_date'].isoformat()
+            else:
+                youtube_sf_data['Upload_Date__c'] = datetime.now(timezone.utc).isoformat()
             
             if youtube_data.get('error_message'):
                 youtube_sf_data['Error_Message__c'] = youtube_data['error_message'][:255]
@@ -384,7 +386,7 @@ class SalesforceSyncService:
             update_data = {'Upload_Status__c': status}
             
             if status == 'completed':
-                update_data['Upload_Date__c'] = kwargs.get('upload_date', datetime.utcnow()).isoformat()
+                update_data['Upload_Date__c'] = kwargs.get('upload_date', datetime.now(timezone.utc)).isoformat()
                 if kwargs.get('video_id'):
                     update_data['Video_Id__c'] = kwargs['video_id']
             
