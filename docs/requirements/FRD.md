@@ -27,7 +27,7 @@ Covers all user-facing features, APIs, data models, workflows, and acceptance cr
 
 ### 2.1 User Roles
 | Role | Description | Capabilities |
-|------|-------------|--------------||
+|------|-------------|--------------|
 | **Guest** | Unauthenticated visitor | View landing page, signup |
 | **Free User** | Registered, free tier | 3 films/month, watermarked |
 | **Pro User** | Paid subscriber ($29/mo) | 30 films/month, no watermark |
