@@ -45,8 +45,13 @@ logs/
 *.log
 
 # Environment
-. env
+.env
 .env.local
+.env.dev
+.env.sandbox
+.env.staging
+.env.prod
+*.env
 
 # OS
 .DS_Store
