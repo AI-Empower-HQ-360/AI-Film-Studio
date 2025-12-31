@@ -27,7 +27,7 @@ wheels/
 /models/
 *.pth
 *.pt
-*. ckpt
+*.ckpt
 data/raw/
 data/processed/
 *.h5
