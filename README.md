@@ -32,12 +32,26 @@
 ### **Key Features**
 
 ✅ **End-to-End Automation** — Script → Scene Graph → Shot Generation → Video Composition  
+✅ **Story & Cultural Context-Aware** — Dynamic image generation based on script narrative and cultural settings  
 ✅ **Scalable Cloud Architecture** — AWS-based infrastructure supporting 10,000+ users  
 ✅ **GPU-Accelerated AI** — SDXL, custom models for high-quality visual generation  
 ✅ **DevOps Best Practices** — IaC, CI/CD, multi-environment deployments  
 ✅ **Production-Ready** — Monitoring, alerting, auto-scaling, security hardening  
 
+### **Image Generation Workflow**
+
+The platform implements a sophisticated, **script-driven image generation pipeline** that adapts to:
+- 📜 **Story narrative and context** — Characters, scenes, and props generated based on script
+- 🌍 **Cultural authenticity** — Traditional attire, architecture, and customs (South Indian, Western, East Asian, etc.)
+- 🎭 **Dynamic character adaptation** — Same characters generate different visuals based on story context
+- 🎨 **Scene consistency** — Backgrounds, lighting, and atmosphere match the narrative
+
+**Dependency Hierarchy:** Script → Cultural Detection → Character Images → Scene Backgrounds → Video Synthesis
+
+📖 **[View Detailed Image Generation Workflow →](./docs/architecture/image-generation-workflow.md)**
+
 ### **Target Users**
+
 
 - Content creators and marketers
 - Indie filmmakers and studios
