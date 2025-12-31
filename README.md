@@ -20,6 +20,7 @@
 - [Getting Started](#getting-started)
 - [Environments](#environments)
 - [CI/CD Pipeline](#cicd-pipeline)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -300,9 +301,52 @@ terraform apply tfplan
 
 ---
 
+## 📚 Documentation
+
+### **Comprehensive Documentation Available**
+
+We have created extensive documentation to help you understand and work with the AI Film Studio platform:
+
+#### **🌐 Master Blueprint**
+- [**Master Blueprint**](./docs/MASTER_BLUEPRINT.md) - Complete system overview with all features, tech stack, workflows, and architecture
+
+#### **🏗️ Architecture & Design**
+- [System Design](./docs/architecture/system-design.md) - Detailed system architecture and component specifications
+- [Visual Architecture Diagrams](./docs/architecture/visual-architecture-diagram.md) - Comprehensive visual diagrams (Mermaid)
+
+#### **📋 Requirements**
+- [Functional Requirements (FRD)](./docs/requirements/FRD.md) - Detailed functional specifications
+- [Non-Functional Requirements (NFR)](./docs/requirements/NFR.md) - Performance, security, and scalability requirements
+
+#### **🔌 API Documentation**
+- [API Overview](./docs/api/README.md) - Authentication, rate limiting, and API standards
+
+#### **🚀 Deployment & Setup**
+- [Local Development Setup](./docs/deployment/local-setup.md) - Complete guide to setting up your development environment
+
+#### **👨‍💻 Developer Resources**
+- [Developer Guide](./docs/guides/developer-guide.md) - Coding standards, workflows, and best practices
+
+### **Quick Links**
+
+| Document | Purpose | Audience |
+|----------|---------|----------|
+| [Master Blueprint](./docs/MASTER_BLUEPRINT.md) | Complete system overview | Everyone |
+| [Local Setup](./docs/deployment/local-setup.md) | Get started developing | Developers |
+| [Developer Guide](./docs/guides/developer-guide.md) | Coding standards & workflows | Developers |
+| [System Design](./docs/architecture/system-design.md) | Architecture details | Architects, DevOps |
+| [API Docs](./docs/api/README.md) | API integration | Frontend & Backend Devs |
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+Before contributing:
+1. Read the [Master Blueprint](./docs/MASTER_BLUEPRINT.md) to understand the system
+2. Follow the [Developer Guide](./docs/guides/developer-guide.md) for coding standards
+3. Set up your [Local Development Environment](./docs/deployment/local-setup.md)
 
 ---
 
