@@ -1560,24 +1560,55 @@ Core Frameworks:
   - Diffusers: 0.25+ (Stable Diffusion)
   - CUDA: 12.1 (GPU acceleration)
 
-Models:
-  Text Generation:
-    - gpt-3.5-turbo (OpenAI API)
-    - claude-3-sonnet (Anthropic API)
-    - Mistral-7B (local fallback)
+Video Generation:
+  - Stable Diffusion Video (SD-V)
+  - RunwayML Gen-2
+  - CogVideo
+  - AnimateDiff
+  - LTX-2, Dream Machine
+
+Voice Synthesis (Multi-age & Multi-gender):
+  - ElevenLabs API (Baby to Mature 45+)
+  - Coqui TTS (self-hosted)
+  - OpenAI TTS
+  - Azure Speech Services
+  Age Groups: Baby, Toddler, Child, Pre-teen, Teen, Young Adult, Adult, Mature
+
+Lip-sync & Animation:
+  - Wav2Lip
+  - First Order Motion Model (FOMM)
+  - SadTalker (3D-aware)
+  - MediaPipe Face Mesh
   
-  Image Generation:
-    - Stable Diffusion XL
-    - ControlNet (pose, depth)
-    - Custom LoRA models
+Music & Audio:
+  - MusicGen (Meta)
+  - AudioCraft
+  - OpenAI Jukebox
+  - MIDI generation
+  - Indian Classical Music support
+  - Slokas, Sahasranamas, Devotional content
   
-  Video Generation:
-    - Stable Video Diffusion
-    - AnimateDiff
+Podcast-Style Videos:
+  - Dual/multi-character overlay
+  - Split-screen layouts (50/50, 60/40, 70/30)
+  - Picture-in-picture
+  - Round table (4-person)
   
-  Audio:
-    - AudioCraft
-    - MusicGen
+Subtitles & Translation:
+  - OpenAI Whisper (ASR)
+  - Google Cloud Speech-to-Text
+  - Google Translate API
+  - DeepL API
+  - 20+ languages support
+  - SRT, VTT, ASS formats
+  
+Job Management:
+  - AWS SQS (primary queue)
+  - BullMQ (Redis-based)
+  - RabbitMQ (alternative)
+  - Celery (Python tasks)
+  - Priority queuing system
+  - Auto-scaling GPU workers
 
 Optimization:
   - xformers: 0.0.23 (memory efficient attention)
@@ -1585,6 +1616,8 @@ Optimization:
   - torch.compile: Native PyTorch 2.0
   - Flash Attention: 2.x
 ```
+
+📖 **[Complete AI/ML Stack Documentation](../../ai-ml-stack.md)**
 
 ### Infrastructure Stack
 
