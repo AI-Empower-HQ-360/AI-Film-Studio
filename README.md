@@ -76,6 +76,20 @@ graph TB
 | **Queue** | SQS | Asynchronous job processing |
 | **CDN** | CloudFront | Global content delivery |
 
+### **Color-Coded Visual Layout**
+
+For a detailed color-coded breakdown of the entire architecture including Salesforce CRM integration, AI/ML capabilities, and YouTube output delivery, see:
+
+📂 **[Color-Coded Visual Layout Plan](./docs/architecture/color-coded-visual-layout.md)**
+
+This document provides:
+- 🎨 Color scheme for all system layers
+- 📊 Layered structure with icons
+- 🔄 Data flow and dependencies
+- 🤖 AI/ML pipeline details
+- 📈 Salesforce CRM integration
+- ▶️ YouTube output and delivery options
+
 ---
 
 ## 📊 SDLC Phases
@@ -95,8 +109,10 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - Cloud service selection
 - Network and security design
 - Environment strategy
+- Color-coded visual layout plan
 
-📂 See: [`docs/architecture/`](./docs/architecture/)
+📂 See: [`docs/architecture/`](./docs/architecture/)  
+📂 See: [Color-Coded Visual Layout](./docs/architecture/color-coded-visual-layout.md)
 
 ### **3️⃣ Development Phase**
 - Application development (Backend, Worker, Frontend)
