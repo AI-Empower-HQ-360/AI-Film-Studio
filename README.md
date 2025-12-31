@@ -205,6 +205,12 @@ ai-film-studio/
 
 ## 🚀 Getting Started
 
+### **Quick Start**
+
+📚 **New to the project?** Start with our [Environment Setup Quick Start Guide](./ENVIRONMENT_SETUP.md)
+
+This guide walks you through setting up any environment (Development, Testing/QA, Staging, Production) in just a few minutes.
+
 ### **Prerequisites**
 
 - AWS Account with appropriate permissions
