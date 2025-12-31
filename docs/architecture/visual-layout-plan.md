@@ -237,8 +237,8 @@ graph TB
   ```
   frontend/
   ├── src/
+  │   ├── app/            # Next.js 14+ App Router pages
   │   ├── components/     # Reusable UI components
-  │   ├── pages/          # Next.js pages
   │   ├── hooks/          # Custom React hooks
   │   ├── context/        # State management
   │   ├── services/       # API services
@@ -466,12 +466,12 @@ CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    full_name VARCHAR(255),
-    subscription_tier VARCHAR(50) DEFAULT 'free',
-    credits_balance INTEGER DEFAULT 3,
+    full_name VARCHAR(255) DEFAULT '',
+    subscription_tier VARCHAR(50) NOT NULL DEFAULT 'free',
+    credits_balance INTEGER NOT NULL DEFAULT 3,
     credits_reset_date DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP
 );
 
