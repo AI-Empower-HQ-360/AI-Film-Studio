@@ -104,7 +104,7 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - Kubernetes manifests
 - Unit testing
 
-📂 See: [`backend/`](./backend/), [`worker/`](./worker/), [`frontend/`](./frontend/), [`infrastructure/`](./infrastructure/)
+📂 See: [`backend/`](./backend/), [`ai/`](./ai/), [`frontend/`](./frontend/), [`cloud-infra/`](./cloud-infra/)
 
 ### **4️⃣ Testing Phase**
 - Unit, integration, and security testing
@@ -176,30 +176,77 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 
 ```
 ai-film-studio/
-├── docs/                          # Documentation
-│   ├── requirements/              # BRD, FRD, NFR
-│   ├── architecture/              # System design, diagrams
-│   └── operations/                # Runbooks, incident response
-├── infrastructure/                # Infrastructure as Code
-│   ├── terraform/                 # Terraform modules
-│   │   ├── environments/          # Dev, Test, Prod configs
-│   │   └── modules/               # Reusable modules
-│   └── kubernetes/                # K8s manifests and Helm charts
-├── backend/                       # FastAPI backend
-│   ├── src/                       # Source code
-│   ├── tests/                     # Unit and integration tests
-│   └── Dockerfile                 # Container image
-├── worker/                        # GPU worker
-│   ├── src/                       # AI pipeline code
-│   ├── tests/                     # Worker tests
-│   └── Dockerfile                 # Container image
-├── frontend/                      # Next.js frontend
-│   ├── src/                       # React components
-│   └── package.json               # Dependencies
-├── .github/                       # GitHub Actions workflows
-│   └── workflows/                 # CI/CD pipelines
-└── scripts/                       # Utility scripts
+│
+├── frontend/                     # User-facing web app
+│   ├── public/                   # Static assets (images, fonts, icons)
+│   ├── src/
+│   │   ├── components/           # React components
+│   │   ├── pages/                # Next.js pages
+│   │   ├── hooks/                # Custom React hooks
+│   │   ├── services/             # API calls to backend
+│   │   ├── styles/               # CSS / Tailwind / Material UI
+│   │   └── utils/                # Utility functions
+│   └── package.json
+│
+├── backend/                      # Backend microservices
+│   ├── app/                      # Main application code
+│   ├── services/
+│   │   ├── user-service/
+│   │   ├── project-service/
+│   │   ├── credit-service/
+│   │   ├── ai-job-service/
+│   │   ├── youtube-service/
+│   │   └── admin-service/
+│   ├── common/                   # Shared utilities (logger, middleware)
+│   ├── queue/                    # Redis / BullMQ job queue definitions
+│   ├── config/                   # Env config, secrets, JWT keys
+│   └── package.json
+│
+├── ai/                           # AI/ML models and pipelines
+│   ├── script-analysis/          # NLP, cultural/context analysis
+│   ├── image-generation/         # Character & background generation
+│   ├── voice-synthesis/          # TTS models, voice cloning
+│   ├── lip-sync-animation/       # Facial animation models
+│   ├── music-poems/              # Slokas, songs, background music
+│   └── subtitles/                # Multi-language subtitle generation
+│
+├── cloud-infra/                  # Terraform & cloud setup
+│   ├── terraform/                # IaC scripts (EC2, ECS, S3, RDS, etc.)
+│   ├── k8s/                      # Kubernetes manifests
+│   └── monitoring/               # CloudWatch / Prometheus / Grafana configs
+│
+├── salesforce/                   # Salesforce metadata & integration
+│   ├── objects/                  # Custom objects (AI_Project__c, AI_Credit__c)
+│   ├── flows/                    # Automation flows
+│   ├── apex/                     # Apex classes & triggers
+│   └── reports-dashboards/
+│
+├── media/                        # Temporary storage for processing
+│   ├── images/                   # User-uploaded images
+│   ├── videos/                   # Generated videos
+│   ├── thumbnails/               # Auto-generated thumbnails
+│   └── subtitles/
+│
+├── scripts/                      # Utility & deployment scripts
+│   ├── deploy.sh
+│   ├── backup.sh
+│   └── preprocess-media.py
+│
+├── docs/                         # Documentation, PDFs, diagrams
+│   ├── architecture/
+│   └── requirements/
+│
+├── tests/                        # Unit, integration, AI model tests
+│   ├── frontend/
+│   ├── backend/
+│   └── ai/
+│
+├── .env                          # Environment variables
+├── docker-compose.yml            # Multi-service local dev environment
+├── README.md
+└── requirements.txt              # Python dependencies
 ```
+
 
 ---
 
@@ -228,18 +275,18 @@ cd AI-Film-Studio
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env  # Configure your environment variables
-uvicorn src.main:app --reload
+pip install -r ../requirements.txt
+cp ../.env.example .env  # Configure your environment variables
+uvicorn app.api.main:app --reload
 ```
 
-#### **3. Set up worker**
+#### **3. Set up AI services**
 ```bash
-cd worker
+cd ai
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
-python src/main.py
+pip install -r ../requirements.txt
+# Configure AI models and services
 ```
 
 #### **4. Set up frontend**
@@ -254,7 +301,7 @@ npm run dev
 
 #### **1. Initialize Terraform**
 ```bash
-cd infrastructure/terraform/environments/dev
+cd cloud-infra/terraform/environments/dev
 terraform init
 ```
 

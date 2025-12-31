@@ -1,7 +1,7 @@
 """Tests for API endpoints"""
 import pytest
-from fastapi. testclient import TestClient
-from src.api.main import app
+from fastapi.testclient import TestClient
+from backend.app.api.main import app
 
 client = TestClient(app)
 

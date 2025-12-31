@@ -1,8 +1,8 @@
 """Setup configuration for AI Film Studio"""
 from setuptools import setup, find_packages
 
-with open("README. md", "r", encoding="utf-8") as fh:
-    long_description = fh. read()
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 setup(
     name="ai-film-studio",
@@ -11,7 +11,8 @@ setup(
     description="AI-powered film production tools",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=find_packages(),
+    packages=find_packages(where="backend") + find_packages(where="ai"),
+    package_dir={"": "backend", "ai": "ai"},
     python_requires=">=3.8",
     install_requires=[
         "fastapi>=0.104.1",

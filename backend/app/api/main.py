@@ -1,7 +1,7 @@
 """Main API entry point"""
 from fastapi import FastAPI
-from src.utils.logger import setup_logger
-from src.config.settings import API_HOST, API_PORT
+from app.utils.logger import setup_logger
+from app.config.settings import API_HOST, API_PORT
 
 logger = setup_logger(__name__)
 
