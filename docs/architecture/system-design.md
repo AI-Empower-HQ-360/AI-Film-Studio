@@ -1493,6 +1493,8 @@ Margin: 85% at 1,000 users, 91% at 10,000 users
 
 ### Frontend Stack
 
+> 📘 **For comprehensive frontend tech stack details, see:** [`frontend-tech-stack.md`](./frontend-tech-stack.md)
+
 ```yaml
 Core Framework:
   - Next.js: 14.x
