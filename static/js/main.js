@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Add scroll effect to navbar
-    let lastScroll = 0;
     const navbar = document.querySelector('.navbar');
     
     window.addEventListener('scroll', function() {
@@ -39,8 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             navbar.style.boxShadow = 'none';
         }
-        
-        lastScroll = currentScroll;
     });
     
     // Animate elements on scroll (simple intersection observer)
