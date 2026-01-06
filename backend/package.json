@@ -1,0 +1,11 @@
+{
+  "name": "ai-film-studio-backend",
+  "version": "0.1.0",
+  "description": "Backend microservices for AI Film Studio",
+  "main": "app/api/main.py",
+  "scripts": {
+    "start": "uvicorn app.api.main:app --host 0.0.0.0 --port 8000",
+    "dev": "uvicorn app.api.main:app --reload",
+    "test": "pytest"
+  }
+}
