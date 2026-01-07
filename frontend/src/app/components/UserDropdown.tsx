@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../lib/AuthContext';
 
 interface UserDropdownProps {
   user: {
@@ -13,7 +12,6 @@ interface UserDropdownProps {
 }
 
 export default function UserDropdown({ user }: UserDropdownProps) {
-  const { signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +31,10 @@ export default function UserDropdown({ user }: UserDropdownProps) {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      // Clear any stored auth data
+      localStorage.removeItem('auth_token');
+      // Redirect to signin
+      window.location.href = '/signin';
     } catch (error) {
       console.error('Sign out error:', error);
     }
