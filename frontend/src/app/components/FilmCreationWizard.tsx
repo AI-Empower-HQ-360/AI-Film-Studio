@@ -6,12 +6,14 @@ interface FilmCreationWizardProps {
   onClose?: () => void;
   onProjectCreate?: (project: FilmProject) => void;
   initialScript?: string;
+  initialYoutubeUrl?: string;
 }
 
-export default function FilmCreationWizard({ onClose, onProjectCreate, initialScript }: FilmCreationWizardProps) {
+export default function FilmCreationWizard({ onClose, onProjectCreate, initialScript, initialYoutubeUrl }: FilmCreationWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [youtubeReference, setYoutubeReference] = useState(initialYoutubeUrl || '');
   
   const [projectData, setProjectData] = useState<Partial<FilmProject>>({
     title: '',
@@ -34,6 +36,13 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
       }));
     }
   }, [initialScript]);
+
+  // Update YouTube reference if initialYoutubeUrl prop changes
+  useEffect(() => {
+    if (initialYoutubeUrl) {
+      setYoutubeReference(initialYoutubeUrl);
+    }
+  }, [initialYoutubeUrl]);
 
   const totalSteps = 4;
 
@@ -75,7 +84,8 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
         script: projectData.script || '',
         settings: projectData.settings!,
         status: 'processing',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        ...(youtubeReference && { metadata: { youtubeReference } }) // Include YouTube reference if present
       };
       
       // Simulate API call
@@ -117,11 +127,51 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Script
               </label>
+              
+              {/* YouTube Reference Indicator */}
+              {youtubeReference && (
+                <div className="mb-3 p-4 bg-gradient-to-r from-red-900/20 to-purple-900/20 border border-red-500/30 rounded-lg">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl">🎥</span>
+                        <span className="font-semibold text-red-400">YouTube Creative Reference</span>
+                      </div>
+                      <p className="text-sm text-slate-300 mb-2">
+                        AI will analyze this video as inspiration to create completely new original content:
+                      </p>
+                      <a 
+                        href={youtubeReference} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-sky-400 hover:text-sky-300 break-all underline"
+                      >
+                        {youtubeReference}
+                      </a>
+                    </div>
+                    <button
+                      onClick={() => setYoutubeReference('')}
+                      className="ml-3 text-slate-400 hover:text-white transition-colors"
+                      title="Remove reference"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-slate-600">
+                    <p className="text-xs text-slate-400">
+                      ✓ New unique characters will be created<br/>
+                      ✓ Original storyline will be generated<br/>
+                      ✓ No content will be copied
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               <div className="space-y-3">
                 <textarea
                   value={projectData.script || ''}
                   onChange={(e) => setProjectData(prev => ({ ...prev, script: e.target.value }))}
-                  placeholder="Enter your script here... Describe scenes, characters, and dialogue."
+                  placeholder={youtubeReference ? "Add additional script details or let AI generate based on the YouTube reference..." : "Enter your script here... Describe scenes, characters, and dialogue."}
                   rows={8}
                   className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 resize-none"
                 />

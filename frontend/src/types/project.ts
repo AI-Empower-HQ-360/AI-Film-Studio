@@ -13,4 +13,7 @@ export interface FilmProject {
   completedAt?: string;
   thumbnailUrl?: string;
   videoUrl?: string;
+  metadata?: {
+    youtubeReference?: string; // YouTube URL used as creative inspiration
+  };
 }

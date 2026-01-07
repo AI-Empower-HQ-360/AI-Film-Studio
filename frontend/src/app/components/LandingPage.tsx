@@ -7,12 +7,21 @@ import Navigation from './Navigation';
 export default function LandingPage() {
   const router = useRouter();
   const [script, setScript] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [showScriptInput, setShowScriptInput] = useState(false);
+  const [inputMode, setInputMode] = useState<'script' | 'youtube'>('script');
+
+  const validateYoutubeUrl = (url: string) => {
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+    return youtubeRegex.test(url);
+  };
 
   const handleQuickStart = () => {
-    if (script.trim()) {
-      // Save script to session storage and redirect to dashboard
+    if (inputMode === 'script' && script.trim()) {
       sessionStorage.setItem('quickStartScript', script);
+      router.push('/dashboard');
+    } else if (inputMode === 'youtube' && youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl)) {
+      sessionStorage.setItem('quickStartYoutubeUrl', youtubeUrl);
       router.push('/dashboard');
     } else {
       setShowScriptInput(true);
@@ -54,42 +63,106 @@ export default function LandingPage() {
           ) : (
             <div className="max-w-3xl mx-auto mb-10">
               <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-2xl">
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    ✨ Paste your script here to get started (up to 10,000 characters)
-                  </label>
-                  <textarea
-                    value={script}
-                    onChange={(e) => setScript(e.target.value)}
-                    maxLength={10000}
-                    placeholder="Example: A hero stands on a cliff at sunset, looking at the vast ocean. The wind blows through their hair as they take a deep breath, ready to face their destiny..."
-                    className="w-full h-40 px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 resize-none"
-                  />
-                  <div className="flex items-center justify-between mt-2">
-                    <span className={`text-sm ${script.length > 9500 ? 'text-orange-400' : 'text-slate-400'}`}>
-                      {script.length.toLocaleString()} / 10,000 characters
-                    </span>
-                    <span className="text-sm text-slate-400">
-                      {script.trim() ? '30-90 seconds recommended' : ''}
-                    </span>
-                  </div>
+                {/* Mode Toggle */}
+                <div className="flex gap-2 mb-4 bg-slate-900 rounded-lg p-1">
+                  <button
+                    onClick={() => setInputMode('script')}
+                    className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
+                      inputMode === 'script'
+                        ? 'bg-gradient-to-r from-sky-500 to-purple-600 text-white shadow-lg'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    📝 Write Script
+                  </button>
+                  <button
+                    onClick={() => setInputMode('youtube')}
+                    className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
+                      inputMode === 'youtube'
+                        ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    🎥 YouTube Reference
+                  </button>
                 </div>
+
+                {inputMode === 'script' ? (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      ✨ Paste your script here to get started (up to 10,000 characters)
+                    </label>
+                    <textarea
+                      value={script}
+                      onChange={(e) => setScript(e.target.value)}
+                      maxLength={10000}
+                      placeholder="Example: A hero stands on a cliff at sunset, looking at the vast ocean. The wind blows through their hair as they take a deep breath, ready to face their destiny..."
+                      className="w-full h-40 px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 resize-none"
+                    />
+                    <div className="flex items-center justify-between mt-2">
+                      <span className={`text-sm ${script.length > 9500 ? 'text-orange-400' : 'text-slate-400'}`}>
+                        {script.length.toLocaleString()} / 10,000 characters
+                      </span>
+                      <span className="text-sm text-slate-400">
+                        {script.trim() ? '30-90 seconds recommended' : ''}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      🎬 Paste a YouTube URL to use as creative reference
+                    </label>
+                    <input
+                      type="url"
+                      value={youtubeUrl}
+                      onChange={(e) => setYoutubeUrl(e.target.value)}
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                    />
+                    <div className="mt-3 bg-blue-900/30 border border-blue-700/50 rounded-lg p-3">
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-400 text-lg">ℹ️</span>
+                        <div>
+                          <p className="text-sm text-blue-200 font-medium">How it works:</p>
+                          <p className="text-xs text-slate-300 mt-1">
+                            AI will analyze the video as creative inspiration and generate <strong>brand new original content</strong> with unique characters and storyline. No content will be copied.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {youtubeUrl && !validateYoutubeUrl(youtubeUrl) && (
+                      <p className="text-sm text-red-400 mt-2">Please enter a valid YouTube URL</p>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex gap-3">
                   <button
                     onClick={handleQuickStart}
-                    disabled={!script.trim()}
+                    disabled={
+                      inputMode === 'script' 
+                        ? !script.trim() 
+                        : !youtubeUrl.trim() || !validateYoutubeUrl(youtubeUrl)
+                    }
                     className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all ${
-                      script.trim()
+                      (inputMode === 'script' ? script.trim() : youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl))
                         ? 'bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white shadow-lg shadow-sky-500/25'
                         : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                     }`}
                   >
-                    {script.trim() ? '🚀 Create Film Now' : 'Enter script to continue'}
+                    {(inputMode === 'script' ? script.trim() : youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl))
+                      ? '🚀 Create Film Now' 
+                      : inputMode === 'script' 
+                        ? 'Enter script to continue' 
+                        : 'Enter YouTube URL to continue'}
                   </button>
                   <button
                     onClick={() => {
                       setShowScriptInput(false);
                       setScript('');
+                      setYoutubeUrl('');
+                      setInputMode('script');
                     }}
                     className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-colors"
                   >
@@ -100,18 +173,37 @@ export default function LandingPage() {
               
               {/* Quick Tips */}
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-                  <span className="text-xs font-semibold text-sky-400">💡 TIP</span>
-                  <p className="text-sm text-slate-300 mt-1">Include visual details</p>
-                </div>
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-                  <span className="text-xs font-semibold text-purple-400">💡 TIP</span>
-                  <p className="text-sm text-slate-300 mt-1">Describe emotions & mood</p>
-                </div>
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-                  <span className="text-xs font-semibold text-pink-400">💡 TIP</span>
-                  <p className="text-sm text-slate-300 mt-1">Keep it 30-90 seconds</p>
-                </div>
+                {inputMode === 'script' ? (
+                  <>
+                    <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                      <span className="text-xs font-semibold text-sky-400">💡 TIP</span>
+                      <p className="text-sm text-slate-300 mt-1">Include visual details</p>
+                    </div>
+                    <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                      <span className="text-xs font-semibold text-purple-400">💡 TIP</span>
+                      <p className="text-sm text-slate-300 mt-1">Describe emotions & mood</p>
+                    </div>
+                    <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                      <span className="text-xs font-semibold text-pink-400">💡 TIP</span>
+                      <p className="text-sm text-slate-300 mt-1">Keep it 30-90 seconds</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                      <span className="text-xs font-semibold text-red-400">🎬 TIP</span>
+                      <p className="text-sm text-slate-300 mt-1">Use as inspiration only</p>
+                    </div>
+                    <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                      <span className="text-xs font-semibold text-pink-400">✨ TIP</span>
+                      <p className="text-sm text-slate-300 mt-1">AI creates original content</p>
+                    </div>
+                    <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                      <span className="text-xs font-semibold text-orange-400">🎨 TIP</span>
+                      <p className="text-sm text-slate-300 mt-1">New characters & story</p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}

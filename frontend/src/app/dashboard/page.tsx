@@ -15,14 +15,21 @@ function DashboardContent() {
   const [selectedProject, setSelectedProject] = useState<FilmProject | null>(null);
   const [projects, setProjects] = useState<FilmProject[]>([]);
   const [quickStartScript, setQuickStartScript] = useState<string | null>(null);
+  const [quickStartYoutubeUrl, setQuickStartYoutubeUrl] = useState<string | null>(null);
 
-  // Check for quick start script from homepage
+  // Check for quick start script or YouTube URL from homepage
   useEffect(() => {
     const savedScript = sessionStorage.getItem('quickStartScript');
+    const savedYoutubeUrl = sessionStorage.getItem('quickStartYoutubeUrl');
+    
     if (savedScript) {
       setQuickStartScript(savedScript);
       setShowFilmWizard(true);
       sessionStorage.removeItem('quickStartScript');
+    } else if (savedYoutubeUrl) {
+      setQuickStartYoutubeUrl(savedYoutubeUrl);
+      setShowFilmWizard(true);
+      sessionStorage.removeItem('quickStartYoutubeUrl');
     }
   }, []);
 
@@ -763,9 +770,11 @@ function DashboardContent() {
           onClose={() => {
             setShowFilmWizard(false);
             setQuickStartScript(null);
+            setQuickStartYoutubeUrl(null);
           }}
           onProjectCreate={handleCreateProject}
           initialScript={quickStartScript || undefined}
+          initialYoutubeUrl={quickStartYoutubeUrl || undefined}
         />
       )}
       
