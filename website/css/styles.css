@@ -646,7 +646,7 @@ section {
 
 .code-block code {
     color: #e5e7eb;
-    font-family: 'Fira Code', 'Monaco', monospace;
+    font-family: 'Fira Code', 'Monaco', Consolas, 'Courier New', monospace;
     font-size: 0.9rem;
     line-height: 1.6;
 }
@@ -717,7 +717,7 @@ section {
 }
 
 .endpoint-header code {
-    font-family: 'Fira Code', monospace;
+    font-family: 'Fira Code', Consolas, 'Courier New', monospace;
     font-size: 0.95rem;
 }
 
