@@ -6,7 +6,7 @@ interface FilmProject {
   title: string;
   script: string;
   settings: {
-    duration: '30' | '60' | '90';
+    duration: '30' | '45' | '60' | '90';
     style: 'realistic' | 'animated' | 'cinematic' | 'documentary';
     mood: 'dramatic' | 'comedic' | 'suspenseful' | 'romantic' | 'action';
     resolution: '720p' | '1080p' | '4k';
