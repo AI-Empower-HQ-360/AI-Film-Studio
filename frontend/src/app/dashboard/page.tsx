@@ -157,15 +157,6 @@ export default function DashboardPage() {
     storageLimit: '10 GB'
   };
 
-  // Overview content
-  const contentStats = {
-    totalScripts: 45,
-    uploadedImages: 23,
-    generatedVideos: 18,
-    generatedImages: 142,
-    audioFiles: 12
-  };
-
   const recentFilms = [
     {
       id: 1,

@@ -97,7 +97,7 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
           <div className="space-y-6">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Create Your Film</h2>
-              <p className="text-slate-400">Let's start with your script and basic details</p>
+              <p className="text-slate-400">Let&apos;s start with your script and basic details</p>
             </div>
             
             <div>
@@ -173,7 +173,7 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
                         checked={projectData.settings?.duration === option.value}
                         onChange={(e) => setProjectData(prev => ({
                           ...prev,
-                          settings: { ...prev.settings!, duration: e.target.value as any }
+                          settings: { ...prev.settings!, duration: e.target.value as '30' | '45' | '60' | '90' }
                         }))}
                         className="text-sky-500 focus:ring-sky-500"
                       />
@@ -189,7 +189,7 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
                   value={projectData.settings?.style || 'cinematic'}
                   onChange={(e) => setProjectData(prev => ({
                     ...prev,
-                    settings: { ...prev.settings!, style: e.target.value as any }
+                    settings: { ...prev.settings!, style: e.target.value as 'realistic' | 'animated' | 'cinematic' | 'documentary' }
                   }))}
                   className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-sky-500"
                 >
@@ -206,7 +206,7 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
                   value={projectData.settings?.mood || 'dramatic'}
                   onChange={(e) => setProjectData(prev => ({
                     ...prev,
-                    settings: { ...prev.settings!, mood: e.target.value as any }
+                    settings: { ...prev.settings!, mood: e.target.value as 'dramatic' | 'comedic' | 'suspenseful' | 'romantic' | 'action' }
                   }))}
                   className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-sky-500"
                 >
@@ -224,7 +224,7 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
                   value={projectData.settings?.resolution || '1080p'}
                   onChange={(e) => setProjectData(prev => ({
                     ...prev,
-                    settings: { ...prev.settings!, resolution: e.target.value as any }
+                    settings: { ...prev.settings!, resolution: e.target.value as '720p' | '1080p' | '4k' }
                   }))}
                   className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-sky-500"
                 >
@@ -285,7 +285,7 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
                 <div>
                   <h4 className="text-yellow-400 font-medium">Generation Time</h4>
                   <p className="text-slate-300 text-sm">
-                    Estimated generation time: 3-5 minutes. You'll receive a notification when your film is ready.
+                    Estimated generation time: 3-5 minutes. You&apos;ll receive a notification when your film is ready.
                   </p>
                 </div>
               </div>

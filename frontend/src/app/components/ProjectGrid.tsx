@@ -233,7 +233,7 @@ export default function ProjectGrid({ projects, onProjectSelect, onProjectDelete
           {/* Filter */}
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as any)}
+            onChange={(e) => setFilterStatus(e.target.value as 'all' | 'draft' | 'processing' | 'completed' | 'failed')}
             className="px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-sky-500"
           >
             <option value="all">All Status</option>
@@ -246,7 +246,7 @@ export default function ProjectGrid({ projects, onProjectSelect, onProjectDelete
           {/* Sort */}
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
+            onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest' | 'name')}
             className="px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-sky-500"
           >
             <option value="newest">Newest First</option>

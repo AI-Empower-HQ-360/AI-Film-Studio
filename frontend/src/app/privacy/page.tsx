@@ -152,7 +152,7 @@ export default function PrivacyPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">8. Third-Party Services</h2>
                 <p>Our service integrates with:</p>
                 <ul className="list-disc ml-6 mt-2 space-y-1">
-                  <li><strong>Google OAuth:</strong> For authentication (governed by Google's Privacy Policy)</li>
+                  <li><strong>Google OAuth:</strong> For authentication (governed by Google&apos;s Privacy Policy)</li>
                   <li><strong>AI Model Providers:</strong> For content generation processing</li>
                   <li><strong>CDN Services:</strong> For content delivery and performance</li>
                 </ul>
