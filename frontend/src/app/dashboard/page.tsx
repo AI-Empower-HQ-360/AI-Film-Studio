@@ -13,8 +13,8 @@ interface Project {
   script: string;
   settings: {
     duration: '30' | '45' | '60' | '90';
-    style: 'cinematic' | 'animated' | 'realistic';
-    mood: 'dramatic' | 'comedic' | 'action' | 'suspenseful';
+    style: 'realistic' | 'animated' | 'cinematic' | 'documentary';
+    mood: 'dramatic' | 'comedic' | 'suspenseful' | 'romantic' | 'action';
     resolution: '720p' | '1080p' | '4k';
   };
   status: 'draft' | 'processing' | 'completed' | 'failed';
