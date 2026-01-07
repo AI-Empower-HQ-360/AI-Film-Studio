@@ -1,11 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useAuth } from '../lib/AuthContext';
 import Navigation from '../components/Navigation';
 
 export default function SignUpPage() {
-  const { signUp, signInWithGoogle, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

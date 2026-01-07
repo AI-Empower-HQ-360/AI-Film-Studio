@@ -2,14 +2,12 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useAuth } from '../lib/AuthContext';
 import Navigation from '../components/Navigation';
 import FilmCreationWizard from '../components/FilmCreationWizard';
 import ProjectGrid from '../components/ProjectGrid';
 import VideoPlayerModal from '../components/VideoPlayerModal';
 
 export default function DashboardPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
   const [showFilmWizard, setShowFilmWizard] = useState(false);
@@ -24,29 +22,12 @@ export default function DashboardPage() {
     }
   }, [searchParams]);
 
-  // Redirect to sign in if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      window.location.href = '/signin';
-    }
-  }, [isLoading, isAuthenticated]);
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render dashboard if not authenticated
-  if (!isAuthenticated || !user) {
-    return null;
-  }
+  // Mock user data
+  const user = {
+    firstName: 'Creator',
+    lastName: 'User',
+    email: 'creator@example.com'
+  };
 
   // Mock data - in a real app, this would come from an API
   const userStats = {

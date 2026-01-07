@@ -1,11 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useAuth } from '../lib/AuthContext';
 import Navigation from '../components/Navigation';
 
 export default function SignInPage() {
-  const { signIn, signInWithGoogle, isLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);

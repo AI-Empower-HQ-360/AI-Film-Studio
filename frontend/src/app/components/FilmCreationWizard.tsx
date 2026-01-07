@@ -1,6 +1,5 @@
 'use client';
 import { useState, useRef } from 'react';
-import { useAuth } from '../lib/AuthContext';
 
 interface FilmProject {
   id: string;
@@ -21,7 +20,6 @@ interface FilmCreationWizardProps {
 }
 
 export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCreationWizardProps) {
-  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

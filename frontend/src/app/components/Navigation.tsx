@@ -1,7 +1,5 @@
 'use client';
 import Link from 'next/link';
-import { useAuth } from '../lib/AuthContext';
-import UserDropdown from './UserDropdown';
 
 interface NavigationProps {
   currentPage?: string;
@@ -9,7 +7,6 @@ interface NavigationProps {
 }
 
 export default function Navigation({ currentPage, className = '' }: NavigationProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
 
   const baseNavClass = "bg-slate-900/80 backdrop-blur-md border-b border-slate-700";
   const fullClassName = className ? `${baseNavClass} ${className}` : baseNavClass;
@@ -60,46 +57,30 @@ export default function Navigation({ currentPage, className = '' }: NavigationPr
               Pricing
             </Link>
 
-            {/* Authentication-based navigation */}
-            {!isLoading && (
-              isAuthenticated && user ? (
-                <>
-                  <Link 
-                    href="/dashboard" 
-                    className={`transition-colors ${
-                      currentPage === 'dashboard' 
-                        ? 'text-white font-medium border-b-2 border-sky-500' 
-                        : 'text-slate-300 hover:text-white'
-                    }`}
-                  >
-                    Dashboard
-                  </Link>
-                  <UserDropdown user={user} />
-                </>
-              ) : (
-                <>
-                  <Link href="/signin" className="text-slate-300 hover:text-white transition-colors">
-                    Sign In
-                  </Link>
-                  <Link href="/signup" className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    Sign Up
-                  </Link>
-                </>
-              )
-            )}
+            {/* Navigation Links */}
+            <Link 
+              href="/dashboard" 
+              className={`transition-colors ${
+                currentPage === 'dashboard' 
+                  ? 'text-white font-medium border-b-2 border-sky-500' 
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              Dashboard
+            </Link>
+            <Link href="/signin" className="text-slate-300 hover:text-white transition-colors">
+              Sign In
+            </Link>
+            <Link href="/signup" className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              Sign Up
+            </Link>
           </div>
 
           {/* Mobile Navigation */}
           <div className="md:hidden">
-            {!isLoading && (
-              isAuthenticated && user ? (
-                <UserDropdown user={user} />
-              ) : (
-                <Link href="/signin" className="text-slate-300 hover:text-white text-sm transition-colors">
-                  Sign In
-                </Link>
-              )
-            )}
+            <Link href="/signin" className="text-slate-300 hover:text-white text-sm transition-colors">
+              Sign In
+            </Link>
           </div>
         </div>
       </div>
