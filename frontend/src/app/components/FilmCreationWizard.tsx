@@ -63,7 +63,8 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
         title: projectData.title || 'Untitled Project',
         script: projectData.script || '',
         settings: projectData.settings!,
-        status: 'processing'
+        status: 'processing',
+        createdAt: new Date().toISOString()
       };
       
       // Simulate API call
