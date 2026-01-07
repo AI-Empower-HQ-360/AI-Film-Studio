@@ -1,13 +1,16 @@
 'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Navigation from '../components/Navigation';
 
 export default function SignInPage() {
+  const router = useRouter();
+  
   const handleGoogleSignIn = () => {
     // TODO: Implement Google OAuth later
     console.log('Google Sign In clicked');
     // For now, redirect to dashboard
-    window.location.href = '/dashboard';
+    router.push('/dashboard');
   };
 
   return (
