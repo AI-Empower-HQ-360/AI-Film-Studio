@@ -56,17 +56,18 @@ export default function LandingPage() {
               <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-2xl">
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    ✨ Paste your script here to get started
+                    ✨ Paste your script here to get started (up to 10,000 characters)
                   </label>
                   <textarea
                     value={script}
                     onChange={(e) => setScript(e.target.value)}
+                    maxLength={10000}
                     placeholder="Example: A hero stands on a cliff at sunset, looking at the vast ocean. The wind blows through their hair as they take a deep breath, ready to face their destiny..."
                     className="w-full h-40 px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 resize-none"
                   />
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-sm text-slate-400">
-                      {script.length} characters
+                    <span className={`text-sm ${script.length > 9500 ? 'text-orange-400' : 'text-slate-400'}`}>
+                      {script.length.toLocaleString()} / 10,000 characters
                     </span>
                     <span className="text-sm text-slate-400">
                       {script.trim() ? '30-90 seconds recommended' : ''}
