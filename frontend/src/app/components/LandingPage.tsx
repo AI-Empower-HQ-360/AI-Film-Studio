@@ -1,34 +1,11 @@
 import Link from 'next/link';
+import Navigation from './Navigation';
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text text-transparent hover:scale-105 transition-transform">
-                🎬 AI Film Studio
-              </Link>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-slate-300 hover:text-white transition-colors">
-                Features
-              </a>
-              <a href="#how-it-works" className="text-slate-300 hover:text-white transition-colors">
-                How It Works
-              </a>
-              <Link href="/pricing" className="text-slate-300 hover:text-white transition-colors">
-                Pricing
-              </Link>
-              <Link href="#" className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navigation className="fixed top-0 left-0 right-0 z-50" />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
@@ -44,7 +21,7 @@ export default function LandingPage() {
             (30-90 seconds) using cutting-edge AI image and video generation technology.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/pricing" className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25 text-center">
+            <Link href="/signup" className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25 text-center">
               Start Creating Free
             </Link>
             <Link href="#how-it-works" className="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-slate-600 text-center">
@@ -209,9 +186,9 @@ export default function LandingPage() {
           <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
             Join thousands of creators, filmmakers, and storytellers who are already using AI Film Studio to bring their visions to life.
           </p>
-          <button className="bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25">
+          <Link href="/signup" className="bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25 inline-block">
             Get Started for Free
-          </button>
+          </Link>
         </div>
       </section>
 
