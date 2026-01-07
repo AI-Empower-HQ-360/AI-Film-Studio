@@ -35,6 +35,18 @@ export default function VideoPlayerModal({ project, onClose, onDownload, onShare
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
+  // Track fullscreen state
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      // Fullscreen state is managed by the browser
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   useEffect(() => {
     if (!project) return;
 
@@ -103,7 +115,8 @@ export default function VideoPlayerModal({ project, onClose, onDownload, onShare
     const container = containerRef.current;
     if (!container) return;
 
-    if (!isFullscreen) {
+    const isCurrentlyFullscreen = !!document.fullscreenElement;
+    if (!isCurrentlyFullscreen) {
       if (container.requestFullscreen) {
         container.requestFullscreen();
       }
