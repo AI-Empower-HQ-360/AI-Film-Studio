@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen">
@@ -6,9 +8,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text text-transparent">
+              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text text-transparent hover:scale-105 transition-transform">
                 🎬 AI Film Studio
-              </span>
+              </Link>
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-slate-300 hover:text-white transition-colors">
@@ -17,12 +19,12 @@ export default function LandingPage() {
               <a href="#how-it-works" className="text-slate-300 hover:text-white transition-colors">
                 How It Works
               </a>
-              <a href="/pricing" className="text-slate-300 hover:text-white transition-colors">
+              <Link href="/pricing" className="text-slate-300 hover:text-white transition-colors">
                 Pricing
-              </a>
-              <button className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              </Link>
+              <Link href="#" className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 Get Started
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -42,12 +44,12 @@ export default function LandingPage() {
             (30-90 seconds) using cutting-edge AI image and video generation technology.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25">
+            <Link href="/pricing" className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25 text-center">
               Start Creating Free
-            </button>
-            <button className="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-slate-600">
+            </Link>
+            <Link href="#how-it-works" className="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-slate-600 text-center">
               Watch Demo
-            </button>
+            </Link>
           </div>
           
           {/* Hero Image Placeholder */}
