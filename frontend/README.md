@@ -57,10 +57,10 @@ frontend/
 │       ├── layout.tsx              # Root layout with metadata
 │       ├── page.tsx                # Home page (renders LandingPage)
 │       └── globals.css             # Global styles
-├── public/                         # Static assets
 ├── package.json
 ├── tsconfig.json
 ├── tailwind.config.ts
+├── postcss.config.mjs
 └── next.config.mjs
 ```
 
