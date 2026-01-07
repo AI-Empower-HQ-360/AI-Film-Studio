@@ -20,11 +20,9 @@ AI Film Studio is a cloud-native platform that transforms text scripts into cine
 **Prerequisites**: Python 3.11+ (tested with 3.12.3)
 
 ```bash
-# Install dependencies (ALWAYS run first)
+# Install dependencies (ALWAYS run first, then install httpx for testing)
 pip install -r requirements.txt
-
-# Additional required dependency (not in requirements.txt)
-pip install httpx
+pip install httpx  # Required for TestClient but missing from requirements.txt
 
 # Run tests
 python -m pytest tests/ -v
@@ -41,10 +39,6 @@ python -m black src/ tests/
 # Start development server
 uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
-
-**Known Issues**:
-- The `requirements.txt` is missing `httpx` which is required for `TestClient`. See "Common Pitfalls" section for details.
-- Source files have some whitespace and formatting issues that `flake8` will report. These are pre-existing and not critical.
 
 ### Next.js Frontend (frontend/ Directory)
 
@@ -205,10 +199,11 @@ Terraform is configured with S3 backend for state management. Do not run `terraf
 
 ## Common Pitfalls to Avoid
 
-1. **Missing httpx**: The `requirements.txt` is missing `httpx` which is required for `starlette.testclient.TestClient`. Always run `pip install httpx` after installing requirements to run tests.
+1. **Test client dependency**: The `requirements.txt` is missing `httpx` which is required for `starlette.testclient.TestClient`. The dependency installation commands above include this fix.
 2. **Test client compatibility**: There may be version conflicts between `starlette`, `httpx`, and `fastapi`. If tests fail with `TypeError`, consider pinning compatible versions.
-3. **Frontend build artifacts**: `frontend/out/` and `frontend/.next/` are in `.gitignore` - don't commit them.
-4. **Environment variables**: Copy `.env.example` to `.env` before running the backend.
+3. **Flake8 warnings**: Some pre-existing source files have whitespace and formatting issues. These are not critical and should be ignored unless you're modifying those specific lines.
+4. **Frontend build artifacts**: `frontend/out/` and `frontend/.next/` are in `.gitignore` - don't commit them.
+5. **Environment variables**: Copy `.env.example` to `.env` before running the backend.
 
 ---
 
