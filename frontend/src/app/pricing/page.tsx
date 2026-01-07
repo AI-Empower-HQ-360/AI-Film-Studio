@@ -1,6 +1,32 @@
+'use client';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function PricingPage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const faqItems = [
+    {
+      question: "Can I upgrade or downgrade my plan?",
+      answer: "Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate the billing accordingly."
+    },
+    {
+      question: "What happens if I exceed my monthly limit?",
+      answer: "When you reach your monthly generation limit, you can either wait for the next billing cycle or upgrade to a higher plan for immediate access to more generations."
+    },
+    {
+      question: "Do you offer refunds?",
+      answer: "We offer a 14-day money-back guarantee for all paid plans. If you're not satisfied, we'll refund your payment, no questions asked."
+    },
+    {
+      question: "Can I use the films commercially?",
+      answer: "Yes! All Standard and Pro plans include full commercial usage rights. Fee plan films have a watermark and are for personal/educational use only."
+    }
+  ];
   const plans = [
     {
       name: 'Fee',
@@ -180,38 +206,38 @@ export default function PricingPage() {
             Everything you need to know about our pricing and plans
           </p>
           
-          <div className="grid gap-8">
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-              <h3 className="text-xl font-semibold text-white mb-3">Can I upgrade or downgrade my plan?</h3>
-              <p className="text-slate-300">
-                Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, 
-                and we&apos;ll prorate the billing accordingly.
-              </p>
-            </div>
-            
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-              <h3 className="text-xl font-semibold text-white mb-3">What happens if I exceed my monthly limit?</h3>
-              <p className="text-slate-300">
-                When you reach your monthly generation limit, you can either wait for the next billing cycle 
-                or upgrade to a higher plan for immediate access to more generations.
-              </p>
-            </div>
-            
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-              <h3 className="text-xl font-semibold text-white mb-3">Do you offer refunds?</h3>
-              <p className="text-slate-300">
-                We offer a 14-day money-back guarantee for all paid plans. If you&apos;re not satisfied, 
-                we&apos;ll refund your payment, no questions asked.
-              </p>
-            </div>
-            
-            <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-              <h3 className="text-xl font-semibold text-white mb-3">Can I use the films commercially?</h3>
-              <p className="text-slate-300">
-                Yes! All Pro and Enterprise plans include full commercial usage rights. 
-                Free plan films have a watermark and are for personal/educational use only.
-              </p>
-            </div>
+          <div className="grid gap-6">
+            {faqItems.map((faq, index) => (
+              <div key={index} className="bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden">
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-slate-700/30 transition-colors"
+                >
+                  <h3 className="text-xl font-semibold text-white pr-4">{faq.question}</h3>
+                  <svg
+                    className={`w-5 h-5 text-slate-400 transition-transform duration-200 flex-shrink-0 ${
+                      openFaq === index ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div
+                  className={`transition-all duration-300 ease-in-out ${
+                    openFaq === index 
+                      ? 'max-h-96 opacity-100' 
+                      : 'max-h-0 opacity-0'
+                  } overflow-hidden`}
+                >
+                  <div className="px-6 pb-4">
+                    <p className="text-slate-300 leading-relaxed">{faq.answer}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
