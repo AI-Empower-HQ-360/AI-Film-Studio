@@ -1,7 +1,24 @@
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Navigation from './Navigation';
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [script, setScript] = useState('');
+  const [showScriptInput, setShowScriptInput] = useState(false);
+
+  const handleQuickStart = () => {
+    if (script.trim()) {
+      // Save script to session storage and redirect to dashboard
+      sessionStorage.setItem('quickStartScript', script);
+      router.push('/dashboard');
+    } else {
+      setShowScriptInput(true);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Navigation */}
@@ -20,14 +37,83 @@ export default function LandingPage() {
             AI-powered platform that converts text scripts into stunning short films 
             (30-90 seconds) using cutting-edge AI image and video generation technology.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/signup" className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25 text-center">
-              Start Creating Free
-            </Link>
-            <Link href="#how-it-works" className="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-slate-600 text-center">
-              Watch Demo
-            </Link>
-          </div>
+
+          {/* Quick Script Input Section */}
+          {!showScriptInput ? (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+              <Link href="/signup" className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25 text-center">
+                Start Creating Free
+              </Link>
+              <button 
+                onClick={() => setShowScriptInput(true)}
+                className="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-slate-600"
+              >
+                Try with Your Script
+              </button>
+            </div>
+          ) : (
+            <div className="max-w-3xl mx-auto mb-10">
+              <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-2xl">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    ✨ Paste your script here to get started
+                  </label>
+                  <textarea
+                    value={script}
+                    onChange={(e) => setScript(e.target.value)}
+                    placeholder="Example: A hero stands on a cliff at sunset, looking at the vast ocean. The wind blows through their hair as they take a deep breath, ready to face their destiny..."
+                    className="w-full h-40 px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 resize-none"
+                  />
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-sm text-slate-400">
+                      {script.length} characters
+                    </span>
+                    <span className="text-sm text-slate-400">
+                      {script.trim() ? '30-90 seconds recommended' : ''}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleQuickStart}
+                    disabled={!script.trim()}
+                    className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all ${
+                      script.trim()
+                        ? 'bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white shadow-lg shadow-sky-500/25'
+                        : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {script.trim() ? '🚀 Create Film Now' : 'Enter script to continue'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowScriptInput(false);
+                      setScript('');
+                    }}
+                    className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+              
+              {/* Quick Tips */}
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                  <span className="text-xs font-semibold text-sky-400">💡 TIP</span>
+                  <p className="text-sm text-slate-300 mt-1">Include visual details</p>
+                </div>
+                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                  <span className="text-xs font-semibold text-purple-400">💡 TIP</span>
+                  <p className="text-sm text-slate-300 mt-1">Describe emotions & mood</p>
+                </div>
+                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                  <span className="text-xs font-semibold text-pink-400">💡 TIP</span>
+                  <p className="text-sm text-slate-300 mt-1">Keep it 30-90 seconds</p>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Hero Image Placeholder */}
           <div className="mt-16 relative">

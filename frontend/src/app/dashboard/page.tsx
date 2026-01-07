@@ -14,6 +14,17 @@ function DashboardContent() {
   const [showFilmWizard, setShowFilmWizard] = useState(false);
   const [selectedProject, setSelectedProject] = useState<FilmProject | null>(null);
   const [projects, setProjects] = useState<FilmProject[]>([]);
+  const [quickStartScript, setQuickStartScript] = useState<string | null>(null);
+
+  // Check for quick start script from homepage
+  useEffect(() => {
+    const savedScript = sessionStorage.getItem('quickStartScript');
+    if (savedScript) {
+      setQuickStartScript(savedScript);
+      setShowFilmWizard(true);
+      sessionStorage.removeItem('quickStartScript');
+    }
+  }, []);
 
   // Handle tab switching via URL parameters
   useEffect(() => {
@@ -749,8 +760,12 @@ function DashboardContent() {
       {/* Modals */}
       {showFilmWizard && (
         <FilmCreationWizard
-          onClose={() => setShowFilmWizard(false)}
+          onClose={() => {
+            setShowFilmWizard(false);
+            setQuickStartScript(null);
+          }}
           onProjectCreate={handleCreateProject}
+          initialScript={quickStartScript || undefined}
         />
       )}
       

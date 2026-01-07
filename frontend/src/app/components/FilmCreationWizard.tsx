@@ -1,20 +1,21 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { FilmProject } from '../../types/project';
 
 interface FilmCreationWizardProps {
   onClose?: () => void;
   onProjectCreate?: (project: FilmProject) => void;
+  initialScript?: string;
 }
 
-export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCreationWizardProps) {
+export default function FilmCreationWizard({ onClose, onProjectCreate, initialScript }: FilmCreationWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [projectData, setProjectData] = useState<Partial<FilmProject>>({
     title: '',
-    script: '',
+    script: initialScript || '',
     settings: {
       duration: '60',
       style: 'cinematic',
@@ -23,6 +24,16 @@ export default function FilmCreationWizard({ onClose, onProjectCreate }: FilmCre
     },
     status: 'draft'
   });
+
+  // Update script if initialScript prop changes
+  useEffect(() => {
+    if (initialScript) {
+      setProjectData(prev => ({
+        ...prev,
+        script: initialScript
+      }));
+    }
+  }, [initialScript]);
 
   const totalSteps = 4;
 
