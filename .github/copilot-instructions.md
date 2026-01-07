@@ -43,7 +43,7 @@ uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Known Issues**:
-- The `requirements.txt` is missing `httpx` which is required for `TestClient`. Always run `pip install httpx` after installing requirements.
+- The `requirements.txt` is missing `httpx` which is required for `TestClient`. See "Common Pitfalls" section for details.
 - Source files have some whitespace and formatting issues that `flake8` will report. These are pre-existing and not critical.
 
 ### Next.js Frontend (frontend/ Directory)
@@ -205,11 +205,10 @@ Terraform is configured with S3 backend for state management. Do not run `terraf
 
 ## Common Pitfalls to Avoid
 
-1. **Missing httpx**: The `requirements.txt` is missing `httpx`. Always install it separately for testing.
-2. **Python version mismatch**: `setup.py` specifies `python_requires=">=3.8"` but the codebase uses Python 3.11+ features.
-3. **Test client compatibility**: There may be version conflicts between `starlette`, `httpx`, and `fastapi`. If tests fail with `TypeError`, check package versions.
-4. **Frontend build artifacts**: `frontend/out/` and `frontend/.next/` are in `.gitignore` - don't commit them.
-5. **Environment variables**: Copy `.env.example` to `.env` before running the backend.
+1. **Missing httpx**: The `requirements.txt` is missing `httpx` which is required for `starlette.testclient.TestClient`. Always run `pip install httpx` after installing requirements to run tests.
+2. **Test client compatibility**: There may be version conflicts between `starlette`, `httpx`, and `fastapi`. If tests fail with `TypeError`, consider pinning compatible versions.
+3. **Frontend build artifacts**: `frontend/out/` and `frontend/.next/` are in `.gitignore` - don't commit them.
+4. **Environment variables**: Copy `.env.example` to `.env` before running the backend.
 
 ---
 
