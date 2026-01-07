@@ -68,7 +68,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text text-transparent">
+              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text text-transparent hover:scale-105 transition-transform">
                 🎬 AI Film Studio
               </Link>
             </div>
@@ -79,12 +79,18 @@ export default function PricingPage() {
               <Link href="/#how-it-works" className="text-slate-300 hover:text-white transition-colors">
                 How It Works
               </Link>
-              <Link href="/pricing" className="text-white font-medium">
+              <Link href="/pricing" className="text-white font-medium border-b-2 border-sky-500">
                 Pricing
               </Link>
-              <button className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              <Link href="/" className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 Get Started
-              </button>
+              </Link>
+            </div>
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Link href="/" className="text-slate-300 hover:text-white text-sm">
+                ← Home
+              </Link>
             </div>
           </div>
         </div>
@@ -93,6 +99,16 @@ export default function PricingPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
+          {/* Back to Home link */}
+          <div className="mb-8">
+            <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white transition-colors group">
+              <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
+          
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             Choose Your{" "}
             <span className="bg-gradient-to-r from-sky-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
@@ -210,9 +226,9 @@ export default function PricingPage() {
             Join thousands of creators who are already using AI Film Studio to bring their visions to life.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25">
+            <Link href="/" className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-sky-500/25 text-center">
               Start Creating Today
-            </button>
+            </Link>
             <Link href="/" className="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-slate-600 text-center">
               Learn More
             </Link>
