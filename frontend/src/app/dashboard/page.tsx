@@ -7,12 +7,29 @@ import FilmCreationWizard from '../components/FilmCreationWizard';
 import ProjectGrid from '../components/ProjectGrid';
 import VideoPlayerModal from '../components/VideoPlayerModal';
 
+interface Project {
+  id: string;
+  title: string;
+  script: string;
+  settings: {
+    duration: '30' | '45' | '60' | '90';
+    style: 'cinematic' | 'animated' | 'realistic';
+    mood: 'dramatic' | 'comedic' | 'action' | 'suspenseful';
+    resolution: '720p' | '1080p' | '4k';
+  };
+  status: 'draft' | 'processing' | 'completed' | 'failed';
+  createdAt: string;
+  completedAt?: string;
+  thumbnailUrl?: string;
+  videoUrl?: string;
+}
+
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
   const [showFilmWizard, setShowFilmWizard] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   // Handle tab switching via URL parameters
   useEffect(() => {
@@ -104,11 +121,11 @@ export default function DashboardPage() {
     setProjects(mockProjects);
   }, []);
 
-  const handleCreateProject = (project: any) => {
+  const handleCreateProject = (project: Project) => {
     setProjects(prev => [project, ...prev]);
   };
 
-  const handleProjectSelect = (project: any) => {
+  const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
   };
 
@@ -116,7 +133,7 @@ export default function DashboardPage() {
     setProjects(prev => prev.filter(p => p.id !== projectId));
   };
 
-  const handleProjectEdit = (project: any) => {
+  const handleProjectEdit = (project: Project) => {
     // In a real app, this would open an edit modal or navigate to an edit page
     console.log('Edit project:', project);
   };
@@ -140,7 +157,7 @@ export default function DashboardPage() {
     storageLimit: '10 GB'
   };
 
-  // Content Statistics
+  // Overview content
   const contentStats = {
     totalScripts: 45,
     uploadedImages: 23,

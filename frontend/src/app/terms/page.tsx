@@ -20,7 +20,7 @@ export default function TermsPage() {
               <section>
                 <h2 className="text-xl font-semibold text-white mb-4">1. Agreement to Terms</h2>
                 <p>
-                  By accessing and using AI Film Studio ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. 
+                  By accessing and using AI Film Studio (&quot;the Service&quot;), you accept and agree to be bound by the terms and provision of this agreement. 
                   If you do not agree to abide by the above, please do not use this service.
                 </p>
               </section>

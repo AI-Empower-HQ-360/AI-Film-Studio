@@ -168,7 +168,7 @@ export default function PrivacyPage() {
               </section>
 
               <section>
-                <h2 className="text-xl font-semibold text-white mb-4">10. Children's Privacy</h2>
+                <h2 className="text-xl font-semibold text-white mb-4">10. Children&apos;s Privacy</h2>
                 <p>
                   AI Film Studio is not intended for children under 13 years of age. We do not knowingly collect 
                   personal information from children under 13. If you believe we have collected information from 
@@ -180,7 +180,7 @@ export default function PrivacyPage() {
                 <h2 className="text-xl font-semibold text-white mb-4">11. Changes to Privacy Policy</h2>
                 <p>
                   We may update this Privacy Policy from time to time. We will notify you of any material changes 
-                  by posting the new Privacy Policy on this page and updating the "Last updated" date. 
+                  by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date. 
                   We encourage you to review this Privacy Policy periodically.
                 </p>
               </section>
