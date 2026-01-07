@@ -7,7 +7,7 @@ import FilmCreationWizard from '../components/FilmCreationWizard';
 import ProjectGrid from '../components/ProjectGrid';
 import VideoPlayerModal from '../components/VideoPlayerModal';
 
-interface Project {
+interface FilmProject {
   id: string;
   title: string;
   script: string;
@@ -28,8 +28,8 @@ export default function DashboardPage() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
   const [showFilmWizard, setShowFilmWizard] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<FilmProject | null>(null);
+  const [projects, setProjects] = useState<FilmProject[]>([]);
 
   // Handle tab switching via URL parameters
   useEffect(() => {
@@ -121,11 +121,11 @@ export default function DashboardPage() {
     setProjects(mockProjects);
   }, []);
 
-  const handleCreateProject = (project: Project) => {
+  const handleCreateProject = (project: FilmProject) => {
     setProjects(prev => [project, ...prev]);
   };
 
-  const handleProjectSelect = (project: Project) => {
+  const handleProjectSelect = (project: FilmProject) => {
     setSelectedProject(project);
   };
 
@@ -133,7 +133,7 @@ export default function DashboardPage() {
     setProjects(prev => prev.filter(p => p.id !== projectId));
   };
 
-  const handleProjectEdit = (project: Project) => {
+  const handleProjectEdit = (project: FilmProject) => {
     // In a real app, this would open an edit modal or navigate to an edit page
     console.log('Edit project:', project);
   };
