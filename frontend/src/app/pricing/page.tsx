@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function PricingPage() {
   const plans = [
     {
-      name: 'Free',
+      name: 'Fee',
       price: '$0',
       duration: '/month',
       description: 'Perfect for trying out AI Film Studio',
@@ -15,12 +15,12 @@ export default function PricingPage() {
         'Community support',
         'Watermarked output'
       ],
-      buttonText: 'Start Free',
+      buttonText: 'Start Fee',
       buttonStyle: 'bg-slate-700 hover:bg-slate-600 text-white',
       popular: false
     },
     {
-      name: 'Pro',
+      name: 'Standard',
       price: '$29',
       duration: '/month',
       description: 'For content creators and small businesses',
@@ -34,14 +34,14 @@ export default function PricingPage() {
         'Priority support',
         'Custom branding'
       ],
-      buttonText: 'Start Pro Trial',
+      buttonText: 'Start Standard Trial',
       buttonStyle: 'bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white',
       popular: true
     },
     {
-      name: 'Enterprise',
-      price: 'Custom',
-      duration: '',
+      name: 'Pro',
+      price: '$59',
+      duration: '/month',
       description: 'For agencies and large organizations',
       features: [
         'Unlimited film generations',
@@ -55,7 +55,7 @@ export default function PricingPage() {
         'Team collaboration tools',
         'Advanced analytics'
       ],
-      buttonText: 'Contact Sales',
+      buttonText: 'Start Pro',
       buttonStyle: 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-500',
       popular: false
     }
