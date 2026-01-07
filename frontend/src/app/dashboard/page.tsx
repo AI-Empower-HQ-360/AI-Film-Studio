@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Navigation from '../components/Navigation';
 import FilmCreationWizard from '../components/FilmCreationWizard';
@@ -8,7 +8,7 @@ import ProjectGrid from '../components/ProjectGrid';
 import VideoPlayerModal from '../components/VideoPlayerModal';
 import type { FilmProject } from '../../types/project';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
   const [showFilmWizard, setShowFilmWizard] = useState(false);
@@ -763,5 +763,13 @@ export default function DashboardPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
