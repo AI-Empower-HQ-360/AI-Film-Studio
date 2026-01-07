@@ -17,7 +17,7 @@ export default function LandingPage() {
               <a href="#how-it-works" className="text-slate-300 hover:text-white transition-colors">
                 How It Works
               </a>
-              <a href="#pricing" className="text-slate-300 hover:text-white transition-colors">
+              <a href="/pricing" className="text-slate-300 hover:text-white transition-colors">
                 Pricing
               </a>
               <button className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
