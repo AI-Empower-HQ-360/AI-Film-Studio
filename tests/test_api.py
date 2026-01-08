@@ -18,3 +18,16 @@ def test_health_check():
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
     assert response.json()["version"] == "0.1.0"
+
+def test_about():
+    """Test about endpoint"""
+    response = client.get("/about")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["name"] == "AI Film Studio"
+    assert data["version"] == "0.1.0"
+    assert "description" in data
+    assert "author" in data
+    assert "features" in data
+    assert isinstance(data["features"], list)
+    assert len(data["features"]) > 0
