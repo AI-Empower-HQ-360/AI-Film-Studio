@@ -24,10 +24,10 @@ wheels/
 *.egg
 
 # AI/ML
-models/
+/models/
 *.pth
 *.pt
-*. ckpt
+*.ckpt
 data/raw/
 data/processed/
 *.h5
