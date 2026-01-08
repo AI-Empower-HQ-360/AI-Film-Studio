@@ -64,6 +64,10 @@ graph TB
     Worker --> RDS
 ```
 
+> 📐 **For detailed architecture diagrams including all microservices, AI models, and integrations, see:**
+> 
+> [**Comprehensive Architecture Diagram →**](./docs/architecture/comprehensive-architecture-diagram.md)
+
 ### **Component Breakdown**
 
 | Component | Technology | Purpose |
