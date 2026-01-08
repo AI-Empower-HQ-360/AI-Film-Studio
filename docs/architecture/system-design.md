@@ -1,7 +1,7 @@
 # System Design Document - AI Film Studio
 
-**Version:** 1.0  
-**Last Updated:** 2025-12-27  
+**Version:** 1.1  
+**Last Updated:** 2025-12-31  
 **Document Owner:** AI-Empower-HQ-360
 
 ---
@@ -9,15 +9,16 @@
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
-2. [High-Level Architecture](#high-level-architecture)
-3. [Component Specifications](#component-specifications)
-4. [Network Architecture](#network-architecture)
-5. [Data Flow Diagrams](#data-flow-diagrams)
-6. [Security Architecture](#security-architecture)
-7. [Scaling Strategies](#scaling-strategies)
-8. [Disaster Recovery Plan](#disaster-recovery-plan)
-9. [Cost Breakdown](#cost-breakdown)
-10. [Technology Stack](#technology-stack)
+2. [AI Film Studio – Master Blueprint (ASCII Mockup)](#ai-film-studio--master-blueprint-ascii-mockup)
+3. [High-Level Architecture](#high-level-architecture)
+4. [Component Specifications](#component-specifications)
+5. [Network Architecture](#network-architecture)
+6. [Data Flow Diagrams](#data-flow-diagrams)
+7. [Security Architecture](#security-architecture)
+8. [Scaling Strategies](#scaling-strategies)
+9. [Disaster Recovery Plan](#disaster-recovery-plan)
+10. [Cost Breakdown](#cost-breakdown)
+11. [Technology Stack](#technology-stack)
 
 ---
 
@@ -32,6 +33,155 @@ The AI Film Studio is a cloud-native platform designed to democratize AI-powered
 - **Security**: Defense-in-depth with encryption, IAM, and network isolation
 - **Cost Optimization**: Right-sized instances with spot instances for GPU workloads
 - **Performance**: Global CDN delivery and efficient GPU utilization
+
+---
+
+## 🌐 AI FILM STUDIO – MASTER BLUEPRINT (ASCII MOCKUP)
+
+```
+┌───────────────👤───────────────┐
+│         USER LAYER (Blue)      │
+│ Script | Images | Voice | Music │
+│ Duration | YouTube Credentials │
+└───────────────┬───────────────┘
+                │
+                ▼
+┌───────────────💻───────────────┐
+│      FRONTEND LAYER (Light Blue)│
+│ React + Next.js                │
+│ TailwindCSS / Material UI      │
+│ Forms & Dropdowns              │
+│ Video / Audio Preview          │
+│ Multi-language support         │
+└───────────────┬───────────────┘
+                │ API Requests
+                ▼
+┌───────────────⚙️───────────────┐
+│ BACKEND MICROSERVICES (Green)  │
+│ Node.js / NestJS               │
+│ Microservices: User, Project,  │
+│ Credits, AI Job, YouTube, Admin│
+│ Async Job Queue: Redis / BullMQ│
+│ Auth: JWT / OAuth 2.0          │
+└───────────────┬───────────────┘
+                │
+   ┌────────────┼────────────┐
+   ▼            ▼            ▼
+┌───────🗄️───────┐ ┌──────🗄️───────┐ ┌────────🗄️────────┐
+│ DATABASE       │ │ CACHE          │ │ STORAGE            │
+│ PostgreSQL     │ │ Redis /        │ │ AWS S3 / CloudFront│
+│ Users, Projects│ │ ElastiCache    │ │ Videos, Images     │
+│ Credits, Logs  │ │ Job Queue      │ │ Subtitles, Thumbnails│
+└───────────────┘ └───────────────┘ └────────────────────┘
+                │
+                ▼
+┌───────────────🤖───────────────┐
+│ AI / ML LAYER (Orange)         │
+│ 1. Script Analysis             │
+│ 2. Image Generation            │
+│ 3. Voice Synthesis             │
+│ 4. Lip-sync / Animation        │
+│ 5. Music / Slokas / Poems      │
+│ 6. Podcast Overlay             │
+│ 7. Subtitles / Multi-language  │
+└───────────────┬───────────────┘
+                │ GPU / CPU
+                ▼
+┌───────────────☁️───────────────┐
+│ CLOUD / INFRASTRUCTURE (Purple) │
+│ AWS EC2 GPU                    │
+│ ECS / Kubernetes               │
+│ Terraform (IaC)                │
+│ RDS (Postgres/MySQL)           │
+│ S3 + CloudFront                │
+│ Redis / ElastiCache            │
+│ Monitoring: CloudWatch, Grafana│
+│ Environments: Dev/Sandbox/Prod│
+└───────────────┬───────────────┘
+                │
+                ▼
+┌───────────────📊───────────────┐
+│ SALESFORCE CRM LAYER (Light Green)│
+│ Contacts → Users               │
+│ AI_Project__c → Projects       │
+│ AI_Credit__c → Credits         │
+│ YouTube_Integration__c         │
+│ Flows / Apex (status, credits) │
+│ Dashboards & Reports           │
+└───────────────┬───────────────┘
+                │
+                ▼
+┌───────────────▶️───────────────┐
+│ YOUTUBE / OUTPUT LAYER (Red)   │
+│ Video Upload (direct)          │
+│ Playlist Creation              │
+│ Thumbnail Generation           │
+│ Download Option                │
+│ Duration: 1–5 min              │
+└───────────────────────────────┘
+```
+
+This master blueprint provides a comprehensive overview of the AI Film Studio architecture, showing the flow from user input through various processing layers to the final output on YouTube.
+
+### Blueprint Layer Descriptions
+
+**User Layer (Blue)** - Entry point where users provide inputs:
+- Script content for the video
+- Images and visual assets
+- Voice preferences and audio settings
+- Music selections
+- Video duration specifications
+- YouTube credentials for direct upload
+
+**Frontend Layer (Light Blue)** - User interface built with modern web technologies:
+- React + Next.js framework for responsive UI
+- TailwindCSS / Material UI for styling
+- Interactive forms and dropdown menus
+- Real-time video and audio preview
+- Multi-language support for global accessibility
+
+**Backend Microservices (Green)** - Core business logic layer:
+- Node.js / NestJS microservices architecture
+- Dedicated services: User Management, Project Management, Credits, AI Job Processing, YouTube Integration, Admin
+- Asynchronous job queue using Redis / BullMQ
+- Secure authentication with JWT / OAuth 2.0
+
+**Data Tier** - Three-pillar data architecture:
+- **Database (PostgreSQL)**: User accounts, projects, credits, activity logs
+- **Cache (Redis / ElastiCache)**: Session management, job queue, performance optimization
+- **Storage (AWS S3 / CloudFront)**: Videos, images, subtitles, thumbnails with CDN delivery
+
+**AI / ML Layer (Orange)** - Intelligent content processing:
+1. Script Analysis - Natural language processing
+2. Image Generation - AI-powered visual creation
+3. Voice Synthesis - Text-to-speech conversion
+4. Lip-sync / Animation - Character animation
+5. Music / Slokas / Poems - Audio content generation
+6. Podcast Overlay - Audio mixing
+7. Subtitles / Multi-language - Automated captioning
+
+**Cloud / Infrastructure (Purple)** - Scalable cloud deployment:
+- AWS EC2 GPU instances for AI processing
+- ECS / Kubernetes for container orchestration
+- Terraform for Infrastructure as Code
+- RDS for managed database service
+- S3 + CloudFront for content delivery
+- Redis / ElastiCache for caching
+- Monitoring with CloudWatch and Grafana
+- Multiple environments: Development, Sandbox, Production
+
+**Salesforce CRM Layer (Light Green)** - Business integration:
+- Contacts synchronized with Users
+- Custom objects: AI_Project__c, AI_Credit__c, YouTube_Integration__c
+- Automated workflows using Flows and Apex
+- Analytics dashboards and reports
+
+**YouTube / Output Layer (Red)** - Final delivery:
+- Direct video upload to YouTube
+- Automated playlist creation
+- Thumbnail generation and upload
+- Download option for local storage
+- Support for 1-5 minute video duration
 
 ---
 
@@ -1728,6 +1878,7 @@ Vendor Support:
 | Version | Date       | Author                 | Changes                          |
 |---------|------------|------------------------|----------------------------------|
 | 1.0     | 2025-12-27 | AI-Empower-HQ-360      | Initial system design document   |
+| 1.1     | 2025-12-31 | AI-Empower-HQ-360      | Added master blueprint ASCII mockup with layer descriptions |
 
 ---
 
