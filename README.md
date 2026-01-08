@@ -13,6 +13,7 @@
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Investor & Developer Master Blueprint](#investor--developer-master-blueprint)
 - [Architecture](#architecture)
 - [SDLC Phases](#sdlc-phases)
 - [Technology Stack](#technology-stack)
@@ -45,6 +46,31 @@
 - Indie filmmakers and studios
 - Educational institutions
 - Corporate training departments
+
+---
+
+## 📘 Investor & Developer Master Blueprint
+
+**NEW!** We've created a comprehensive master blueprint that integrates all architectural layers, AI dependencies, business models, and deployment strategies.
+
+### **What's Included:**
+
+✅ **Complete Workflow Layers** — Frontend → Backend → AI → Cloud → Salesforce → YouTube  
+✅ **7-Stage AI Pipeline** — Script → Story/Culture → Image → Voice → Animation → Music → Podcast → Subtitles  
+✅ **Subscription & Credit System** — Free → Pro → Enterprise tiers (3 credits = 1 min)  
+✅ **Multi-Environment Strategy** — Dev, Sandbox/QA, Staging, Production  
+✅ **Integration Details** — Salesforce CRM + YouTube + Multi-language support  
+✅ **Cultural Awareness** — Dynamic content with cultural context  
+✅ **Voice Diversity** — 25+ voice options across ages, genders, languages  
+✅ **Business Model** — Revenue projections, unit economics, scaling strategies
+
+📂 **Read the full blueprint:** [`docs/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md`](./docs/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md)
+
+This document is designed for:
+- **Investors**: Understand the business model, market opportunity, and technical capabilities
+- **Developers**: Reference guide for implementation, architecture, and integration
+- **Partners**: Integration opportunities with Salesforce, YouTube, and other platforms
+- **Stakeholders**: Complete visibility into the end-to-end system
 
 ---
 
