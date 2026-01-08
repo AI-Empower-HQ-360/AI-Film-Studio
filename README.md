@@ -1,4 +1,4 @@
-v# 🎬 AI Film Studio — End-to-End SDLC (AWS + DevOps + Cloud + AI)
+# 🎬 AI Film Studio — End-to-End SDLC (AWS + DevOps + Cloud + AI)
 
 **A production-ready case study demonstrating enterprise-grade cloud architecture, DevOps practices, and AI-powered film generation**
 

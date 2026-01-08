@@ -4,7 +4,7 @@ import sys
 
 def setup_logger(name: str, log_level: str = "INFO") -> logging.Logger:
     """Setup logger with specified name and level"""
-    logger = logging. getLogger(name)
+    logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, log_level))
     
     console_handler = logging.StreamHandler(sys.stdout)
