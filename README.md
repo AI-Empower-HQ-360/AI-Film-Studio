@@ -147,10 +147,16 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - **JWT**: Authentication
 
 ### **Worker (AI Pipeline)**
-- **Stable Diffusion XL (SDXL)**: Image generation
-- **Custom AI models**: Video generation
-- **FFmpeg**: Video composition and encoding
-- **Celery/SQS**: Task queue processing
+- **Video Generation**: Stable Diffusion Video, Gen-2, CogVideo, AnimateDiff
+- **Voice Synthesis**: ElevenLabs, Coqui TTS, OpenAI TTS (multi-age, multi-gender)
+- **Lip-sync & Animation**: Wav2Lip, First Order Motion Model, SadTalker
+- **Music Generation**: MusicGen, AudioCraft, OpenAI Jukebox
+- **Subtitles**: OpenAI Whisper, Google Cloud Speech-to-Text
+- **Translation**: Google Translate, DeepL
+- **Job Queue**: AWS SQS, BullMQ, RabbitMQ, Celery
+- **FFmpeg**: Video/audio composition and encoding
+
+📖 **[View Complete AI/ML Tech Stack Documentation](./docs/ai-ml-stack.md)**
 
 ### **Frontend**
 - **Next.js 14**: React framework
