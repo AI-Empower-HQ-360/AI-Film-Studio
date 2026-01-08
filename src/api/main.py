@@ -1,7 +1,10 @@
 """Main API entry point"""
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from src.utils.logger import setup_logger
 from src.config.settings import API_HOST, API_PORT
+import os
 
 logger = setup_logger(__name__)
 
@@ -11,10 +14,14 @@ app = FastAPI(
     version="0.1.0"
 )
 
+# Mount static files
+static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 @app.get("/")
 async def root():
-    """Health check endpoint"""
-    return {"message": "AI Film Studio API is running", "status": "healthy"}
+    """Serve the homepage"""
+    return FileResponse(os.path.join(static_dir, "index.html"))
 
 @app.get("/api/v1/health")
 async def health_check():

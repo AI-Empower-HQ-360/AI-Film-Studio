@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Film Studio - Transform text scripts into cinematic short films using AI-powered generation">
+    <meta name="keywords" content="AI, Film, Studio, Video Generation, AI-powered, Cloud, AWS">
+    <title>AI Film Studio - Transform Scripts into Films with AI</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <span class="logo-icon">🎬</span>
+                    <span class="logo-text">AI Film Studio</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#technology">Technology</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="/api/v1/health" class="btn-secondary">API Docs</a>
+                    <a href="#" class="btn-primary">Get Started</a>
+                </div>
+                <div class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-icon">✨</span>
+                    <span>Powered by Cloud & AI</span>
+                </div>
+                <h1 class="hero-title">
+                    Transform <span class="gradient-text">Scripts</span> into 
+                    <span class="gradient-text">Cinematic Films</span> with AI
+                </h1>
+                <p class="hero-description">
+                    Enterprise-grade cloud platform that converts text scripts into stunning 30-90 second films 
+                    using AI-powered image/video generation and intelligent composition. Built on AWS with DevOps best practices.
+                </p>
+                <div class="hero-cta">
+                    <a href="#" class="btn-large btn-primary">Start Creating Free</a>
+                    <a href="#how-it-works" class="btn-large btn-outline">Watch Demo</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">10,000+</div>
+                        <div class="stat-label">Users Supported</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50,000+</div>
+                        <div class="stat-label">Films Generated</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Uptime SLA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Powerful Features for Modern Creators</h2>
+                <p class="section-description">
+                    Everything you need to create professional AI-generated films at scale
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">End-to-End Automation</h3>
+                    <p class="feature-description">
+                        Complete pipeline from script to final video: Scene Graph → Shot Generation → Video Composition
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">GPU-Accelerated AI</h3>
+                    <p class="feature-description">
+                        High-quality visual generation using SDXL and custom models on powerful GPU infrastructure
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3 class="feature-title">Scalable Cloud Architecture</h3>
+                    <p class="feature-description">
+                        AWS-based infrastructure supporting 10,000+ concurrent users with auto-scaling capabilities
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Enterprise Security</h3>
+                    <p class="feature-description">
+                        Production-ready with encryption at rest/transit, IAM policies, and security hardening
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Advanced Monitoring</h3>
+                    <p class="feature-description">
+                        CloudWatch integration with real-time metrics, alerting, and distributed tracing
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3 class="feature-title">CI/CD Pipeline</h3>
+                    <p class="feature-description">
+                        Automated deployment with blue-green strategies, rollback capabilities, and GitHub Actions
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-description">
+                    From script to screen in four simple steps
+                </p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Write Your Script</h3>
+                        <p class="step-description">
+                            Input your story or script through our intuitive interface. 
+                            Our AI analyzes the narrative structure and breaks it into scenes.
+                        </p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3 class="step-title">AI Scene Generation</h3>
+                        <p class="step-description">
+                            Advanced AI models generate high-quality images and video clips 
+                            for each scene using Stable Diffusion XL and custom models.
+                        </p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Intelligent Composition</h3>
+                        <p class="step-description">
+                            FFmpeg-powered video composition stitches scenes together with 
+                            transitions, effects, and audio for a cinematic experience.
+                        </p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">04</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Download & Share</h3>
+                        <p class="step-description">
+                            Preview your film, make adjustments, and download in high quality. 
+                            Share directly to social media platforms.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Stack Section -->
+    <section id="technology" class="technology">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Built with Enterprise-Grade Technology</h2>
+                <p class="section-description">
+                    Production-ready stack leveraging the best cloud and AI technologies
+                </p>
+            </div>
+            <div class="tech-categories">
+                <div class="tech-category">
+                    <h3 class="tech-category-title">Cloud & Infrastructure</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">AWS</span>
+                        <span class="tech-badge">Terraform</span>
+                        <span class="tech-badge">Kubernetes</span>
+                        <span class="tech-badge">Docker</span>
+                        <span class="tech-badge">ECS/EKS</span>
+                    </div>
+                </div>
+                <div class="tech-category">
+                    <h3 class="tech-category-title">Backend & API</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Python 3.11+</span>
+                        <span class="tech-badge">FastAPI</span>
+                        <span class="tech-badge">SQLAlchemy</span>
+                        <span class="tech-badge">PostgreSQL</span>
+                        <span class="tech-badge">Redis</span>
+                    </div>
+                </div>
+                <div class="tech-category">
+                    <h3 class="tech-category-title">AI & ML Pipeline</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Stable Diffusion XL</span>
+                        <span class="tech-badge">PyTorch</span>
+                        <span class="tech-badge">Transformers</span>
+                        <span class="tech-badge">FFmpeg</span>
+                        <span class="tech-badge">OpenCV</span>
+                    </div>
+                </div>
+                <div class="tech-category">
+                    <h3 class="tech-category-title">DevOps & Monitoring</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">GitHub Actions</span>
+                        <span class="tech-badge">CloudWatch</span>
+                        <span class="tech-badge">Prometheus</span>
+                        <span class="tech-badge">Grafana</span>
+                        <span class="tech-badge">X-Ray</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="architecture">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Scalable Architecture</h2>
+                <p class="section-description">
+                    High-availability, multi-region deployment with auto-scaling
+                </p>
+            </div>
+            <div class="architecture-diagram">
+                <div class="arch-layer">
+                    <div class="arch-component">
+                        <div class="arch-icon">🌐</div>
+                        <h4>CloudFront CDN</h4>
+                        <p>Global content delivery</p>
+                    </div>
+                    <div class="arch-component">
+                        <div class="arch-icon">⚖️</div>
+                        <h4>Load Balancer</h4>
+                        <p>Traffic distribution</p>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-component">
+                        <div class="arch-icon">🐳</div>
+                        <h4>ECS/EKS Cluster</h4>
+                        <p>Container orchestration</p>
+                    </div>
+                    <div class="arch-component">
+                        <div class="arch-icon">🔥</div>
+                        <h4>GPU Workers</h4>
+                        <p>AI generation</p>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-component">
+                        <div class="arch-icon">💾</div>
+                        <h4>RDS PostgreSQL</h4>
+                        <p>Multi-AZ database</p>
+                    </div>
+                    <div class="arch-component">
+                        <div class="arch-icon">📦</div>
+                        <h4>S3 Storage</h4>
+                        <p>Asset storage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Simple, Transparent Pricing</h2>
+                <p class="section-description">
+                    Choose the plan that fits your creative needs
+                </p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-plan">Starter</h3>
+                        <div class="pricing-price">
+                            <span class="price-currency">$</span>
+                            <span class="price-amount">0</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ 10 films per month</li>
+                        <li>✓ 720p quality</li>
+                        <li>✓ 30-second films</li>
+                        <li>✓ Community support</li>
+                        <li>✓ Basic templates</li>
+                    </ul>
+                    <a href="#" class="btn-pricing">Get Started</a>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-plan">Professional</h3>
+                        <div class="pricing-price">
+                            <span class="price-currency">$</span>
+                            <span class="price-amount">49</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ 100 films per month</li>
+                        <li>✓ 1080p quality</li>
+                        <li>✓ 90-second films</li>
+                        <li>✓ Priority support</li>
+                        <li>✓ Advanced templates</li>
+                        <li>✓ Custom branding</li>
+                        <li>✓ API access</li>
+                    </ul>
+                    <a href="#" class="btn-pricing">Start Free Trial</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-plan">Enterprise</h3>
+                        <div class="pricing-price">
+                            <span class="price-amount-text">Custom</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ Unlimited films</li>
+                        <li>✓ 4K quality</li>
+                        <li>✓ Custom duration</li>
+                        <li>✓ Dedicated support</li>
+                        <li>✓ Custom models</li>
+                        <li>✓ SLA guarantee</li>
+                        <li>✓ On-premise option</li>
+                        <li>✓ White-label solution</li>
+                    </ul>
+                    <a href="#" class="btn-pricing">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Create Your First AI Film?</h2>
+                <p class="cta-description">
+                    Join thousands of creators, filmmakers, and content producers using AI Film Studio
+                </p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn-large btn-primary">Start Creating for Free</a>
+                    <a href="#" class="btn-large btn-outline">Schedule a Demo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🎬</span>
+                        <span class="logo-text">AI Film Studio</span>
+                    </div>
+                    <p class="footer-description">
+                        Transform scripts into cinematic films with enterprise-grade AI technology.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">GitHub</a>
+                        <a href="#" class="social-link">Twitter</a>
+                        <a href="#" class="social-link">LinkedIn</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#technology">Technology</a></li>
+                        <li><a href="/api/v1/health">API Docs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 AI Film Studio by AI-Empower-HQ-360. All rights reserved.</p>
+                <p class="footer-badges">
+                    <span class="badge">AWS</span>
+                    <span class="badge">Terraform</span>
+                    <span class="badge">Kubernetes</span>
+                    <span class="badge">FastAPI</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

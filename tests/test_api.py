@@ -6,10 +6,11 @@ from src.api.main import app
 client = TestClient(app)
 
 def test_root():
-    """Test root endpoint"""
+    """Test root endpoint returns HTML homepage"""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json()["status"] == "healthy"
+    assert "text/html" in response.headers["content-type"]
+    assert b"AI Film Studio" in response.content
 
 def test_health_check():
     """Test health check endpoint"""
