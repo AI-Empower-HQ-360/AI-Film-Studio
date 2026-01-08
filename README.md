@@ -21,6 +21,8 @@ v# 🎬 AI Film Studio — End-to-End SDLC (AWS + DevOps + Cloud + AI)
 - [Environments](#environments)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Contributing](#contributing)
+- [Automation & Tooling](#-automation--tooling)
+- [Acknowledgments](#-acknowledgments)
 - [License](#license)
 
 ---
@@ -326,6 +328,88 @@ This project follows a multi-environment branch strategy for safe CI/CD deployme
 ## 🤝 Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+### **Adding Collaborators**
+
+To invite developers or team members to collaborate on this project:
+
+1. **Navigate to Settings**: Go to your repository's **Settings** tab
+2. **Access Collaborators**: Click on **Collaborators and teams** in the left sidebar
+3. **Add People**: Click **Add people** and enter the GitHub username or email of the person you want to invite
+4. **Set Permissions**: Choose the appropriate permission level:
+   - **Read**: Can view and clone the repository
+   - **Triage**: Can manage issues and pull requests
+   - **Write**: Can push to the repository
+   - **Maintain**: Can manage the repository without access to sensitive actions
+   - **Admin**: Full access to the repository
+5. **Send Invitation**: The collaborator will receive an email invitation to join
+
+For organization-owned repositories, you can also create teams with specific access levels.
+
+---
+
+## 🤖 Automation & Tooling
+
+This project leverages various automation tools to streamline development and maintain code quality:
+
+### **GitHub Actions**
+
+GitHub Actions workflows are set up for continuous integration and deployment:
+
+- **Deployment Pipeline**: Automatically builds and deploys the Next.js frontend to GitHub Pages on push to `main`
+- **CI/CD Workflows**: Additional workflows can be configured for backend testing, worker validation, and infrastructure deployment
+
+To add new workflows:
+1. Create a `.yml` file in `.github/workflows/`
+2. Define triggers, jobs, and steps following [GitHub Actions documentation](https://docs.github.com/en/actions)
+
+### **Recommended Bots & Automation**
+
+Consider setting up these automated tools to enhance your workflow:
+
+| Bot/Tool | Purpose | Setup |
+|----------|---------|-------|
+| **Dependabot** | Automated dependency updates | Add `dependabot.yml` to `.github/` |
+| **CodeQL** | Security vulnerability scanning | Enable in repository security settings |
+| **Stale Bot** | Auto-close inactive issues/PRs | Add `stale.yml` workflow |
+| **Semantic Release** | Automated versioning and changelog | Configure in CI pipeline |
+| **Pre-commit Hooks** | Code quality checks before commits | Add `.pre-commit-config.yaml` |
+| **Branch Protection** | Require reviews and status checks | Configure in repository settings |
+
+### **Setting Up Dependabot**
+
+To enable automated dependency updates, create `.github/dependabot.yml`:
+
+```yaml
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+```
+
+---
+
+## 🙏 Acknowledgments
+
+This project was developed with assistance from **GitHub Copilot**, an AI-powered coding assistant that helped accelerate development through intelligent code suggestions, documentation generation, and problem-solving support.
+
+We acknowledge the following tools and technologies that made this project possible:
+
+- **GitHub Copilot** — AI pair programming assistant
+- **OpenAI** — AI research and technology
+- **AWS** — Cloud infrastructure
+- **HashiCorp Terraform** — Infrastructure as Code
+- **The Open Source Community** — For the amazing frameworks and libraries used in this project
 
 ---
 
