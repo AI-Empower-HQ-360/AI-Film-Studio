@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Film Studio - Turn Your Script into Cinematic Films</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">🎬 AI Film Studio</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/pricing">Pricing</a></li>
+                <li><a href="/login" class="btn btn-primary">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Turn Your Script into a Cinematic Film</h1>
+                <p>AI-powered film generation in minutes. From script to stunning video.</p>
+                <div class="flex-center gap-2">
+                    <a href="/create" class="btn btn-primary">Create a Film</a>
+                    <a href="#demo" class="btn btn-secondary">Watch Demo</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo" style="padding: 4rem 0;">
+            <div class="container">
+                <h2 class="text-center mb-3" style="font-size: 2rem;">See What's Possible</h2>
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="video-container">
+                            <video controls poster="/static/images/demo1-poster.jpg">
+                                <source src="/static/videos/demo1.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <h3 class="mt-2">Cinematic Style</h3>
+                        <p class="text-muted">Hollywood-quality visuals with dramatic lighting</p>
+                    </div>
+                    <div class="card">
+                        <div class="video-container">
+                            <video controls poster="/static/images/demo2-poster.jpg">
+                                <source src="/static/videos/demo2.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <h3 class="mt-2">Anime Style</h3>
+                        <p class="text-muted">Vibrant anime-inspired animations</p>
+                    </div>
+                    <div class="card">
+                        <div class="video-container">
+                            <video controls poster="/static/images/demo3-poster.jpg">
+                                <source src="/static/videos/demo3.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <h3 class="mt-2">Noir Style</h3>
+                        <p class="text-muted">Classic black and white film noir aesthetic</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 4rem 0; background: rgba(31, 41, 55, 0.3);">
+            <div class="container">
+                <h2 class="text-center mb-3" style="font-size: 2rem;">How It Works</h2>
+                <div class="grid grid-3">
+                    <div class="card text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                        <h3>1. Write Your Script</h3>
+                        <p class="text-muted">Enter your story and choose a visual style</p>
+                    </div>
+                    <div class="card text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">⚙️</div>
+                        <h3>2. AI Generates</h3>
+                        <p class="text-muted">Our AI creates scenes, shots, and assembles your film</p>
+                    </div>
+                    <div class="card text-center">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎥</div>
+                        <h3>3. Download & Share</h3>
+                        <p class="text-muted">Get your finished MP4 ready to share</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 4rem 0;">
+            <div class="container">
+                <h2 class="text-center mb-3" style="font-size: 2rem;">Pricing</h2>
+                <div class="grid grid-3">
+                    <div class="card text-center">
+                        <h3>Starter</h3>
+                        <div style="font-size: 2.5rem; margin: 1rem 0; font-weight: bold;">$9</div>
+                        <p class="text-muted">per month</p>
+                        <ul style="list-style: none; margin: 2rem 0; text-align: left;">
+                            <li class="mb-1">✓ 10 films per month</li>
+                            <li class="mb-1">✓ Up to 60 seconds</li>
+                            <li class="mb-1">✓ All styles</li>
+                            <li class="mb-1">✓ HD quality</li>
+                        </ul>
+                        <a href="/signup" class="btn btn-secondary" style="width: 100%;">Get Started</a>
+                    </div>
+                    <div class="card text-center" style="border: 2px solid var(--primary-color);">
+                        <div style="background: var(--primary-color); color: white; padding: 0.5rem; margin: -1.5rem -1.5rem 1rem; border-radius: 0.75rem 0.75rem 0 0;">
+                            POPULAR
+                        </div>
+                        <h3>Pro</h3>
+                        <div style="font-size: 2.5rem; margin: 1rem 0; font-weight: bold;">$29</div>
+                        <p class="text-muted">per month</p>
+                        <ul style="list-style: none; margin: 2rem 0; text-align: left;">
+                            <li class="mb-1">✓ 50 films per month</li>
+                            <li class="mb-1">✓ Up to 120 seconds</li>
+                            <li class="mb-1">✓ All styles</li>
+                            <li class="mb-1">✓ 4K quality</li>
+                            <li class="mb-1">✓ Priority processing</li>
+                        </ul>
+                        <a href="/signup" class="btn btn-primary" style="width: 100%;">Get Started</a>
+                    </div>
+                    <div class="card text-center">
+                        <h3>Enterprise</h3>
+                        <div style="font-size: 2.5rem; margin: 1rem 0; font-weight: bold;">Custom</div>
+                        <p class="text-muted">contact us</p>
+                        <ul style="list-style: none; margin: 2rem 0; text-align: left;">
+                            <li class="mb-1">✓ Unlimited films</li>
+                            <li class="mb-1">✓ Custom duration</li>
+                            <li class="mb-1">✓ Custom styles</li>
+                            <li class="mb-1">✓ 8K quality</li>
+                            <li class="mb-1">✓ Dedicated support</li>
+                            <li class="mb-1">✓ API access</li>
+                        </ul>
+                        <a href="/contact" class="btn btn-secondary" style="width: 100%;">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 4rem 0; text-align: center;">
+            <div class="container">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Ready to Create Your Film?</h2>
+                <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Join thousands of creators bringing their stories to life with AI
+                </p>
+                <a href="/create" class="btn btn-primary" style="font-size: 1.25rem; padding: 1rem 2rem;">
+                    Start Creating Now
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background: var(--darker-bg); padding: 2rem 0; margin-top: 4rem; border-top: 1px solid var(--border-color);">
+        <div class="container text-center">
+            <p class="text-muted">&copy; 2025 AI Film Studio. All rights reserved.</p>
+            <div class="mt-2">
+                <a href="/terms" style="color: var(--text-muted); margin: 0 1rem;">Terms</a>
+                <a href="/privacy" style="color: var(--text-muted); margin: 0 1rem;">Privacy</a>
+                <a href="/contact" style="color: var(--text-muted); margin: 0 1rem;">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
