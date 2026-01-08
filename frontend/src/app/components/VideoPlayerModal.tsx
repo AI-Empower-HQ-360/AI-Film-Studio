@@ -15,6 +15,7 @@ export default function VideoPlayerModal({ project, onClose, onDownload, onShare
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
@@ -22,7 +23,7 @@ export default function VideoPlayerModal({ project, onClose, onDownload, onShare
   // Track fullscreen state
   useEffect(() => {
     const handleFullscreenChange = () => {
-      // Fullscreen state is managed by the browser
+      setIsFullscreen(!!document.fullscreenElement);
     };
     
     document.addEventListener('fullscreenchange', handleFullscreenChange);
@@ -306,7 +307,7 @@ export default function VideoPlayerModal({ project, onClose, onDownload, onShare
                   onClick={toggleFullscreen}
                   className="text-white hover:text-sky-400 transition-colors text-xl"
                 >
-                  ⛶
+                  {isFullscreen ? '⮾' : '⛶'}
                 </button>
               </div>
             </div>
