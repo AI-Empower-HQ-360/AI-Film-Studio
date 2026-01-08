@@ -17,6 +17,7 @@ v# 🎬 AI Film Studio — End-to-End SDLC (AWS + DevOps + Cloud + AI)
 - [SDLC Phases](#sdlc-phases)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
+- [Documentation](#documentation)
 - [Getting Started](#getting-started)
 - [Environments](#environments)
 - [CI/CD Pipeline](#cicd-pipeline)
@@ -176,30 +177,120 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 
 ```
 ai-film-studio/
-├── docs/                          # Documentation
-│   ├── requirements/              # BRD, FRD, NFR
-│   ├── architecture/              # System design, diagrams
-│   └── operations/                # Runbooks, incident response
-├── infrastructure/                # Infrastructure as Code
-│   ├── terraform/                 # Terraform modules
-│   │   ├── environments/          # Dev, Test, Prod configs
-│   │   └── modules/               # Reusable modules
-│   └── kubernetes/                # K8s manifests and Helm charts
-├── backend/                       # FastAPI backend
+├── frontend/                      # React + Next.js web application
+│   ├── public/                    # Static assets
 │   ├── src/                       # Source code
-│   ├── tests/                     # Unit and integration tests
-│   └── Dockerfile                 # Container image
-├── worker/                        # GPU worker
-│   ├── src/                       # AI pipeline code
-│   ├── tests/                     # Worker tests
-│   └── Dockerfile                 # Container image
-├── frontend/                      # Next.js frontend
-│   ├── src/                       # React components
-│   └── package.json               # Dependencies
-├── .github/                       # GitHub Actions workflows
-│   └── workflows/                 # CI/CD pipelines
-└── scripts/                       # Utility scripts
+│   │   ├── components/            # React components
+│   │   ├── pages/                 # Next.js pages
+│   │   ├── hooks/                 # Custom hooks
+│   │   ├── services/              # API calls
+│   │   └── styles/                # CSS/Tailwind
+│   └── README.md
+├── backend/                       # FastAPI microservices
+│   ├── services/                  # Microservices
+│   │   ├── user-service/          # Auth & user management
+│   │   ├── project-service/       # Project CRUD
+│   │   ├── credit-service/        # Billing & subscriptions
+│   │   ├── ai-job-service/        # Job queue management
+│   │   ├── youtube-service/       # YouTube integration
+│   │   └── admin-service/         # Admin panel
+│   ├── common/                    # Shared utilities
+│   ├── queue/                     # Job queue definitions
+│   └── README.md
+├── ai/                            # AI/ML models & pipelines
+│   ├── script-analysis/           # NLP & scene analysis
+│   ├── image-generation/          # SDXL image generation
+│   ├── voice-synthesis/           # TTS & voice cloning
+│   ├── lip-sync-animation/        # Facial animation
+│   ├── music-poems/               # Music & sloka generation
+│   ├── subtitles/                 # Multi-language subtitles
+│   └── README.md
+├── cloud-infra/                   # Infrastructure as Code
+│   ├── terraform/                 # Terraform configs
+│   ├── k8s/                       # Kubernetes manifests
+│   ├── monitoring/                # CloudWatch, Prometheus
+│   └── README.md
+├── salesforce/                    # Salesforce integration
+│   ├── objects/                   # Custom objects
+│   ├── flows/                     # Automation flows
+│   ├── apex/                      # Apex classes
+│   └── README.md
+├── media/                         # Temporary storage
+│   ├── images/                    # User uploads
+│   ├── videos/                    # Generated videos
+│   └── subtitles/                 # Subtitle files
+├── docs/                          # Comprehensive documentation
+│   ├── architecture/              # Architecture diagrams
+│   │   ├── complete-visual-architecture.md  # ⭐ NEW
+│   │   ├── frontend-tech-stack.md           # ⭐ NEW
+│   │   ├── complete-tech-stack.md           # ⭐ NEW
+│   │   ├── file-structure.md                # ⭐ NEW
+│   │   └── system-design.md
+│   ├── requirements/              # FRD, NFR
+│   └── README.md                  # Documentation index
+├── scripts/                       # Utility scripts
+├── tests/                         # Integration tests
+└── .github/                       # CI/CD workflows
 ```
+
+📖 **[View Complete File Structure Documentation](docs/architecture/file-structure.md)**
+
+---
+
+## 📚 Documentation
+
+Comprehensive documentation is available to help you understand, deploy, and maintain AI Film Studio.
+
+### 📖 Quick Links
+
+#### Architecture & Design
+- **[Complete Visual Architecture](docs/architecture/complete-visual-architecture.md)** ⭐
+  - Comprehensive diagram combining Frontend + Backend + AI + Cloud + Storage + Environments
+  - All interactions and workflows visualized
+  - Data flow scenarios
+  
+- **[Frontend Tech Stack](docs/architecture/frontend-tech-stack.md)** ⭐
+  - React 18+ + Next.js 14 stack
+  - TailwindCSS, Material UI, Framer Motion
+  - Redux, React Query, i18next
+  - Complete package.json and setup guide
+
+- **[Complete Tech Stack](docs/architecture/complete-tech-stack.md)** ⭐
+  - 100+ technologies documented
+  - Frontend, Backend, AI/ML, Cloud, CI/CD
+  - Version requirements and decision matrix
+  
+- **[File Structure Documentation](docs/architecture/file-structure.md)** ⭐
+  - Complete directory tree
+  - Configuration files
+  - Best practices and conventions
+
+- **[System Design](docs/architecture/system-design.md)**
+  - High-level architecture
+  - Component specifications
+  - Network architecture
+  - Security and scaling strategies
+  - Cost breakdown
+
+#### Requirements
+- **[Functional Requirements (FRD)](docs/requirements/FRD.md)**
+  - User roles and capabilities
+  - Feature specifications
+  - Acceptance criteria
+
+- **[Non-Functional Requirements (NFR)](docs/requirements/NFR.md)**
+  - Performance, scalability, security
+  - Reliability and usability
+
+#### Component Documentation
+- **[Frontend README](frontend/README.md)** - React/Next.js setup and architecture
+- **[Backend README](backend/README.md)** - FastAPI microservices documentation
+- **[AI/ML README](ai/README.md)** - AI models and processing pipelines
+- **[Cloud Infrastructure README](cloud-infra/README.md)** - Terraform and Kubernetes
+- **[Salesforce README](salesforce/README.md)** - CRM integration
+
+#### Full Documentation Index
+📚 **[View Complete Documentation Index](docs/README.md)**
 
 ---
 
