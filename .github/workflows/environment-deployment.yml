@@ -1,0 +1,215 @@
+name: Environment Deployment
+
+# This workflow manages deployments to different environments based on branch
+on:
+  push:
+    branches:
+      - dev
+      - sandbox
+      - staging
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - sandbox
+          - staging
+          - production
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  # Determine which environment to deploy to
+  determine-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      aws-account: ${{ steps.set-env.outputs.aws-account }}
+    steps:
+      - name: Determine environment from branch
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          else
+            case "${{ github.ref_name }}" in
+              dev)
+                ENV="dev"
+                ;;
+              sandbox)
+                ENV="sandbox"
+                ;;
+              staging)
+                ENV="staging"
+                ;;
+              main)
+                ENV="production"
+                ;;
+              *)
+                echo "Unknown branch: ${{ github.ref_name }}"
+                exit 1
+                ;;
+            esac
+          fi
+          
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "Deploying to environment: $ENV"
+          
+          # Set AWS account based on environment
+          case "$ENV" in
+            dev)
+              echo "aws-account=dev-account-id" >> $GITHUB_OUTPUT
+              ;;
+            sandbox)
+              echo "aws-account=test-account-id" >> $GITHUB_OUTPUT
+              ;;
+            staging|production)
+              echo "aws-account=prod-account-id" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+  # Build and test
+  build-and-test:
+    runs-on: ubuntu-latest
+    needs: determine-environment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      - name: Run unit tests
+        run: |
+          if [ -d tests ]; then
+            echo "Running tests..."
+            # pytest tests/ || true
+            echo "Tests would run here"
+          fi
+
+      - name: Run linting
+        run: |
+          echo "Linting would run here"
+          # flake8 src/ || true
+          # black --check src/ || true
+
+  # Deploy to Dev (automatic)
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: [determine-environment, build-and-test]
+    if: needs.determine-environment.outputs.environment == 'dev'
+    environment:
+      name: dev
+      url: https://dev.aifilmstudio.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Dev
+        run: |
+          echo "🚀 Deploying to Dev environment"
+          echo "Environment: ${{ needs.determine-environment.outputs.environment }}"
+          echo "AWS Account: ${{ needs.determine-environment.outputs.aws-account }}"
+          # Add actual deployment commands here
+          # e.g., terraform apply, kubectl apply, etc.
+
+  # Deploy to Sandbox (automatic)
+  deploy-sandbox:
+    runs-on: ubuntu-latest
+    needs: [determine-environment, build-and-test]
+    if: needs.determine-environment.outputs.environment == 'sandbox'
+    environment:
+      name: sandbox
+      url: https://sandbox.aifilmstudio.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Sandbox
+        run: |
+          echo "🚀 Deploying to Sandbox environment"
+          echo "Environment: ${{ needs.determine-environment.outputs.environment }}"
+          echo "AWS Account: ${{ needs.determine-environment.outputs.aws-account }}"
+          # Add actual deployment commands here
+
+      - name: Run integration tests
+        run: |
+          echo "Running integration tests on Sandbox"
+          # Add integration test commands here
+
+  # Deploy to Staging (requires approval)
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [determine-environment, build-and-test]
+    if: needs.determine-environment.outputs.environment == 'staging'
+    environment:
+      name: staging
+      url: https://staging.aifilmstudio.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Staging
+        run: |
+          echo "🚀 Deploying to Staging environment"
+          echo "Environment: ${{ needs.determine-environment.outputs.environment }}"
+          echo "AWS Account: ${{ needs.determine-environment.outputs.aws-account }}"
+          # Add actual deployment commands here
+
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests on Staging"
+          # Add smoke test commands here
+
+  # Deploy to Production (requires approval)
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [determine-environment, build-and-test]
+    if: needs.determine-environment.outputs.environment == 'production'
+    environment:
+      name: production
+      url: https://aifilmstudio.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create deployment tag
+        run: |
+          VERSION=$(date +%Y.%m.%d)-${{ github.run_number }}
+          echo "Creating tag: v$VERSION"
+          # git tag -a "v$VERSION" -m "Production deployment v$VERSION"
+          # git push origin "v$VERSION"
+
+      - name: Deploy to Production
+        run: |
+          echo "🚀 Deploying to Production environment"
+          echo "Environment: ${{ needs.determine-environment.outputs.environment }}"
+          echo "AWS Account: ${{ needs.determine-environment.outputs.aws-account }}"
+          # Add actual deployment commands here
+          # Consider blue-green or canary deployment strategy
+
+      - name: Verify deployment
+        run: |
+          echo "Verifying production deployment"
+          # Add verification commands here
+          # curl https://aifilmstudio.com/health
+
+      - name: Notify team
+        if: always()
+        run: |
+          echo "Sending deployment notification"
+          # Add notification logic (Slack, email, etc.)

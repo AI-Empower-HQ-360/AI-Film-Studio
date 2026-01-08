@@ -278,12 +278,25 @@ terraform apply tfplan
 
 ## 🌍 Environments
 
-| Environment | Purpose | Infrastructure |
-|-------------|---------|---------------|
-| **Dev** | Rapid development and testing | Small instances, single AZ |
-| **Test/QA** | Integration and performance testing | Mirrors prod, scaled down |
-| **Staging** | Pre-production validation | Prod-like, blue-green ready |
-| **Production** | Live user traffic | Multi-AZ, auto-scaling, HA |
+| Environment | Branch | Purpose | Infrastructure |
+|-------------|--------|---------|---------------|
+| **Dev** | `dev` | Rapid development and testing | Small instances, single AZ |
+| **Sandbox** | `sandbox` | Integration and QA testing | Mirrors prod, scaled down |
+| **Staging** | `staging` | Pre-production validation | Prod-like, blue-green ready |
+| **Production** | `main` | Live user traffic | Multi-AZ, auto-scaling, HA |
+
+### Branch Strategy
+
+This project follows a multi-environment branch strategy for safe CI/CD deployments:
+
+- **`dev`** → Development environment (automatic deployment)
+- **`sandbox`** → Testing/QA environment (automatic deployment, QA approval required)
+- **`staging`** → Pre-production environment (manual deployment with approval)
+- **`main`** → Production environment (manual deployment with multiple approvals)
+
+📂 See: [`docs/BRANCHING_STRATEGY.md`](./docs/BRANCHING_STRATEGY.md) for complete workflow details.
+
+📂 Environment-specific documentation: [`docs/environments/`](./docs/environments/)
 
 ---
 
