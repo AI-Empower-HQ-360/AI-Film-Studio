@@ -205,11 +205,16 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 📖 **[View Complete AI/ML Tech Stack Documentation](./docs/ai-ml-stack.md)**
 
 ### **Frontend**
-- **Next.js 14**: React framework
+- **Next.js 14**: React framework with SSR
+- **React 18**: Component-based UI
 - **TypeScript**: Type-safe development
-- **Tailwind CSS**: Styling
-- **Axios**: API client
-- **React Query**: Data fetching
+- **Tailwind CSS + Material UI/Chakra UI**: Styling and components
+- **Redux/Zustand**: State management
+- **React Hook Form**: Form handling
+- **Video.js**: Video playback
+- **i18next**: Internationalization
+
+📂 See detailed breakdown: [`docs/architecture/frontend-tech-stack.md`](./docs/architecture/frontend-tech-stack.md)
 
 ### **DevOps**
 - **GitHub Actions**: CI/CD
