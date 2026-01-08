@@ -19,6 +19,7 @@
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
+  - [Environment Setup Master Checklist](./docs/ENVIRONMENT_SETUP_CHECKLIST.md)
 - [Environments](#environments)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Contributing](#contributing)
@@ -261,6 +262,8 @@ ai-film-studio/
 ---
 
 ## 🚀 Getting Started
+
+> 📘 **New to the project?** Check out our comprehensive [**Environment Setup Master Checklist**](./docs/ENVIRONMENT_SETUP_CHECKLIST.md) for detailed setup instructions across Dev, Sandbox, Staging, and Production environments.
 
 ### **Prerequisites**
 
