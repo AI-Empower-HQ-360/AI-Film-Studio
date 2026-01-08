@@ -2,11 +2,14 @@
 
 **A production-ready case study demonstrating enterprise-grade cloud architecture, DevOps practices, and AI-powered film generation**
 
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/AI-Empower-HQ-360/AI-Film-Studio/releases)
 [![AWS](https://img.shields.io/badge/AWS-Cloud-orange?logo=amazon-aws)](https://aws.amazon.com)
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-623CE4?logo=terraform)](https://terraform.io)
 [![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5?logo=kubernetes)](https://kubernetes.io)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js-000000?logo=next.js)](https://nextjs.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
@@ -21,6 +24,7 @@
 - [Getting Started](#getting-started)
 - [Environments](#environments)
 - [CI/CD Pipeline](#cicd-pipeline)
+- [Versioning and Releases](#versioning-and-releases)
 - [Contributing](#contributing)
 - [Automation & Tooling](#-automation--tooling)
 - [Acknowledgments](#-acknowledgments)
@@ -367,6 +371,53 @@ This project follows a multi-environment branch strategy for safe CI/CD deployme
 - `.github/workflows/worker-ci-cd.yml` — Worker deployment
 - `.github/workflows/frontend-ci-cd.yml` — Frontend deployment
 - `.github/workflows/terraform-deploy.yml` — Infrastructure deployment
+
+---
+
+## 🏷️ Versioning and Releases
+
+This project follows [Semantic Versioning](https://semver.org/) (SemVer): `MAJOR.MINOR.PATCH`
+
+### **Current Version**: `v0.1.0`
+
+### **Version Tags**
+
+We use Git tags to mark releases:
+- **Release tags**: `v0.1.0`, `v1.0.0`, etc.
+- **Pre-release tags**: `v1.0.0-alpha.1`, `v1.0.0-beta.1`, `v1.0.0-rc.1`
+
+### **Release Information**
+
+- **Latest Release**: [v0.1.0](https://github.com/AI-Empower-HQ-360/AI-Film-Studio/releases/tag/v0.1.0)
+- **Changelog**: See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes
+- **Version History**: View all releases on [GitHub Releases](https://github.com/AI-Empower-HQ-360/AI-Film-Studio/releases)
+
+### **Tagging Strategy**
+
+This project uses comprehensive tagging for:
+
+1. **Git Version Tags** - Semantic version tags for releases
+2. **Docker Image Tags** - Container versioning and deployment tracking
+3. **AWS Resource Tags** - Infrastructure resource organization and cost tracking
+4. **Python Package Tags** - Package metadata and classification
+5. **Module Tags** - Code organization and categorization
+
+For detailed information about our versioning and tagging practices, see:
+- [Versioning and Tagging Guide](./docs/development/VERSIONING_AND_TAGGING.md)
+- [Release Process Documentation](./docs/development/VERSIONING_AND_TAGGING.md#release-process)
+
+### **Quick Tag Reference**
+
+```bash
+# List all version tags
+git tag -l "v*"
+
+# Check current version
+cat VERSION
+
+# View latest release
+git describe --tags --abbrev=0
+```
 
 ---
 
