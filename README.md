@@ -21,6 +21,7 @@
 - [Getting Started](#getting-started)
 - [Environments](#environments)
 - [CI/CD Pipeline](#cicd-pipeline)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Automation & Tooling](#-automation--tooling)
 - [Acknowledgments](#-acknowledgments)
@@ -367,6 +368,76 @@ This project follows a multi-environment branch strategy for safe CI/CD deployme
 - `.github/workflows/worker-ci-cd.yml` — Worker deployment
 - `.github/workflows/frontend-ci-cd.yml` — Frontend deployment
 - `.github/workflows/terraform-deploy.yml` — Infrastructure deployment
+
+---
+
+## 📚 Documentation
+
+Comprehensive documentation is available to help you understand, develop, deploy, and invest in AI Film Studio.
+
+### **For Developers**
+
+📖 **[Complete Developer Guide](./docs/DEVELOPER_GUIDE.md)** — Your comprehensive resource for everything development-related:
+- Project overview and workflow
+- Complete tech stack breakdown (Frontend, Backend, AI/ML, Cloud, Salesforce, YouTube API)
+- Environment setup (Dev, Sandbox, Staging, Production)
+- Detailed file structure and architecture
+- API contracts with request/response examples
+- Database schema with ERD diagrams
+- AI pipelines (Script → Image → Voice → Lip-Sync → Music → Subtitles → Composition)
+- Cloud infrastructure details
+- Salesforce CRM integration
+- YouTube integration
+- Subscription & credit system
+- Testing & QA guidelines
+- Deployment & CI/CD procedures
+- MVP & roadmap
+
+🔌 **[API Reference](./docs/API_REFERENCE.md)** — Complete API documentation:
+- Authentication & API keys
+- All available endpoints
+- Request/response schemas
+- Rate limits
+- Error codes
+- Code examples (Python, JavaScript)
+- Webhooks
+
+### **For Investors**
+
+💼 **[Investor Presentation](./docs/INVESTOR_PRESENTATION.md)** — Comprehensive investment overview:
+- Executive summary & key highlights
+- Problem statement & market opportunity
+- Our solution & competitive advantages
+- Technology & architecture overview
+- Business model & revenue projections
+- Target market & go-to-market strategy
+- Team & hiring plan
+- Financial projections (3-year forecast)
+- Use of funds & investment terms
+- Roadmap & vision
+
+### **Technical Architecture**
+
+🏗️ **[System Design](./docs/architecture/system-design.md)** — Detailed architecture documentation:
+- High-level architecture diagrams
+- Component specifications
+- Network architecture & security
+- Data flow diagrams
+- Scaling strategies
+- Disaster recovery plan
+- Cost breakdown
+
+📋 **[Requirements](./docs/requirements/)** — Project requirements:
+- [Functional Requirements (FRD)](./docs/requirements/FRD.md)
+- [Non-Functional Requirements (NFR)](./docs/requirements/NFR.md)
+
+### **Quick Links**
+
+- **Getting Started**: See [Getting Started](#getting-started) section below
+- **Local Development**: [Developer Guide - Environment Setup](./docs/DEVELOPER_GUIDE.md#environment-setup)
+- **API Integration**: [API Reference](./docs/API_REFERENCE.md)
+- **Cloud Deployment**: [System Design - Infrastructure](./docs/architecture/system-design.md#cloud-infrastructure)
+- **Contributing**: [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ---
 
