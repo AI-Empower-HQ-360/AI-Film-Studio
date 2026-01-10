@@ -19,6 +19,7 @@
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
+- [Browser-Only GitHub Workflow](#browser-only-github-workflow)
 - [Environments](#environments)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Contributing](#contributing)
@@ -324,6 +325,12 @@ terraform plan -out=tfplan
 ```bash
 terraform apply tfplan
 ```
+
+---
+
+## 🌐 Browser-Only GitHub Workflow
+
+Develop, test, and deploy entirely from the browser with GitHub Codespaces + Copilot + Actions. Open a codespace (no local setup), let Copilot scaffold features, push to trigger CI, and deploy from GitHub Actions. See the detailed guide in [`docs/browser-only-workflow.md`](./docs/browser-only-workflow.md) and the automation in [`./.github/workflows/cloud-dev.yml`](./.github/workflows/cloud-dev.yml). Configure AWS and deployment secrets in **Settings → Secrets and variables → Actions** to enable CD/infra jobs.
 
 ---
 
