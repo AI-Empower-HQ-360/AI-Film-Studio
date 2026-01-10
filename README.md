@@ -25,6 +25,7 @@
 - [Automation & Tooling](#-automation--tooling)
 - [Acknowledgments](#-acknowledgments)
 - [License](#license)
+- [Contact](#contact)
 
 ---
 
@@ -464,6 +465,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ---
 
+<a id="contact"></a>
 ## 📞 Contact
 
 **Author**: AI-Empower-HQ-360  
