@@ -1,6 +1,9 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import type { FilmProject } from '../../types/project';
+import { useProject } from '@/hooks/useProject';
+import { useJob } from '@/hooks/useJob';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface FilmCreationWizardProps {
   onClose?: () => void;
@@ -12,8 +15,14 @@ interface FilmCreationWizardProps {
 export default function FilmCreationWizard({ onClose, onProjectCreate, initialScript, initialYoutubeUrl }: FilmCreationWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [youtubeReference, setYoutubeReference] = useState(initialYoutubeUrl || '');
+  
+  const { user } = useAuth();
+  const { createProject } = useProject();
+  const { status: jobStatus, submitJob } = useJob(jobId);
   
   const [projectData, setProjectData] = useState<Partial<FilmProject>>({
     title: '',
@@ -43,6 +52,19 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
       setYoutubeReference(initialYoutubeUrl);
     }
   }, [initialYoutubeUrl]);
+
+  // Update project status based on job status
+  useEffect(() => {
+    if (jobStatus) {
+      setProjectData(prev => ({
+        ...prev,
+        status: jobStatus.status === 'completed' ? 'completed' :
+                jobStatus.status === 'failed' ? 'failed' : 'processing',
+        videoUrl: jobStatus.result?.video_url,
+        thumbnailUrl: jobStatus.result?.thumbnail_url,
+      }));
+    }
+  }, [jobStatus]);
 
   const totalSteps = 4;
 
@@ -75,26 +97,35 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
   };
 
   const handleGenerateFilm = async () => {
+    if (!user) {
+      setError('Please login to create films');
+      return;
+    }
+
     setIsProcessing(true);
+    setError(null);
+    
     try {
-      // In a real app, this would call your API
-      const newProject: FilmProject = {
-        id: Date.now().toString(),
+      // Create project in database
+      const newProject = await createProject({
         title: projectData.title || 'Untitled Project',
         script: projectData.script || '',
         settings: projectData.settings!,
-        status: 'processing',
-        createdAt: new Date().toISOString(),
-        ...(youtubeReference && { metadata: { youtubeReference } }) // Include YouTube reference if present
-      };
+        metadata: youtubeReference ? { youtubeReference } : undefined,
+      });
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Submit job for AI processing
+      const newJobId = await submitJob(newProject.id);
+      setJobId(newJobId);
       
       onProjectCreate?.(newProject);
-      onClose?.();
-    } catch (error) {
-      console.error('Error generating film:', error);
+      
+      // Don't close wizard, show progress instead
+      // User can close manually or wait for completion
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create film';
+      setError(errorMessage);
+      console.error('Error generating film:', err);
     } finally {
       setIsProcessing(false);
     }
