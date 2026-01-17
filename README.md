@@ -126,6 +126,20 @@ graph TB
 | **Queue** | SQS | Asynchronous job processing |
 | **CDN** | CloudFront | Global content delivery |
 
+### **Color-Coded Visual Layout**
+
+For a comprehensive visual architecture guide with detailed layer specifications, flow diagrams, and implementation guidelines for Figma/Canva/Lucidchart, see:
+
+📊 **[Visual Layout Plan](./docs/architecture/visual-layout-plan.md)**
+
+This document includes:
+- 8-layer color-coded architecture (User, Frontend, Backend, Database, AI/ML, Cloud, Salesforce, YouTube)
+- Detailed component specifications for each layer
+- Flow diagrams and dependency mappings
+- Icon suggestions and color schemes
+- Mermaid diagrams for visualization
+- Implementation guidelines for design tools
+
 ---
 
 ## 📊 SDLC Phases
@@ -145,8 +159,10 @@ This project follows a complete **Software Development Life Cycle (SDLC)** with 
 - Cloud service selection
 - Network and security design
 - Environment strategy
+- Visual layout and color-coded architecture
 
-📂 See: [`docs/architecture/`](./docs/architecture/)
+📂 See: [`docs/architecture/`](./docs/architecture/)  
+📊 Visual Layout: [`docs/architecture/visual-layout-plan.md`](./docs/architecture/visual-layout-plan.md)
 
 ### **3️⃣ Development Phase**
 - Application development (Backend, Worker, Frontend)
