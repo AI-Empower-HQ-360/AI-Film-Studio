@@ -266,6 +266,17 @@ ai-film-studio/
 
 ## 🚀 Getting Started
 
+### **Quick Start**
+
+**New to AI Film Studio?** Follow our comprehensive setup guides:
+
+📚 **[Complete Setup Documentation →](./docs/setup/)**
+
+- 🚀 **[Quick Start Guide](./docs/setup/QUICK_START_GUIDE.md)** - Get running in 30 minutes
+- ✅ **[Environment Setup Checklist](./docs/setup/ENVIRONMENT_SETUP_MASTER_CHECKLIST.md)** - Complete infrastructure setup
+- 📁 **[File Structure Template](./docs/setup/FILE_STRUCTURE_TEMPLATE.md)** - Understand project organization
+- 🔐 **[Environment Variables Reference](./docs/setup/ENV_VARIABLES_REFERENCE.md)** - All configuration options
+
 ### **Prerequisites**
 
 - AWS Account with appropriate permissions
@@ -276,40 +287,29 @@ ai-film-studio/
 - kubectl (for EKS)
 - GitHub account for CI/CD
 
-### **Local Development Setup**
+### **Quick Local Development Setup**
 
-#### **1. Clone the repository**
+#### **1. Clone and configure**
 ```bash
 git clone https://github.com/AI-Empower-HQ-360/AI-Film-Studio.git
 cd AI-Film-Studio
+
+# Copy environment template
+cp .env.dev.template .env.dev
+# Edit .env.dev with your credentials
 ```
 
-#### **2. Set up backend**
+#### **2. Start services with Docker**
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env  # Configure your environment variables
-uvicorn src.main:app --reload
+docker-compose up -d
 ```
 
-#### **3. Set up worker**
-```bash
-cd worker
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python src/main.py
-```
+#### **3. Access the application**
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
+- API Docs: `http://localhost:8000/docs`
 
-#### **4. Set up frontend**
-```bash
-cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
-```
+For detailed setup instructions, see the **[Quick Start Guide](./docs/setup/QUICK_START_GUIDE.md)**
 
 ### **Infrastructure Deployment**
 
@@ -319,15 +319,13 @@ cd infrastructure/terraform/environments/dev
 terraform init
 ```
 
-#### **2. Plan infrastructure**
+#### **2. Plan and apply infrastructure**
 ```bash
 terraform plan -out=tfplan
-```
-
-#### **3. Apply infrastructure**
-```bash
 terraform apply tfplan
 ```
+
+For complete infrastructure setup across all environments, see the **[Environment Setup Checklist](./docs/setup/ENVIRONMENT_SETUP_MASTER_CHECKLIST.md)**
 
 ---
 
