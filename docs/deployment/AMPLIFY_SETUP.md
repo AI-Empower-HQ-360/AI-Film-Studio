@@ -47,17 +47,38 @@ Go to **App Settings → Environment variables** and add:
 
 #### Required Variables
 ```bash
+# Node Configuration
+NODE_VERSION=18
+
+# API Endpoints
 NEXT_PUBLIC_API_URL=https://api-prod.aifilmstudio.com
 NEXT_PUBLIC_WS_URL=wss://api-prod.aifilmstudio.com
 NEXT_PUBLIC_ENV=production
-NODE_VERSION=18
+
+# Feature Flags
+NEXT_PUBLIC_ENABLE_VIDEO_GENERATION=true
+NEXT_PUBLIC_ENABLE_VOICE_SYNTHESIS=true
+NEXT_PUBLIC_ENABLE_LIPSYNC=true
+NEXT_PUBLIC_ENABLE_MUSIC_GENERATION=true
+NEXT_PUBLIC_ENABLE_PODCAST_VIDEO=true
+NEXT_PUBLIC_ENABLE_SUBTITLE_GENERATION=true
 ```
 
 #### Optional Variables (for analytics, monitoring)
 ```bash
+# Analytics
 NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_MIXPANEL_TOKEN=your_mixpanel_token
+
+# Error Tracking
 NEXT_PUBLIC_ENABLE_SENTRY=true
-SENTRY_DSN=your_sentry_dsn_here
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_AUTH_TOKEN=your_sentry_auth_token
+
+# Feature Experiments
+NEXT_PUBLIC_ENABLE_BETA_FEATURES=false
+NEXT_PUBLIC_ENABLE_VOICE_CLONING=false
 ```
 
 ### Step 4: Deploy
@@ -93,11 +114,30 @@ Deploy different branches to separate environments:
 
 **Branch-Specific API URLs:**
 ```yaml
-# main branch
+# main branch (Production)
+NEXT_PUBLIC_ENV=production
 NEXT_PUBLIC_API_URL=https://api-prod.aifilmstudio.com
+NEXT_PUBLIC_WS_URL=wss://api-prod.aifilmstudio.com
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
 
-# staging branch
+# staging branch (Pre-production UAT)
+NEXT_PUBLIC_ENV=staging
 NEXT_PUBLIC_API_URL=https://api-staging.aifilmstudio.com
+NEXT_PUBLIC_WS_URL=wss://api-staging.aifilmstudio.com
+NEXT_PUBLIC_ENABLE_ANALYTICS=false
+
+# sandbox branch (QA/Integration Testing)
+NEXT_PUBLIC_ENV=sandbox
+NEXT_PUBLIC_API_URL=https://api-sandbox.aifilmstudio.com
+NEXT_PUBLIC_WS_URL=wss://api-sandbox.aifilmstudio.com
+NEXT_PUBLIC_ENABLE_ANALYTICS=false
+
+# dev branch (Active Development)
+NEXT_PUBLIC_ENV=development
+NEXT_PUBLIC_API_URL=https://api-dev.aifilmstudio.com
+NEXT_PUBLIC_WS_URL=wss://api-dev.aifilmstudio.com
+NEXT_PUBLIC_ENABLE_ANALYTICS=false
+```
 
 # sandbox branch
 NEXT_PUBLIC_API_URL=https://api-sandbox.aifilmstudio.com
