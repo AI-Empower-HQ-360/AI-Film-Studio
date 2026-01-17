@@ -1,0 +1,71 @@
+# GitHub Release Configuration
+# This file configures the changelog generator for GitHub releases
+# See: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - dependencies
+      - duplicate
+      - question
+      - invalid
+      - wontfix
+    authors:
+      - dependabot
+      - github-actions[bot]
+
+  categories:
+    - title: 🚀 New Features
+      labels:
+        - feature
+        - enhancement
+        - new-feature
+    
+    - title: 🐛 Bug Fixes
+      labels:
+        - bug
+        - bugfix
+        - fix
+    
+    - title: 📚 Documentation
+      labels:
+        - documentation
+        - docs
+    
+    - title: 🏗️ Infrastructure
+      labels:
+        - infrastructure
+        - terraform
+        - deployment
+        - devops
+    
+    - title: 🔒 Security
+      labels:
+        - security
+        - vulnerability
+    
+    - title: ⚡ Performance
+      labels:
+        - performance
+        - optimization
+    
+    - title: 🧪 Testing
+      labels:
+        - test
+        - testing
+    
+    - title: 🔧 Maintenance
+      labels:
+        - maintenance
+        - chore
+        - refactor
+    
+    - title: 🔄 Dependencies
+      labels:
+        - dependencies
+        - dependency-update
+    
+    - title: 📦 Other Changes
+      labels:
+        - "*"
