@@ -31,8 +31,12 @@ models/
 *. ckpt
 data/raw/
 data/processed/
+data/generated/
 *.h5
 *.pkl
+
+# Exception for src/models (data models)
+!src/models/
 
 # IDE
 .vscode/
