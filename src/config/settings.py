@@ -1,4 +1,5 @@
 """Configuration settings for AI Film Studio"""
+
 import os
 from pathlib import Path
 
