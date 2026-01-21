@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Renderer - AI Film Studio</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎬</span>
+                AI Film Studio
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/script.html">Script</a></li>
+                <li><a href="/scenes.html">Scenes</a></li>
+                <li><a href="/render.html">Render</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Render Content -->
+    <div class="container">
+        <div class="mt-4">
+            <h1 class="hero-title" style="font-size: 2.5rem; text-align: center;">Video Renderer</h1>
+            <p class="hero-subtitle" style="text-align: center;">
+                Render your film project into a high-quality video file
+            </p>
+        </div>
+
+        <div style="max-width: 900px; margin: 0 auto;">
+            <!-- Project Selection -->
+            <div class="card mt-4">
+                <h2 class="card-title">Select Project</h2>
+                <div class="form-group mt-3">
+                    <label class="form-label" for="project">Project Name</label>
+                    <select class="form-select" id="project" name="project">
+                        <option value="sci-fi">Sci-Fi Adventure</option>
+                        <option value="mystery">Mystery Thriller</option>
+                        <option value="romance">Romantic Comedy</option>
+                        <option value="action">Action Packed</option>
+                    </select>
+                </div>
+                <div class="project-meta mt-2">
+                    <span>🎬 12 Scenes</span>
+                    <span>⏱️ 45 minutes</span>
+                    <span>✅ 7 Scenes Complete</span>
+                </div>
+            </div>
+
+            <!-- Render Settings -->
+            <div class="card mt-4">
+                <h2 class="card-title">Render Settings</h2>
+                
+                <div class="form-group mt-3">
+                    <label class="form-label" for="resolution">Video Resolution</label>
+                    <select class="form-select" id="resolution" name="resolution">
+                        <option value="720p">HD (1280x720)</option>
+                        <option value="1080p" selected>Full HD (1920x1080)</option>
+                        <option value="1440p">2K (2560x1440)</option>
+                        <option value="2160p">4K Ultra HD (3840x2160)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="fps">Frame Rate (FPS)</label>
+                    <select class="form-select" id="fps" name="fps">
+                        <option value="24">24 FPS (Cinematic)</option>
+                        <option value="30" selected>30 FPS (Standard)</option>
+                        <option value="60">60 FPS (Smooth)</option>
+                        <option value="120">120 FPS (High Speed)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="format">Output Format</label>
+                    <select class="form-select" id="format" name="format">
+                        <option value="mp4" selected>MP4 (H.264)</option>
+                        <option value="mov">MOV (QuickTime)</option>
+                        <option value="avi">AVI</option>
+                        <option value="mkv">MKV</option>
+                        <option value="webm">WebM</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="quality">Quality</label>
+                    <select class="form-select" id="quality" name="quality">
+                        <option value="draft">Draft (Fast, Lower Quality)</option>
+                        <option value="standard">Standard (Balanced)</option>
+                        <option value="high" selected>High (Recommended)</option>
+                        <option value="ultra">Ultra (Slow, Best Quality)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bitrate">Bitrate</label>
+                    <select class="form-select" id="bitrate" name="bitrate">
+                        <option value="5000">5 Mbps (Lower File Size)</option>
+                        <option value="10000" selected>10 Mbps (Recommended)</option>
+                        <option value="20000">20 Mbps (High Quality)</option>
+                        <option value="50000">50 Mbps (Professional)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Audio Settings -->
+            <div class="card mt-4">
+                <h2 class="card-title">Audio Settings</h2>
+                
+                <div class="form-group mt-3">
+                    <label class="form-label" for="audio-codec">Audio Codec</label>
+                    <select class="form-select" id="audio-codec" name="audio-codec">
+                        <option value="aac" selected>AAC (Recommended)</option>
+                        <option value="mp3">MP3</option>
+                        <option value="opus">Opus</option>
+                        <option value="flac">FLAC (Lossless)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="audio-bitrate">Audio Bitrate</label>
+                    <select class="form-select" id="audio-bitrate" name="audio-bitrate">
+                        <option value="128">128 kbps</option>
+                        <option value="192">192 kbps</option>
+                        <option value="256" selected>256 kbps (Recommended)</option>
+                        <option value="320">320 kbps (High Quality)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" checked style="margin-right: 0.5rem;">
+                        Include background music
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" checked style="margin-right: 0.5rem;">
+                        Include dialogue/voice-over
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" checked style="margin-right: 0.5rem;">
+                        Include sound effects
+                    </label>
+                </div>
+            </div>
+
+            <!-- Render Preview -->
+            <div class="card mt-4">
+                <h2 class="card-title">Estimated Render Info</h2>
+                <div class="stats-grid mt-3">
+                    <div class="stat-card">
+                        <div class="stat-value">~2.5 GB</div>
+                        <div class="stat-label">File Size</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">~15 min</div>
+                        <div class="stat-label">Render Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">45:30</div>
+                        <div class="stat-label">Video Duration</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Render Button -->
+            <div class="card mt-4">
+                <h2 class="card-title">Ready to Render?</h2>
+                <p class="card-description mt-2">
+                    Make sure all scenes are complete and settings are configured correctly before starting the render.
+                </p>
+                <div class="mt-3">
+                    <button class="btn btn-primary" onclick="startRender()" style="width: 100%;">
+                        🎬 Start Rendering
+                    </button>
+                </div>
+            </div>
+
+            <!-- Render Progress (Initially Hidden) -->
+            <div class="card mt-4" id="render-progress-card" style="display: none;">
+                <h2 class="card-title">Rendering in Progress...</h2>
+                <div class="progress-bar mt-3">
+                    <div class="progress-fill" id="render-progress" style="width: 0%;"></div>
+                </div>
+                <p class="text-center mt-2" style="color: var(--text-secondary);">
+                    <span id="progress-text">Initializing render...</span>
+                </p>
+                <div class="mt-3 text-center">
+                    <button class="btn btn-secondary" onclick="cancelRender()">
+                        ❌ Cancel Render
+                    </button>
+                </div>
+            </div>
+
+            <!-- Previous Renders -->
+            <div class="card mt-4">
+                <h2 class="card-title">Previous Renders</h2>
+                <div class="project-list mt-3">
+                    <div class="project-item">
+                        <div class="project-info">
+                            <h3>Sci-Fi Adventure - Final.mp4</h3>
+                            <div class="project-meta">
+                                <span>📅 Dec 20, 2024</span>
+                                <span>📦 2.3 GB</span>
+                                <span>⏱️ 45:30</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn btn-primary">📥 Download</button>
+                            <button class="btn btn-secondary">👁️ Preview</button>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-info">
+                            <h3>Sci-Fi Adventure - Draft.mp4</h3>
+                            <div class="project-meta">
+                                <span>📅 Dec 18, 2024</span>
+                                <span>📦 1.1 GB</span>
+                                <span>⏱️ 45:00</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn btn-primary">📥 Download</button>
+                            <button class="btn btn-secondary">👁️ Preview</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        function startRender() {
+            const card = document.getElementById('render-progress-card');
+            card.style.display = 'block';
+            
+            showLoading('Initializing render engine...');
+            
+            setTimeout(() => {
+                hideLoading();
+                simulateRender();
+            }, 2000);
+        }
+
+        function simulateRender() {
+            const progressBar = document.getElementById('render-progress');
+            const progressText = document.getElementById('progress-text');
+            let progress = 0;
+
+            const phases = [
+                { end: 10, text: 'Preparing scenes...' },
+                { end: 25, text: 'Processing video frames...' },
+                { end: 50, text: 'Rendering visual effects...' },
+                { end: 70, text: 'Encoding audio tracks...' },
+                { end: 90, text: 'Finalizing video file...' },
+                { end: 100, text: 'Render complete!' }
+            ];
+
+            let currentPhase = 0;
+
+            const interval = setInterval(() => {
+                progress += 1;
+                progressBar.style.width = `${progress}%`;
+
+                // Update phase text
+                if (currentPhase < phases.length && progress >= phases[currentPhase].end) {
+                    progressText.textContent = phases[currentPhase].text;
+                    currentPhase++;
+                }
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showNotification('Video rendered successfully! 🎉', 'success');
+                    setTimeout(() => {
+                        document.getElementById('render-progress-card').style.display = 'none';
+                        progressBar.style.width = '0%';
+                        progressText.textContent = 'Initializing render...';
+                    }, 3000);
+                }
+            }, 150);
+        }
+
+        function cancelRender() {
+            if (confirm('Are you sure you want to cancel the render?')) {
+                document.getElementById('render-progress-card').style.display = 'none';
+                document.getElementById('render-progress').style.width = '0%';
+                document.getElementById('progress-text').textContent = 'Initializing render...';
+                showNotification('Render cancelled', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>
