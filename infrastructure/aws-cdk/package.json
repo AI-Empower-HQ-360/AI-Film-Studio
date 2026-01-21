@@ -1,0 +1,15 @@
+{
+  "name": "ai-film-studio-cdk",
+  "version": "1.0.0",
+  "description": "AWS CDK infrastructure for AI Film Studio",
+  "scripts": {
+    "build": "echo 'CDK build'",
+    "test": "echo 'No tests'",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.120.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {}
+}
