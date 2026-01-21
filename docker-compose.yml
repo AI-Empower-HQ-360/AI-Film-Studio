@@ -1,0 +1,207 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15.4-alpine
+    container_name: ai-film-studio-db
+    environment:
+      POSTGRES_DB: filmstudio
+      POSTGRES_USER: filmstudio_admin
+      POSTGRES_PASSWORD: dev_password_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U filmstudio_admin -d filmstudio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai-film-studio
+
+  # Redis Cache
+  redis:
+    image: redis:7.0-alpine
+    container_name: ai-film-studio-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass dev_redis_password
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "dev_redis_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai-film-studio
+
+  # LocalStack for AWS services emulation (S3, SQS, etc.)
+  localstack:
+    image: localstack/localstack:latest
+    container_name: ai-film-studio-localstack
+    ports:
+      - "4566:4566"  # LocalStack edge port
+      - "4571:4571"  # S3 port
+    environment:
+      - SERVICES=s3,sqs,secretsmanager
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai-film-studio
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-film-studio-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://filmstudio_admin:dev_password_change_me@postgres:5432/filmstudio
+      - REDIS_URL=redis://:dev_redis_password@redis:6379/0
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_BUCKET=ai-film-studio-assets-dev
+      - SQS_QUEUE_URL=http://localstack:4566/000000000000/ai-film-studio-queue
+      - JWT_SECRET=dev_jwt_secret_change_me_in_production
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./src:/app/src
+      - ./backend:/app/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ai-film-studio
+
+  # GPU Worker (for local testing without GPU, use CPU fallback)
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: ai-film-studio-worker
+    environment:
+      - DATABASE_URL=postgresql://filmstudio_admin:dev_password_change_me@postgres:5432/filmstudio
+      - REDIS_URL=redis://:dev_redis_password@redis:6379/0
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_BUCKET=ai-film-studio-assets-dev
+      - SQS_QUEUE_URL=http://localstack:4566/000000000000/ai-film-studio-queue
+      - ENVIRONMENT=development
+      - DEVICE=cpu  # Use 'cuda' if GPU is available
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./worker:/app/worker
+      - ./models:/app/models  # Cache AI models
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - ai-film-studio
+    # Uncomment if you have NVIDIA GPU support
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ai-film-studio-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_ENVIRONMENT=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    command: npm run dev
+    networks:
+      - ai-film-studio
+
+  # PgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ai-film-studio-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ai-film-studio.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - ai-film-studio
+
+  # Redis Commander for Redis management (optional)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: ai-film-studio-redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:dev_redis_password
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - ai-film-studio
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  ai-film-studio:
+    driver: bridge
+    name: ai-film-studio-network

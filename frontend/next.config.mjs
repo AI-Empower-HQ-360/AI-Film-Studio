@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // AWS Amplify uses standalone output
-  output: 'standalone',
+  // GitHub Pages uses static export
+  output: 'export',
   reactStrictMode: true,
   
   // Disable ESLint during build for faster deployments
@@ -14,10 +14,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Remove GitHub Pages config for Amplify
-  // trailingSlash: true,
-  // basePath: '',
-  // assetPrefix: '',
+  // GitHub Pages configuration
+  trailingSlash: true,
+  basePath: process.env.NODE_ENV === 'production' ? '/AI-Film-Studio' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/AI-Film-Studio/' : '',
   
   // Image optimization for AWS Amplify
   images: {
