@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from src.utils.logger import setup_logger
-from src.config.settings import API_HOST, API_PORT
+from src.config.settings import API_HOST, API_PORT, SALESFORCE_SYNC_ENABLED
 import os
 
 # Import routers
@@ -15,6 +15,7 @@ from src.api.routes import (
     youtube_router,
     ai_job_router
 )
+from src.api.salesforce_routes import router as salesforce_router
 
 logger = setup_logger(__name__)
 
@@ -23,7 +24,7 @@ VERSION = "0.1.0"
 
 app = FastAPI(
     title="AI Film Studio API",
-    description="API for AI-powered film production platform with comprehensive user management, project creation, credit system, YouTube integration, and AI job processing",
+    description="API for AI-powered film production platform with comprehensive user management, project creation, credit system, YouTube integration, Salesforce CRM, and AI job processing",
     version=VERSION,
     docs_url="/api/docs",
     redoc_url="/api/redoc"
@@ -49,6 +50,11 @@ app.include_router(credit_router)
 app.include_router(youtube_router)
 app.include_router(ai_job_router)
 
+# Include Salesforce routes if enabled
+if SALESFORCE_SYNC_ENABLED:
+    app.include_router(salesforce_router)
+    logger.info("Salesforce CRM integration enabled")
+
 @app.get("/")
 async def root():
     """Serve the homepage"""
@@ -60,7 +66,8 @@ async def health_check():
     return {
         "status": "healthy",
         "version": VERSION,
-        "service": "AI Film Studio API"
+        "service": "AI Film Studio API",
+        "salesforce_enabled": SALESFORCE_SYNC_ENABLED
     }
 
 @app.get("/about")
@@ -75,7 +82,8 @@ async def about():
             "AI-powered script generation",
             "Scene and shot creation",
             "Video production pipeline",
-            "MP4 export"
+            "MP4 export",
+            "Salesforce CRM integration"
         ]
     }
 
