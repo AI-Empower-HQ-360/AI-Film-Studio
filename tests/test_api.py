@@ -16,12 +16,12 @@ def test_root(client):
 
 def test_health_check(client):
     """Test health check endpoint"""
-    response = client.get("/api/v1/health")
+    response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
     assert response.json()["version"] == "0.1.0"
 
-def test_about():
+def test_about(client):
     """Test about endpoint"""
     response = client.get("/about")
     assert response.status_code == 200
