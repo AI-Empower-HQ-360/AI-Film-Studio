@@ -4,7 +4,7 @@
   "description": "A web project for developing UI/UX designs and deploying to GitHub Pages.",
   "main": "src/js/main.js",
   "scripts": {
-    "start": "live-server src",
+    "start": "npx serve src -p 5000",
     "build": "echo 'Build step not defined'",
     "deploy": "gh-pages -d src"
   },
@@ -15,12 +15,12 @@
     "design",
     "GitHub Pages"
   ],
-  "author": "Your Name",
+  "author": "AI Empower HQ 360",
   "license": "MIT",
   "dependencies": {
     "gh-pages": "^6.3.0",
-    "live-server": "^1.2.1"
+    "serve": "^14.2.0"
   },
   "devDependencies": {},
-  "homepage": "https://<username>.github.io/ui-ux-web-project/"
+  "homepage": "https://AI-Empower-HQ-360.github.io/AI-Film-Studio/"
 }
