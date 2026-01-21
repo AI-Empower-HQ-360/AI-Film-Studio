@@ -1867,7 +1867,6 @@ Container Orchestration:
 
 Infrastructure as Code:
   - Terraform: 1.6+
-  - AWS CDK: 2.x (alternative)
 
 CI/CD:
   - GitHub Actions: Automated deployments
