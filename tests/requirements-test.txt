@@ -36,3 +36,21 @@ isort==5.13.2
 
 # Documentation testing
 pytest-doctestplus==1.0.0
+
+# Parallel test execution (Priority 1)
+pytest-xdist>=3.3.0
+
+# HTML test reports (Priority 1)
+pytest-html>=4.1.0
+
+# Time/date mocking (Priority 1)
+freezegun>=1.2.0
+
+# Performance testing (Priority 2)
+pytest-benchmark>=4.0.0
+
+# JSON test reports for CI/CD (Priority 2)
+pytest-json-report>=1.5.0
+
+# Fast linter (Priority 2 - alternative to flake8)
+ruff>=0.1.0

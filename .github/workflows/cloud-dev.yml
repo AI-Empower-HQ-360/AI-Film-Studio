@@ -31,8 +31,27 @@ jobs:
           python -m pip install --upgrade pip
           pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
 
-      - name: Run tests
-        run: pytest -q
+      - name: Install test dependencies
+        run: pip install -r tests/requirements-test.txt
+
+      - name: Run backend tests
+        run: pytest tests/ -v --cov=src --cov-report=xml --cov-report=html --html=test-report.html --self-contained-html
+
+      - name: Upload test coverage
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          file: ./coverage.xml
+          flags: backend
+          name: backend-coverage
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-html-report
+          path: test-report.html
+          retention-days: 30
 
   cd:
     name: Build & deploy (main only)
