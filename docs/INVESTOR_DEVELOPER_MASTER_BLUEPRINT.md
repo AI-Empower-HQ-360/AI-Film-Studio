@@ -1,9 +1,9 @@
 # AI FILM STUDIO – INVESTOR & DEVELOPER MASTER BLUEPRINT
 
-**Version:** 1.0  
-**Date:** 2025-12-31  
+**Version:** 2.0  
+**Date:** 2026-01-09  
 **Document Owner:** AI-Empower-HQ-360  
-**Status:** Complete
+**Status:** Updated - Enterprise Studio Operating System
 
 ---
 
@@ -13,10 +13,12 @@ This comprehensive blueprint integrates all architectural layers, AI dependencie
 
 ### Key Highlights
 
-✅ **Multi-Layer Architecture**: Frontend → Backend → AI → Cloud → Salesforce → YouTube  
-✅ **Advanced AI Pipeline**: 7-stage dependency chain for content generation  
+✅ **Enterprise Studio Operating System**: 8-engine unified platform architecture  
+✅ **Character Engine (Core Module)**: First-class character assets with consistency  
+✅ **Advanced AI Pipeline**: 7-stage dependency chain integrated with 8 engines  
 ✅ **Flexible Business Model**: Free → Pro → Enterprise tiers with credit system  
 ✅ **Multi-Environment Strategy**: Dev, Sandbox/QA, Staging, Production  
+✅ **Deployment Strategy**: GitHub Pages (frontend) + AWS CDK (backend/workers)  
 ✅ **Global Integration**: Salesforce CRM + YouTube + Multi-cloud  
 ✅ **Cultural Awareness**: Dynamic content generation with cultural context  
 ✅ **Voice Diversity**: 25+ voice options across age groups and genders  
@@ -43,7 +45,48 @@ This comprehensive blueprint integrates all architectural layers, AI dependencie
 
 ## 1. System Architecture Overview
 
-### 1.1 High-Level Architecture Diagram
+### 1.1 Enterprise Studio Operating System (8-Engine Architecture)
+
+AI Film Studio is built on an **Enterprise Studio Operating System** with **8 core engines** that work together to provide end-to-end production capabilities:
+
+```
+AI Film Studio - Enterprise Studio Operating System
+│
+├── 1. Character Engine (Core Module)
+│   └── First-class character assets, consistency, versions
+│
+├── 2. AI Writing & Story Engine
+│   └── Script generation, dialogue, storyboards
+│
+├── 3. AI Pre-Production Engine
+│   └── Script breakdown, schedules, budgets
+│
+├── 4. Production Management (Studio Ops)
+│   └── RBAC, asset management, approvals
+│
+├── 5. AI / Real Shoot Production Layer
+│   └── Hybrid production (real footage + AI)
+│
+├── 6. AI Post-Production Engine
+│   ├── AI Voice & Dialogue Engine
+│   ├── AI Music & Scoring Engine
+│   └── AI Audio Post Engine
+│
+├── 7. Marketing & Distribution Engine
+│   └── Trailers, posters, platform exports
+│
+└── 8. Enterprise Platform Layer
+    └── Multi-tenancy, billing, API access
+```
+
+**Key Features:**
+- **Character-First Architecture**: Characters are first-class assets, not prompts
+- **Scene-Aware Processing**: Voice, music, and audio adapt to scene context
+- **Enterprise-Ready**: Multi-tenant, RBAC, audit logs, compliance
+- **Hybrid Production**: Support for real footage + AI-generated content
+- **End-to-End Pipeline**: From idea to distribution in one platform
+
+### 1.2 High-Level Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -88,15 +131,25 @@ This comprehensive blueprint integrates all architectural layers, AI dependencie
                              │
                              ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    AI / ML LAYER (Orange)                            │
-│  GPU-Accelerated AI Pipeline (7 Stages):                            │
-│  1️⃣ Script Analysis (Story, Characters, Actions, Cultural Context)  │
-│  2️⃣ Image Generation (Characters, Backgrounds, Props)               │
-│  3️⃣ Voice Synthesis (25+ voices, Multi-language)                    │
-│  4️⃣ Lip-sync & Animation (Facial, Head movement)                    │
-│  5️⃣ Music / Slokas / Poems (Indian & Western)                       │
-│  6️⃣ Podcast Mode (Two-character dialogue)                           │
-│  7️⃣ Subtitles & Multi-language (ASR + Translation)                  │
+│              ENTERPRISE STUDIO OPERATING SYSTEM (Orange)              │
+│  8 Core Engines:                                                     │
+│  1️⃣ Character Engine - First-class character assets                 │
+│  2️⃣ Writing Engine - Script, dialogue, storyboards                  │
+│  3️⃣ Pre-Production Engine - Breakdown, schedules, budgets           │
+│  4️⃣ Production Management - RBAC, assets, approvals                 │
+│  5️⃣ Production Layer - Real footage + AI generation                 │
+│  6️⃣ Post-Production Engine - Voice, music, audio post               │
+│  7️⃣ Marketing Engine - Trailers, posters, exports                   │
+│  8️⃣ Enterprise Platform - Multi-tenant, billing, API                │
+│                                                                      │
+│  AI Pipeline Integration (7 Stages within engines):                 │
+│  • Script Analysis → Writing Engine                                  │
+│  • Character Generation → Character Engine                           │
+│  • Image/Video Generation → Production Layer                         │
+│  • Voice Synthesis → Post-Production (Voice Engine)                  │
+│  • Music/Scoring → Post-Production (Music Engine)                    │
+│  • Audio Processing → Post-Production (Audio Post Engine)            │
+│  • Subtitles → Post-Production (Voice Engine)                        │
 └────────────────────────────┬────────────────────────────────────────┘
                              │
                              ▼
@@ -143,6 +196,67 @@ This comprehensive blueprint integrates all architectural layers, AI dependencie
 | **Red** | YouTube/Output | Content distribution, publishing |
 
 ---
+
+## 1.5 Character Engine (CRITICAL CORE MODULE)
+
+**Characters are first-class assets**, not prompts. This is the foundation of the Enterprise Studio Operating System.
+
+### Core Features
+
+**Character Creation:**
+- Visual concept art generation
+- Photorealistic characters
+- Stylized / animated characters
+- Wardrobe, makeup, aging, variations
+- Brand mascots
+
+**Character Consistency:**
+- Identity locking across images, scenes, and video
+- Pose, lighting, emotion control
+- Scene-to-scene continuity
+- Character persistence across projects
+
+**Character Versions:**
+- Concept → Casting → Final → Alternate timelines
+- Version history and rollback
+- Scene-specific assignments
+- A/B testing for character designs
+
+**Character Modes:**
+- **Actor Mode**: Real actor references, look tests
+- **Avatar Mode**: Fully AI actors for films, animation
+- **Brand Mode**: Persistent mascots, campaign reuse, brand-safe consistency
+
+### API Integration
+
+```python
+# Create character
+character = await character_engine.create_character(
+    name="John Doe",
+    description="Protagonist",
+    mode=CharacterMode.AVATAR,
+    character_type=CharacterType.PHOTOREALISTIC
+)
+
+# Generate character image with consistency
+visual = await character_engine.generate_character_image(
+    character_id=character.character_id,
+    prompt="Walking in park",
+    scene_context="Sunny afternoon",
+    emotion="happy"
+)
+```
+
+### Why This Matters
+
+This enables:
+- **Real Filmmaking**: Consistent characters across scenes
+- **AI Films**: Fully AI-generated content with character continuity
+- **Brand Storytelling**: Persistent mascots and brand characters
+- **Production Quality**: Professional-grade character management
+
+---
+
 ## 2. Workflow Layers
 
 ### 2.1 Layer-by-Layer Breakdown
@@ -455,6 +569,56 @@ Stage 7: Subtitles & Multi-language
 
 #### Layer 6: Cloud Infrastructure Layer (Purple)
 
+**Deployment Strategy:**
+- **Frontend**: GitHub Pages (automatic deployment, free)
+- **Backend & Workers**: AWS CDK (on-demand, scalable)
+- **Hybrid Approach**: Best of both worlds - simple frontend + powerful backend
+
+**AWS CDK Infrastructure:**
+
+```yaml
+VPC:
+  - Public subnets (ALB, NAT)
+  - Private subnets (ECS, RDS)
+  - Isolated subnets (RDS)
+
+ECS Fargate Cluster:
+  - Backend API Service (FastAPI)
+    - All 8 engines (Character, Writing, Production, etc.)
+    - Auto-scaling: 2-20 tasks
+    - CPU: 1-2 vCPU, Memory: 2-4 GB
+  
+RDS PostgreSQL:
+  - Multi-AZ for production
+  - Automated backups
+  - Read replicas for scaling
+  
+S3 Buckets:
+  - ai-film-studio-assets (scripts, videos)
+  - ai-film-studio-characters (character assets)
+  - ai-film-studio-marketing (trailers, posters)
+  - Versioning enabled, lifecycle policies
+  
+SQS Queues:
+  - ai-film-studio-jobs (main queue)
+  - ai-film-studio-video (video processing)
+  - ai-film-studio-voice (voice generation)
+  
+CloudFront CDN:
+  - Global content delivery
+  - S3 origin for assets
+  - HTTPS only, compression
+  
+ECR Repositories:
+  - ai-film-studio-backend
+  - ai-film-studio-worker
+  
+GPU Workers (EC2):
+  - Launch templates for G4DN instances
+  - Auto-scaling based on queue depth
+  - Spot instances for cost savings
+```
+
 **AWS Services:**
 
 ```yaml
@@ -545,8 +709,28 @@ Monitoring:
     Cost: ~$10-$50/month
 ```
 
-**Infrastructure as Code (Terraform):**
+**Infrastructure as Code:**
 
+**AWS CDK (Primary):**
+```typescript
+// CDK Stack Structure
+infrastructure/aws-cdk/
+├── app.py                    # CDK app entry point
+├── cdk.json                  # CDK configuration
+├── requirements.txt          # Python dependencies
+├── stacks/
+│   └── ai_film_studio_stack.py  # Main infrastructure stack
+├── Dockerfile.backend        # Backend container
+├── Dockerfile.worker         # GPU worker container
+├── deploy.sh                 # Deployment script
+└── README.md                 # Deployment guide
+```
+
+**Deployment:**
+- **GitHub Actions**: `.github/workflows/aws-cdk-deploy.yml`
+- **Manual**: `cd infrastructure/aws-cdk && ./deploy.sh production us-east-1`
+
+**Terraform (Optional/Alternative):**
 ```hcl
 # Example Terraform structure
 terraform/
@@ -764,44 +948,191 @@ Share Links:
 ```
 
 ---
+
+## 2.6 Enterprise Studio Operating System Engines
+
+### 2.6.1 AI Pre-Production Engine
+
+**Purpose:** Convert scripts into executable production plans
+
+**Features:**
+- Script breakdown (scenes, cast, props, locations)
+- Shooting schedules generation
+- Budget estimation
+- Call sheets creation
+- Production calendars
+
+**Integration:**
+- Works with Writing Engine (receives scripts)
+- Informs Production Management (schedules)
+- Supports both AI and real shoots
+
+**API:**
+```python
+# Create production plan
+plan = await preproduction_engine.create_production_plan(
+    script_id=script.script_id
+)
+
+# Generate shooting schedule
+schedule = await preproduction_engine.generate_shooting_schedule(
+    script_id=script.script_id,
+    breakdown=plan.breakdown,
+    start_date=date(2024, 6, 1)
+)
+```
+
+### 2.6.2 Production Management (Studio Ops)
+
+**Purpose:** Enterprise studio control layer
+
+**Features:**
+- Role-based access control (writer, director, producer, editor)
+- Asset management (scripts, footage, audio, images)
+- Timeline & milestone tracking
+- Review, approval, and locking workflows
+- Audit logs and compliance
+
+**Enterprise-Ready:**
+- Multi-user collaboration
+- Permission-based access
+- Version control for assets
+- Approval workflows
+- Compliance tracking
+
+**API:**
+```python
+# Create project
+project = await production_manager.create_project(
+    name="My Film",
+    created_by=user_id
+)
+
+# Request approval
+approval = await production_manager.request_approval(
+    asset_id=asset.asset_id,
+    approver_id=producer_id
+)
+```
+
+### 2.6.3 Marketing & Distribution Engine
+
+**Purpose:** Turn productions into revenue-ready assets
+
+**Features:**
+- Trailers, teasers, promos generation
+- Posters and thumbnails creation
+- Social media cut-downs
+- Platform-specific exports (YouTube, Instagram, TikTok)
+- Campaign asset reuse
+
+**This is where brands and agencies scale.**
+
+**API:**
+```python
+# Generate trailer
+trailer = await marketing_engine.generate_trailer(
+    project_id=project.project_id,
+    source_video_id=video_id,
+    duration=60.0
+)
+
+# Generate poster
+poster = await marketing_engine.generate_poster(
+    project_id=project.project_id,
+    style="cinematic"
+)
+```
+
+### 2.6.4 Enterprise Platform Layer
+
+**Purpose:** SaaS governance and scalability
+
+**Features:**
+- Multi-tenant organizations
+- Usage metering and billing
+- API access and rate limiting
+- Data isolation and security
+- SLAs and compliance
+
+**Without this, you do not have an enterprise product.**
+
+**API:**
+```python
+# Create organization
+org = await enterprise_platform.create_organization(
+    name="Studio XYZ",
+    subscription_tier=SubscriptionTier.ENTERPRISE
+)
+
+# Record usage
+usage = await enterprise_platform.record_usage(
+    organization_id=org.organization_id,
+    metric=UsageMetric.VIDEO_MINUTES,
+    quantity=120.0
+)
+```
+
+---
+
 ## 3. AI Dependencies & Pipeline
 
-### 3.1 AI Dependency Flow Diagram
+### 3.1 AI Dependency Flow Diagram (Integrated with 8 Engines)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│                        AI DEPENDENCY CHAIN                            │
+│              AI PIPELINE WITH ENTERPRISE STUDIO OS                    │
 │                                                                       │
 │  Step 1: SCRIPT INPUT                                                │
 │  ↓                                                                    │
 │  └─→ User provides script (text)                                     │
+│      Engine: Writing Engine                                          │
 │                                                                       │
-│  Step 2: STORY & CULTURAL ANALYSIS                                   │
+│  Step 2: CHARACTER CREATION (if new characters needed)                │
+│  ↓                                                                    │
+│  └─→ Character Engine creates first-class character assets           │
+│      - Visual concept art                                            │
+│      - Identity locking                                              │
+│      - Character versions                                            │
+│      Engine: Character Engine (Core Module)                          │
+│                                                                       │
+│  Step 3: STORY & CULTURAL ANALYSIS                                   │
 │  ↓                                                                    │
 │  ├─→ Plot analysis & scene breakdown                                 │
 │  ├─→ Character identification & traits                               │
 │  ├─→ Action sequences & key moments                                  │
 │  └─→ Cultural context detection (Indian/Western/Asian/etc.)          │
 │      Models: GPT-4, Claude, LLaMA 2                                  │
+│      Engine: Writing Engine                                          │
 │                                                                       │
-│  Step 3: IMAGE GENERATION                                            │
-│  ↓ (Depends on: Story analysis + Cultural context)                   │
-│  ├─→ Character images (culturally appropriate attire)                │
+│  Step 4: PRE-PRODUCTION PLANNING                                     │
+│  ↓                                                                    │
+│  ├─→ Script breakdown (scenes, cast, props, locations)               │
+│  ├─→ Shooting schedules                                              │
+│  ├─→ Budget estimation                                               │
+│      Engine: Pre-Production Engine                                   │
+│                                                                       │
+│  Step 5: IMAGE GENERATION                                            │
+│  ↓ (Depends on: Story analysis + Cultural context + Characters)      │
+│  ├─→ Character images (using Character Engine assets)                │
 │  ├─→ Background scenes (location-specific)                           │
 │  ├─→ Props & objects (context-aware)                                 │
 │  └─→ Style transfer (traditional/modern/fusion)                      │
 │      Models: SDXL, ControlNet, Custom LoRAs                          │
+│      Engine: Production Layer (AI generation)                        │
 │                                                                       │
-│  Step 4: VOICE SYNTHESIS                                             │
-│  ↓ (Depends on: Script + Character profiles)                         │
-│  ├─→ Text-to-speech for each character                               │
+│  Step 6: VOICE SYNTHESIS (Scene-Aware)                               │
+│  ↓ (Depends on: Script + Character profiles + Scene context)         │
+│  ├─→ Text-to-speech for each character (linked to Character Engine)  │
 │  ├─→ Age-appropriate voice selection                                 │
 │  ├─→ Gender-appropriate voice                                        │
 │  ├─→ Language & accent selection                                     │
-│  └─→ Emotion injection (happy, sad, angry, etc.)                     │
+│  ├─→ Emotion injection (happy, sad, angry, etc.)                     │
+│  └─→ Scene-aware performance (matching scene mood)                   │
 │      Models: ElevenLabs, Azure TTS, Coqui TTS                        │
+│      Engine: Post-Production Engine (Voice & Dialogue)               │
 │                                                                       │
-│  Step 5: ANIMATION & LIP-SYNC                                        │
+│  Step 7: ANIMATION & LIP-SYNC                                        │
 │  ↓ (Depends on: Images + Voice audio)                                │
 │  ├─→ Facial landmark detection                                       │
 │  ├─→ Lip movement generation (phoneme-to-viseme)                     │
@@ -809,17 +1140,29 @@ Share Links:
 │  ├─→ Expression animation (emotions)                                 │
 │  └─→ Body movement (if full-body)                                    │
 │      Models: Wav2Lip, SadTalker, Custom rigs                         │
+│      Engine: Production Layer                                        │
 │                                                                       │
-│  Step 6: MUSIC / SLOKAS / POEMS                                      │
+│  Step 8: MUSIC / SLOKAS / POEMS (Scene-Aware)                        │
 │  ↓ (Depends on: Scene mood + Cultural context)                       │
-│  ├─→ Background music generation or selection                        │
+│  ├─→ Scene-aware music generation                                    │
+│  ├─→ Dialogue-aware ducking                                          │
+│  ├─→ Beat-aligned transitions                                        │
 │  ├─→ Sloka narration with traditional music (if selected)            │
-│  ├─→ Poem recitation with background score                           │
 │  ├─→ Audio mixing & mastering                                        │
 │  └─→ Volume balancing with dialogue                                  │
 │      Models: MusicGen, AudioCraft, Licensed libraries                │
+│      Engine: Post-Production Engine (Music & Scoring)                │
 │                                                                       │
-│  Step 7: PODCAST MODE (Optional)                                     │
+│  Step 9: AUDIO POST-PROCESSING                                       │
+│  ↓ (Depends on: All audio tracks)                                    │
+│  ├─→ Dialogue cleanup                                                │
+│  ├─→ Noise reduction                                                 │
+│  ├─→ Loudness normalization                                          │
+│  ├─→ Auto-mixing (dialogue vs music)                                 │
+│  └─→ Platform-specific mastering (cinema, YouTube, OTT)              │
+│      Engine: Post-Production Engine (Audio Post)                     │
+│                                                                       │
+│  Step 10: PODCAST MODE (Optional)                                    │
 │  ↓ (Depends on: Dialogue script + Two voice selections)              │
 │  ├─→ Speaker diarization (who speaks when)                           │
 │  ├─→ Turn-taking logic & natural pauses                              │
@@ -827,8 +1170,9 @@ Share Links:
 │  ├─→ Synchronized animation for both characters                      │
 │  └─→ Camera angle switching (split screen/alternating)               │
 │      Models: Custom NLP + Multi-voice TTS                            │
+│      Engine: Post-Production Engine                                  │
 │                                                                       │
-│  Step 8: SUBTITLES & MULTI-LANGUAGE                                  │
+│  Step 11: SUBTITLES & MULTI-LANGUAGE                                 │
 │  ↓ (Depends on: Final audio track)                                   │
 │  ├─→ Automatic speech recognition (ASR)                              │
 │  ├─→ Translation to target languages (50+)                           │
@@ -836,8 +1180,9 @@ Share Links:
 │  ├─→ Subtitle styling (font, color, position)                        │
 │  └─→ Export in multiple formats (SRT, VTT, etc.)                     │
 │      Models: Whisper ASR, GPT-4 Translation, DeepL                   │
+│      Engine: Post-Production Engine (Voice Engine)                   │
 │                                                                       │
-│  Step 9: FINAL VIDEO RENDERING                                       │
+│  Step 12: FINAL VIDEO RENDERING                                      │
 │  ↓ (Depends on: All above components)                                │
 │  ├─→ Video composition (scenes + animations)                         │
 │  ├─→ Audio mixing (dialogue + music + effects)                       │
@@ -846,26 +1191,44 @@ Share Links:
 │  ├─→ Thumbnail generation                                            │
 │  └─→ Export as MP4 (H.264 + AAC, 1080p)                              │
 │      Tools: FFmpeg, OpenCV, MoviePy                                  │
+│      Engine: Production Layer                                        │
 │                                                                       │
-│  OUTPUT: Final video file ready for download/YouTube upload          │
+│  Step 13: MARKETING ASSETS GENERATION                                │
+│  ↓ (Depends on: Final video)                                         │
+│  ├─→ Trailers and teasers                                            │
+│  ├─→ Posters and thumbnails                                          │
+│  ├─→ Social media cut-downs                                          │
+│  └─→ Platform-specific exports                                       │
+│      Engine: Marketing & Distribution Engine                         │
+│                                                                       │
+│  OUTPUT: Final video + Marketing assets ready for distribution       │
+│                                                                       │
+│  All operations metered and billed via Enterprise Platform Layer     │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.2 Dependency Matrix
+### 3.2 Dependency Matrix (Integrated with 8 Engines)
 
-| Stage | Depends On | Output | Est. Time |
-|-------|------------|--------|-----------|
-| 1. Script Input | User | Raw text | Instant |
-| 2. Story Analysis | Script | Structured data | 10-30s |
-| 3. Image Generation | Story + Culture | Images (PNG) | 20-40s/scene |
-| 4. Voice Synthesis | Script + Characters | Audio (WAV) | 5-15s/min |
-| 5. Animation | Images + Voice | Video clips | 30-60s/scene |
-| 6. Music | Scene mood | Audio (MP3) | 10-20s |
-| 7. Podcast Mode | Dialogue + Voices | Conversation | 40-80s |
-| 8. Subtitles | Final audio | SRT/VTT | 10-20s |
-| 9. Rendering | All above | MP4 video | 20-40s |
+| Stage | Engine | Depends On | Output | Est. Time |
+|-------|--------|------------|--------|-----------|
+| 1. Script Input | Writing Engine | User | Raw text | Instant |
+| 2. Character Creation | Character Engine | User/Story | Character assets | 20-40s |
+| 3. Story Analysis | Writing Engine | Script | Structured data | 10-30s |
+| 4. Pre-Production | Pre-Production Engine | Script | Production plan | 5-15s |
+| 5. Image Generation | Production Layer | Story + Characters | Images (PNG) | 20-40s/scene |
+| 6. Voice Synthesis | Post-Production (Voice) | Script + Characters + Scene | Audio (WAV) | 5-15s/min |
+| 7. Animation | Production Layer | Images + Voice | Video clips | 30-60s/scene |
+| 8. Music Scoring | Post-Production (Music) | Scene mood | Audio (MP3) | 10-20s |
+| 9. Audio Post | Post-Production (Audio Post) | All audio tracks | Processed audio | 15-30s |
+| 10. Podcast Mode | Post-Production | Dialogue + Voices | Conversation | 40-80s |
+| 11. Subtitles | Post-Production (Voice) | Final audio | SRT/VTT | 10-20s |
+| 12. Rendering | Production Layer | All above | MP4 video | 20-40s |
+| 13. Marketing Assets | Marketing Engine | Final video | Trailers, posters | 30-60s |
+| 14. Usage Metering | Enterprise Platform | All operations | Billing records | Instant |
 
-**Total Processing Time: 2-5 minutes** (for 1-minute video)
+**Total Processing Time: 2-5 minutes** (for 1-minute video, excluding marketing assets)
+
+**All operations are tracked and billed through the Enterprise Platform Layer.**
 
 ### 3.3 Cultural Context Examples
 
@@ -1223,9 +1586,131 @@ sequenceDiagram
 
 ---
 
-## 6. Environment Strategy
+## 6. Deployment Strategy
 
-### 6.1 Multi-Environment Overview
+### 6.1 CI/CD Platform Overview
+
+**Primary Deployment Strategy:**
+- **Frontend**: GitHub Pages (automatic, free, fast)
+- **Backend & Workers**: AWS CDK (on-demand, scalable, production-ready)
+
+This hybrid approach provides:
+- ✅ **Simple Frontend Deployment**: GitHub Pages handles static site hosting automatically
+- ✅ **Powerful Backend Infrastructure**: AWS CDK provides enterprise-grade backend services
+- ✅ **Cost Efficiency**: Free frontend hosting + pay-as-you-go backend
+- ✅ **Scalability**: Frontend scales automatically; backend scales on-demand
+
+### 6.2 GitHub Pages Deployment (Frontend)
+
+**Workflow:** `.github/workflows/deploy-pages.yml` and `.github/workflows/deploy.yml`
+
+**Triggers:**
+- Push to `main` branch
+- Manual trigger via `workflow_dispatch`
+
+**Process:**
+1. Checkout code
+2. Setup Node.js 18
+3. Install dependencies (`npm ci`)
+4. Build Next.js app (`npm run build`)
+5. Upload `frontend/out` directory as artifact
+6. Deploy to GitHub Pages automatically
+
+**Features:**
+- ✅ Automatic HTTPS
+- ✅ Custom domain support
+- ✅ Global CDN via GitHub's infrastructure
+- ✅ Zero configuration required
+
+**URL:** Configured via GitHub Pages settings
+
+### 6.3 AWS CDK Deployment (Backend & Workers)
+
+**Workflow:** `.github/workflows/aws-cdk-deploy.yml`
+
+**Infrastructure Stack:**
+```yaml
+VPC:
+  - Public subnets (ALB, NAT Gateway)
+  - Private subnets (ECS, RDS)
+  - Isolated subnets (RDS Multi-AZ)
+
+ECS Fargate Cluster:
+  - Backend API Service (FastAPI)
+  - All 8 engines integrated
+  - Auto-scaling: 2-20 tasks
+  - Health checks and load balancing
+
+RDS PostgreSQL:
+  - Multi-AZ for production
+  - Automated backups (7-30 days)
+  - Read replicas for scaling
+
+S3 Buckets:
+  - ai-film-studio-assets (scripts, videos)
+  - ai-film-studio-characters (character assets)
+  - ai-film-studio-marketing (trailers, posters)
+  - Versioning and lifecycle policies
+
+SQS Queues:
+  - Main job queue
+  - Video processing queue
+  - Voice generation queue
+  - Dead letter queues
+
+CloudFront CDN:
+  - S3 origin for assets
+  - Global content delivery
+  - HTTPS only, compression
+
+ECR Repositories:
+  - Backend container images
+  - Worker container images
+
+GPU Workers:
+  - EC2 launch templates (G4DN)
+  - Auto-scaling based on queue depth
+  - Spot instances for cost savings
+```
+
+**Deployment Process:**
+```bash
+# Manual deployment
+cd infrastructure/aws-cdk
+./deploy.sh production us-east-1
+
+# Via GitHub Actions
+# Triggers on push to main (if AWS secrets configured)
+```
+
+**Required GitHub Secrets:**
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+
+**Cost Estimate:**
+- Development: ~$40-75/month
+- Production: ~$400-1100/month
+
+### 6.4 Multi-Branch Deployment Strategy
+
+| Branch | Environment | Frontend | Backend | Trigger |
+|--------|-------------|----------|---------|---------|
+| `dev` | Development | GitHub Pages | AWS Dev | Automatic |
+| `sandbox` | QA/Test | GitHub Pages | AWS Sandbox | Automatic |
+| `staging` | Pre-production | GitHub Pages | AWS Staging | Manual approval |
+| `main` | Production | GitHub Pages | AWS Production | Manual approval |
+
+**Deployment Flow:**
+```
+feature/* → dev → sandbox → staging → main
+              ↓       ↓         ↓        ↓
+            Dev    QA/Test   Pre-prod  Production
+```
+
+### 6.5 Environment Strategy
+
+### 6.5.1 Multi-Environment Overview
 
 | Environment | Purpose | Scale | Data | Cost/Month |
 |-------------|---------|-------|------|------------|
@@ -1234,7 +1719,7 @@ sequenceDiagram
 | **Staging** | Pre-production | Medium | Prod snapshot | \$800-1000 |
 | **Production** | Live traffic | Large | Real user data | \$2500-3500 |
 
-### 6.2 Environment Specifications
+### 6.5.2 Environment Specifications
 
 **Development:**
 - ECS: 1 task/service, GPU: 0-1 instances
@@ -1548,6 +2033,7 @@ This Investor & Developer Master Blueprint provides a comprehensive view of the 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2025-12-31 | AI-Empower-HQ-360 | Initial master blueprint |
+| 2.0 | 2026-01-09 | AI-Empower-HQ-360 | Updated to Enterprise Studio Operating System architecture<br>- Added 8-engine architecture overview<br>- Added Character Engine as Core Module<br>- Added Pre-Production, Production Management, Marketing engines<br>- Added Enterprise Platform Layer details<br>- Updated AI pipeline to show engine integration<br>- Added AWS CDK infrastructure documentation<br>- Added GitHub Pages + AWS CDK deployment strategy |
 
 ---
 
