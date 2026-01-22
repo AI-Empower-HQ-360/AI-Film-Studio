@@ -59,20 +59,45 @@ This directory contains AWS CDK (Cloud Development Kit) infrastructure code for 
 
 1. **AWS Account** with appropriate permissions
 2. **AWS CLI** configured
-3. **Python 3.9+**
+3. **Python 3.11 or 3.12** ⚠️ (Python 3.13 is not yet supported by AWS CDK)
+   - See [PYTHON_VERSION_REQUIREMENT.md](./PYTHON_VERSION_REQUIREMENT.md) for details
 4. **Node.js 18+** (for CDK)
 5. **AWS CDK CLI**: `npm install -g aws-cdk`
+
+**⚠️ Important:** If you have Python 3.13 installed, you must install Python 3.12 or 3.11 separately for CDK. Use `py -3.12` to create the virtual environment.
 
 ## Setup
 
 ### 1. Install Dependencies
 
+**⚠️ Python Version Check:**
+```bash
+# Check if Python 3.12 is available
+py -3.12 --version  # Windows
+python3.12 --version  # Linux/Mac
+
+# If not installed, download from:
+# https://www.python.org/downloads/release/python-3120/
+```
+
+**Create Virtual Environment:**
 ```bash
 cd infrastructure/aws-cdk
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Windows (use Python 3.12)
+py -3.12 -m venv .venv-cdk
+.venv-cdk\Scripts\Activate.ps1
+
+# Linux/Mac (use Python 3.12)
+python3.12 -m venv .venv-cdk
+source .venv-cdk/bin/activate
+
+# Install dependencies
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+**Note:** If you only have Python 3.13, see [PYTHON_VERSION_REQUIREMENT.md](./PYTHON_VERSION_REQUIREMENT.md) for installation instructions.
 
 ### 2. Configure AWS
 
