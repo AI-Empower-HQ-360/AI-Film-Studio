@@ -224,15 +224,59 @@ class DialoguesEngine:
         Returns:
             Generated dialogue text
         """
-        # TODO: Integrate with AI service (OpenAI, Claude, etc.)
-        # For now, return placeholder
+        # Build prompt for AI framework
+        prompt_parts = [f"Generate dialogue for {character_name}"]
+        if character_personality:
+            prompt_parts.append(f"Personality: {character_personality}")
+        if emotion != "neutral":
+            prompt_parts.append(f"Emotion: {emotion}")
+        if dialogue_style != DialogueStyle.CASUAL:
+            prompt_parts.append(f"Style: {dialogue_style}")
+        prompt_parts.append(f"Context: {context}")
+        if max_length:
+            prompt_parts.append(f"Maximum {max_length} words")
         
-        personality_prompt = f" as {character_personality}" if character_personality else ""
-        emotion_prompt = f" with {emotion} emotion" if emotion != "neutral" else ""
-        style_prompt = f" in {dialogue_style} style" if dialogue_style != DialogueStyle.CASUAL else ""
+        prompt = "\n".join(prompt_parts)
         
-        # Placeholder generation
-        dialogue = f"[{character_name}{personality_prompt}{emotion_prompt}{style_prompt}]: {context}"
+        # Use AI Framework if available
+        if self.ai_framework:
+            try:
+                import asyncio
+                try:
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        # Can't await in sync context, use fallback
+                        dialogue = None
+                    else:
+                        dialogue = loop.run_until_complete(
+                            self.ai_framework.generate_text(
+                                prompt=prompt,
+                                provider="openai",
+                                model="gpt-4",
+                                max_tokens=max_length * 2 if max_length else 200,
+                                temperature=0.8
+                            )
+                        )
+                except RuntimeError:
+                    dialogue = asyncio.run(
+                        self.ai_framework.generate_text(
+                            prompt=prompt,
+                            provider="openai",
+                            model="gpt-4",
+                            max_tokens=max_length * 2 if max_length else 200,
+                            temperature=0.8
+                        )
+                    )
+            except Exception as e:
+                logger.warning(f"AI framework dialogue generation failed: {e}, using fallback")
+                dialogue = None
+        
+        # Fallback to placeholder if AI framework not available or failed
+        if not dialogue:
+            personality_prompt = f" as {character_personality}" if character_personality else ""
+            emotion_prompt = f" with {emotion} emotion" if emotion != "neutral" else ""
+            style_prompt = f" in {dialogue_style} style" if dialogue_style != DialogueStyle.CASUAL else ""
+            dialogue = f"[{character_name}{personality_prompt}{emotion_prompt}{style_prompt}]: {context}"
         
         if max_length:
             words = dialogue.split()

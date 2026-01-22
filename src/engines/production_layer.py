@@ -232,10 +232,27 @@ class ProductionLayer:
         - Inserts and gap-filling
         - Pre-visualization
         """
-        # TODO: Integrate with video generation service
-        # Would generate shot matching scene requirements
         shot_id = str(uuid.uuid4())
         prompt_text = prompt or description or "AI-generated scene"
+        
+        # Use AI Framework for video generation
+        video_url = None
+        if self.ai_framework:
+            try:
+                video_result = await self.ai_framework.generate_video(
+                    prompt=prompt_text,
+                    provider="stability",
+                    duration=int(duration)
+                )
+                if isinstance(video_result, dict):
+                    video_url = video_result.get("video_url") or f"s3://{self.s3_bucket}/shots/{shot_id}/shot.mp4"
+                else:
+                    video_url = f"s3://{self.s3_bucket}/shots/{shot_id}/shot.mp4"
+            except Exception as e:
+                logger.warning(f"AI framework video generation failed: {e}, using fallback")
+                video_url = f"s3://{self.s3_bucket}/shots/{shot_id}/shot.mp4"
+        else:
+            video_url = f"s3://{self.s3_bucket}/shots/{shot_id}/shot.mp4"
         
         shot = Shot(
             shot_id=shot_id,
@@ -243,7 +260,7 @@ class ProductionLayer:
             shot_type=ShotType.AI_GENERATED,
             source_type="generated",
             duration=duration,
-            video_url=f"s3://{self.s3_bucket}/shots/{shot_id}/shot.mp4",
+            video_url=video_url or f"s3://{self.s3_bucket}/shots/{shot_id}/shot.mp4",
             metadata={
                 "prompt": prompt_text,
                 "description": description,

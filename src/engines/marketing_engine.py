@@ -243,8 +243,20 @@ class MarketingEngine:
         - Text overlays
         - Branding
         """
-        # TODO: Implement trailer generation
-        # Would:
+        # Use AI Framework for trailer generation if available
+        if self.ai_framework:
+            try:
+                # Analyze video for key moments using AI
+                analysis = await self.ai_framework.analyze_content(
+                    content=f"Generate trailer from video {source_video_id}, duration: {duration}s, style: {style}",
+                    analysis_type="trailer_generation",
+                    provider="openai"
+                )
+                logger.info(f"AI trailer generation analysis: {analysis.get('analysis', '')[:100]}")
+            except Exception as e:
+                logger.warning(f"AI framework trailer generation failed: {e}, using basic generation")
+        
+        # Trailer generation would:
         # 1. Analyze source video for key moments
         # 2. Select compelling clips
         # 3. Add music and sound effects

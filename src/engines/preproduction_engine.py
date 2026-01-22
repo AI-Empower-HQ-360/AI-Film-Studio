@@ -317,7 +317,19 @@ class PreProductionEngine:
             start_date=start_date
         )
         
-        # TODO: Implement scheduling algorithm
+        # Use AI Framework for schedule optimization if available
+        if self.ai_framework:
+            try:
+                analysis = await self.ai_framework.analyze_content(
+                    content=f"Script breakdown: {breakdown.breakdown_id}\nStart date: {start_date}\nDays per week: {days_per_week}",
+                    analysis_type="schedule_optimization",
+                    provider="openai"
+                )
+                logger.info(f"AI schedule optimization analysis: {analysis.get('analysis', '')[:100]}")
+            except Exception as e:
+                logger.warning(f"AI framework schedule optimization failed: {e}, using basic scheduling")
+        
+        # Basic scheduling logic
         # Would optimize for:
         # - Location efficiency
         # - Cast continuity

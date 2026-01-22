@@ -208,8 +208,9 @@ class ScreenplayEngine:
         self,
         scene_id: str,
         character_name: str,
-        dialogue_text: str,
-        parenthetical: Optional[str] = None
+        dialogue_text: Optional[str] = None,
+        parenthetical: Optional[str] = None,
+        generate: bool = False
     ) -> ScreenplayElement:
         """
         Add dialogue to scene
@@ -217,8 +218,9 @@ class ScreenplayEngine:
         Args:
             scene_id: Scene ID
             character_name: Character name
-            dialogue_text: Dialogue text
+            dialogue_text: Dialogue text (optional if generate=True)
             parenthetical: Parenthetical (emotion/direction)
+            generate: If True, generate dialogue using AI
             
         Returns:
             ScreenplayElement
@@ -226,6 +228,45 @@ class ScreenplayEngine:
         scene = self.scenes.get(scene_id)
         if not scene:
             raise ValueError(f"Scene {scene_id} not found")
+        
+        # Generate dialogue using AI Framework if requested
+        if generate and self.ai_framework and not dialogue_text:
+            try:
+                import asyncio
+                prompt = f"Generate screenplay dialogue for {character_name}"
+                if parenthetical:
+                    prompt += f" ({parenthetical})"
+                prompt += f" in scene: {scene.scene_heading}"
+                if scene.synopsis:
+                    prompt += f"\nScene context: {scene.synopsis}"
+                
+                try:
+                    loop = asyncio.get_event_loop()
+                    if not loop.is_running():
+                        dialogue_text = loop.run_until_complete(
+                            self.ai_framework.generate_text(
+                                prompt=prompt,
+                                provider="openai",
+                                model="gpt-4",
+                                max_tokens=200,
+                                temperature=0.8
+                            )
+                        )
+                except RuntimeError:
+                    dialogue_text = asyncio.run(
+                        self.ai_framework.generate_text(
+                            prompt=prompt,
+                            provider="openai",
+                            model="gpt-4",
+                            max_tokens=200,
+                            temperature=0.8
+                        )
+                    )
+            except Exception as e:
+                logger.warning(f"AI framework dialogue generation failed: {e}, using provided text")
+        
+        if not dialogue_text:
+            dialogue_text = "[Dialogue text required]"
         
         # Add character to screenplay if not exists
         screenplay = self._find_screenplay_by_scene(scene_id)

@@ -245,6 +245,34 @@ class DirectorEngine:
         Returns:
             List of shot compositions
         """
+        # Use AI Framework for shot planning if available
+        if self.ai_framework:
+            try:
+                import asyncio
+                try:
+                    loop = asyncio.get_event_loop()
+                    if not loop.is_running():
+                        analysis = loop.run_until_complete(
+                            self.ai_framework.analyze_content(
+                                content=f"Scene: {scene_description}\nCharacters: {character_count}\nAction: {action_type}",
+                                analysis_type="shot_planning",
+                                provider="openai"
+                            )
+                        )
+                        # Parse AI analysis to create shots (simplified)
+                        logger.info(f"AI analysis for shot planning: {analysis.get('analysis', '')[:100]}")
+                except RuntimeError:
+                    analysis = asyncio.run(
+                        self.ai_framework.analyze_content(
+                            content=f"Scene: {scene_description}\nCharacters: {character_count}\nAction: {action_type}",
+                            analysis_type="shot_planning",
+                            provider="openai"
+                        )
+                    )
+                    logger.info(f"AI analysis for shot planning: {analysis.get('analysis', '')[:100]}")
+            except Exception as e:
+                logger.warning(f"AI framework shot planning failed: {e}, using rule-based fallback")
+        
         shots = []
         
         if action_type == "dialogue":

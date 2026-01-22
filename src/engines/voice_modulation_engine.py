@@ -324,20 +324,44 @@ class VoiceModulationEngine:
             speed = request.speed or base_model.get("speed", 1.0)
             volume = request.volume or 1.0
             
-            # Import voice synthesis service
-            try:
-                from src.services.voice_synthesis import VoiceSynthesisService
-                voice_service = VoiceSynthesisService()
-            except ImportError:
-                logger.warning("Voice synthesis service not available, using mock")
-                # Mock synthesis for testing
-                audio_url = f"s3://ai-film-studio-assets/voices/{job_id}/output.mp3"
-                duration = len(request.text.split()) * 0.5  # Estimate
+            # Use AI Framework for voice synthesis
+            audio_url = None
+            duration = len(request.text.split()) * 0.5  # Estimate
+            
+            if self.ai_framework:
+                try:
+                    # Use AI framework for voice synthesis
+                    voice_result = await self.ai_framework.synthesize_voice(
+                        text=request.text,
+                        voice_id=voice_model_key,
+                        provider="elevenlabs",
+                        emotion=request.emotion,
+                        speed=speed,
+                        pitch=pitch,
+                        volume=volume,
+                        accent=request.accent,
+                        language=request.language
+                    )
+                    if isinstance(voice_result, dict):
+                        audio_url = voice_result.get("audio_url") or f"s3://ai-film-studio-assets/voices/{job_id}/output.mp3"
+                        duration = voice_result.get("duration", duration)
+                    else:
+                        audio_url = f"s3://ai-film-studio-assets/voices/{job_id}/output.mp3"
+                except Exception as e:
+                    logger.warning(f"AI framework voice synthesis failed: {e}, using fallback")
+                    audio_url = f"s3://ai-film-studio-assets/voices/{job_id}/output.mp3"
             else:
-                # Use actual voice synthesis service
-                # This would integrate with ElevenLabs or similar
+                # Fallback: Import voice synthesis service
+                try:
+                    from src.services.voice_synthesis import VoiceSynthesisService
+                    voice_service = VoiceSynthesisService()
+                    audio_url = f"s3://ai-film-studio-assets/voices/{job_id}/output.mp3"
+                except ImportError:
+                    logger.warning("Voice synthesis service not available, using mock")
+                    audio_url = f"s3://ai-film-studio-assets/voices/{job_id}/output.mp3"
+            
+            if not audio_url:
                 audio_url = f"s3://ai-film-studio-assets/voices/{job_id}/output.mp3"
-                duration = len(request.text.split()) * 0.5  # Estimate
             
             # Create result
             result = VoiceModulationResult(
