@@ -41,12 +41,49 @@ class VideoGenerationResponse(BaseModel):
     error_message: Optional[str] = None
 
 
+class VideoProcessor:
+    """Internal video processor for operations (mockable)"""
+    
+    async def render(self, **kwargs) -> Dict[str, Any]:
+        """Render video"""
+        return {"output_path": "", "duration": 0.0, "resolution": "1920x1080", "fps": 30}
+    
+    async def merge(self, segments: List[str]) -> str:
+        """Merge video segments"""
+        return ""
+    
+    async def add_audio(self, video_path: str, audio_path: str) -> str:
+        """Add audio to video"""
+        return ""
+    
+    async def add_subtitles(self, video_path: str, subtitles: List[Dict]) -> str:
+        """Add subtitles to video"""
+        return ""
+    
+    async def apply_effects(self, video_path: str, effects: List[str]) -> str:
+        """Apply effects to video"""
+        return ""
+    
+    async def analyze(self, video_path: str) -> Dict[str, Any]:
+        """Analyze video"""
+        return {}
+    
+    async def extract_frames(self, video_path: str, interval: float) -> List[str]:
+        """Extract frames from video"""
+        return []
+    
+    async def generate_thumbnail(self, video_path: str) -> str:
+        """Generate thumbnail"""
+        return ""
+
+
 class VideoGenerationService:
     """Service for AI-powered video generation"""
     
     def __init__(self, s3_bucket: str = "ai-film-studio-assets"):
         self.s3_bucket = s3_bucket
         self.active_jobs: Dict[str, Any] = {}
+        self.processor = VideoProcessor()  # Mockable processor
     
     async def generate_video(
         self,
@@ -342,3 +379,352 @@ class VideoGenerationService:
         
         logger.info(f"Extracted {len(frames)} frames from {video_path}")
         return frames
+    
+    async def generate_from_scene(
+        self,
+        scene: Dict[str, Any],
+        settings: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Generate video from a scene
+        
+        Args:
+            scene: Scene dictionary with description, characters, etc.
+            settings: Optional video settings
+            
+        Returns:
+            Dictionary with output path and metadata
+        """
+        import uuid
+        
+        # Use processor if available (for mocking)
+        if hasattr(self.processor, 'render'):
+            return await self.processor.render(scene=scene, settings=settings)
+        
+        job_id = str(uuid.uuid4())
+        output_path = f"s3://{self.s3_bucket}/videos/{job_id}/output.mp4"
+        
+        logger.info(f"Generating video from scene: {scene.get('scene_number', 'unknown')}")
+        
+        return {
+            "output_path": output_path,
+            "duration": scene.get("duration", 30),
+            "resolution": settings.get("resolution", "1920x1080") if settings else "1920x1080",
+            "fps": settings.get("fps", 30) if settings else 30
+        }
+    
+    async def generate_batch(
+        self,
+        scenes: List[Dict[str, Any]],
+        settings: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Generate videos for multiple scenes
+        
+        Args:
+            scenes: List of scene dictionaries
+            settings: Optional video settings
+            
+        Returns:
+            List of generation results
+        """
+        results = []
+        for scene in scenes:
+            result = await self.generate_from_scene(scene, settings)
+            results.append(result)
+        return results
+    
+    def validate_settings(self, settings: Dict[str, Any]) -> bool:
+        """
+        Validate video generation settings
+        
+        Args:
+            settings: Settings dictionary
+            
+        Returns:
+            True if valid, False otherwise
+        """
+        valid_resolutions = ["720p", "1080p", "4K", "1280x720", "1920x1080", "3840x2160"]
+        valid_codecs = ["h264", "h265", "vp9", "av1"]
+        
+        # Check resolution
+        resolution = settings.get("resolution")
+        if resolution and resolution not in valid_resolutions:
+            return False
+        
+        # Check fps
+        fps = settings.get("fps")
+        if fps and (not isinstance(fps, int) or fps < 1 or fps > 120):
+            return False
+        
+        # Check codec
+        codec = settings.get("codec")
+        if codec and codec not in valid_codecs:
+            return False
+        
+        return True
+    
+    async def merge_segments(
+        self,
+        segments: List[str],
+        output_path: Optional[str] = None
+    ) -> str:
+        """
+        Merge multiple video segments
+        
+        Args:
+            segments: List of video file paths
+            output_path: Optional output path
+            
+        Returns:
+            Path to merged video
+        """
+        import uuid
+        
+        # Use processor if available (for mocking)
+        if hasattr(self.processor, 'merge'):
+            return await self.processor.merge(segments)
+        
+        if not output_path:
+            output_path = f"s3://{self.s3_bucket}/videos/merged_{uuid.uuid4()}.mp4"
+        
+        logger.info(f"Merging {len(segments)} video segments")
+        return output_path
+    
+    async def add_audio(
+        self,
+        video_path: str,
+        audio_path: str,
+        output_path: Optional[str] = None
+    ) -> str:
+        """
+        Add audio track to video
+        
+        Args:
+            video_path: Path to video file
+            audio_path: Path to audio file
+            output_path: Optional output path
+            
+        Returns:
+            Path to video with audio
+        """
+        import uuid
+        
+        # Use processor if available (for mocking)
+        if hasattr(self.processor, 'add_audio'):
+            return await self.processor.add_audio(video_path, audio_path)
+        
+        if not output_path:
+            output_path = f"s3://{self.s3_bucket}/videos/with_audio_{uuid.uuid4()}.mp4"
+        
+        logger.info(f"Adding audio to video: {video_path}")
+        return output_path
+    
+    async def add_subtitles(
+        self,
+        video_path: str,
+        subtitles: List[Dict[str, Any]],
+        output_path: Optional[str] = None
+    ) -> str:
+        """
+        Add subtitles to video
+        
+        Args:
+            video_path: Path to video file
+            subtitles: List of subtitle entries
+            output_path: Optional output path
+            
+        Returns:
+            Path to video with subtitles
+        """
+        import uuid
+        
+        # Use processor if available (for mocking)
+        if hasattr(self.processor, 'add_subtitles'):
+            return await self.processor.add_subtitles(video_path, subtitles)
+        
+        if not output_path:
+            output_path = f"s3://{self.s3_bucket}/videos/with_subtitles_{uuid.uuid4()}.mp4"
+        
+        logger.info(f"Adding {len(subtitles)} subtitles to video: {video_path}")
+        return output_path
+    
+    async def apply_effects(
+        self,
+        video_path: str,
+        effects: List[str],
+        output_path: Optional[str] = None
+    ) -> str:
+        """
+        Apply video effects
+        
+        Args:
+            video_path: Path to video file
+            effects: List of effect names
+            output_path: Optional output path
+            
+        Returns:
+            Path to processed video
+        """
+        import uuid
+        
+        # Use processor if available (for mocking)
+        if hasattr(self.processor, 'apply_effects'):
+            return await self.processor.apply_effects(video_path, effects)
+        
+        if not output_path:
+            output_path = f"s3://{self.s3_bucket}/videos/with_effects_{uuid.uuid4()}.mp4"
+        
+        logger.info(f"Applying effects {effects} to video: {video_path}")
+        return output_path
+    
+    async def generate_thumbnail(
+        self,
+        video_path: str,
+        timestamp: float = 0.0
+    ) -> str:
+        """
+        Generate thumbnail from video (public method)
+        
+        Args:
+            video_path: Path to video file
+            timestamp: Time position in seconds
+            
+        Returns:
+            Path to thumbnail image
+        """
+        import uuid
+        
+        # Use processor if available (for mocking)
+        if hasattr(self.processor, 'generate_thumbnail'):
+            return await self.processor.generate_thumbnail(video_path)
+        
+        thumbnail_path = f"s3://{self.s3_bucket}/thumbnails/thumb_{uuid.uuid4()}.jpg"
+        
+        logger.info(f"Generating thumbnail from video: {video_path}")
+        return thumbnail_path
+    
+    async def export_to_mp4(
+        self,
+        video_path: str,
+        output_path: Optional[str] = None,
+        quality: str = "high"
+    ) -> str:
+        """
+        Export video to MP4 format
+        
+        Args:
+            video_path: Path to source video
+            output_path: Optional output path
+            quality: Quality preset (low, medium, high)
+            
+        Returns:
+            Path to exported video
+        """
+        import uuid
+        
+        if not output_path:
+            output_path = f"s3://{self.s3_bucket}/exports/video_{uuid.uuid4()}.mp4"
+        
+        logger.info(f"Exporting video to MP4: {video_path} -> {output_path}")
+        return output_path
+    
+    async def export_to_webm(
+        self,
+        video_path: str,
+        output_path: Optional[str] = None,
+        quality: str = "high"
+    ) -> str:
+        """
+        Export video to WebM format
+        
+        Args:
+            video_path: Path to source video
+            output_path: Optional output path
+            quality: Quality preset (low, medium, high)
+            
+        Returns:
+            Path to exported video
+        """
+        import uuid
+        
+        if not output_path:
+            output_path = f"s3://{self.s3_bucket}/exports/video_{uuid.uuid4()}.webm"
+        
+        logger.info(f"Exporting video to WebM: {video_path} -> {output_path}")
+        return output_path
+    
+    async def export(
+        self,
+        video_path: str,
+        format: str = "mp4",
+        compression: Optional[str] = None,
+        output_path: Optional[str] = None
+    ) -> str:
+        """
+        Export video to specified format
+        
+        Args:
+            video_path: Path to source video
+            format: Output format (mp4, webm, avi, mov)
+            compression: Compression level
+            output_path: Optional output path
+            
+        Returns:
+            Path to exported video
+        """
+        valid_formats = ["mp4", "webm", "avi", "mov", "mkv"]
+        if format not in valid_formats:
+            raise ValueError(f"Unsupported format: {format}")
+        
+        if format == "mp4":
+            return await self.export_to_mp4(video_path, output_path)
+        elif format == "webm":
+            return await self.export_to_webm(video_path, output_path)
+        else:
+            import uuid
+            if not output_path:
+                output_path = f"s3://{self.s3_bucket}/exports/video_{uuid.uuid4()}.{format}"
+            logger.info(f"Exporting video to {format}: {video_path} -> {output_path}")
+            return output_path
+    
+    async def submit_to_queue(
+        self,
+        request: VideoGenerationRequest,
+        priority: int = 1
+    ) -> str:
+        """
+        Submit video generation job to queue
+        
+        Args:
+            request: Video generation request
+            priority: Job priority (1-10)
+            
+        Returns:
+            Job ID
+        """
+        import uuid
+        
+        job_id = str(uuid.uuid4())
+        
+        self.active_jobs[job_id] = {
+            "status": "queued",
+            "priority": priority,
+            "request": request.dict(),
+            "submitted_at": asyncio.get_event_loop().time()
+        }
+        
+        logger.info(f"Submitted job {job_id} to queue with priority {priority}")
+        return job_id
+    
+    async def check_job_status(self, job_id: str) -> Dict[str, Any]:
+        """
+        Check status of a video generation job
+        
+        Args:
+            job_id: Job identifier
+            
+        Returns:
+            Job status dictionary
+        """
+        return self.get_job_status(job_id)

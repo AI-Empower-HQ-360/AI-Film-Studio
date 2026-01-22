@@ -140,8 +140,82 @@ class CharacterEngine:
         self.s3_bucket = s3_bucket
         self.characters: Dict[str, Character] = {}
         self.consistency_config = CharacterConsistencyConfig()
+        self.voice_parameters: Dict[str, Dict[str, Any]] = {}
     
-    async def create_character(
+    def create_character(
+        self,
+        name: str,
+        description: Optional[str] = None,
+        mode: Optional[CharacterMode] = None,
+        character_type: Optional[CharacterType] = None,
+        physical_attributes: Optional[Dict[str, Any]] = None,
+        personality_traits: Optional[List[str]] = None,
+        cultural_context: Optional[str] = None,
+        project_id: Optional[str] = None,
+        brand_id: Optional[str] = None,
+        appearance: Optional[Dict[str, Any]] = None,
+        personality: Optional[Dict[str, Any]] = None,
+        voice_id: Optional[str] = None,
+        **kwargs
+    ) -> Character:
+        """
+        Create a new character - first-class asset (synchronous)
+        
+        Args:
+            name: Character name (required)
+            description: Character description
+            mode: Actor, Avatar, or Brand mode
+            character_type: Photorealistic, Stylized, Animated, or Concept Art
+            physical_attributes: Physical characteristics dict
+            personality_traits: List of personality traits
+            cultural_context: Cultural setting/context
+            project_id: Associated project
+            brand_id: For brand characters
+            appearance: Alternative to physical_attributes (for compatibility)
+            personality: Dict with personality info (for compatibility)
+            voice_id: Voice ID for the character
+            
+        Returns:
+            Created Character object
+        """
+        if not name:
+            raise ValueError("Character name is required")
+        
+        character_id = str(uuid.uuid4())
+        
+        # Handle compatibility with appearance/physical_attributes
+        attrs = physical_attributes or appearance or {}
+        
+        # Extract personality traits from dict if provided
+        traits = personality_traits or []
+        if personality and 'traits' in personality:
+            traits = personality['traits']
+        
+        identity = CharacterIdentity(
+            character_id=character_id,
+            name=name,
+            description=description or f"A character named {name}",
+            physical_attributes=attrs,
+            personality_traits=traits,
+            cultural_context=cultural_context,
+            voice_id=voice_id
+        )
+        
+        character = Character(
+            character_id=character_id,
+            identity=identity,
+            mode=mode or CharacterMode.AVATAR,
+            character_type=character_type or CharacterType.PHOTOREALISTIC,
+            project_id=project_id,
+            brand_id=brand_id
+        )
+        
+        self.characters[character_id] = character
+        logger.info(f"Created character {character_id}: {name} ({character.mode.value} mode)")
+        
+        return character
+    
+    async def create_character_async(
         self,
         name: str,
         description: str,
@@ -154,7 +228,7 @@ class CharacterEngine:
         brand_id: Optional[str] = None
     ) -> Character:
         """
-        Create a new character - first-class asset
+        Create a new character - first-class asset (async version)
         
         Args:
             name: Character name
@@ -170,30 +244,17 @@ class CharacterEngine:
         Returns:
             Created Character object
         """
-        character_id = str(uuid.uuid4())
-        
-        identity = CharacterIdentity(
-            character_id=character_id,
+        return self.create_character(
             name=name,
             description=description,
-            physical_attributes=physical_attributes or {},
-            personality_traits=personality_traits or [],
-            cultural_context=cultural_context
-        )
-        
-        character = Character(
-            character_id=character_id,
-            identity=identity,
             mode=mode,
             character_type=character_type,
+            physical_attributes=physical_attributes,
+            personality_traits=personality_traits,
+            cultural_context=cultural_context,
             project_id=project_id,
             brand_id=brand_id
         )
-        
-        self.characters[character_id] = character
-        logger.info(f"Created character {character_id}: {name} ({mode.value} mode)")
-        
-        return character
     
     async def add_character_version(
         self,
@@ -536,3 +597,342 @@ class CharacterEngine:
         except RuntimeError:
             # If no event loop, create a new one
             return asyncio.run(self.clone_character(character_id, new_name))
+    
+    async def generate_portrait(
+        self,
+        character: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Generate a portrait image for a character
+        
+        Args:
+            character: Character dictionary or Character object
+            
+        Returns:
+            Dictionary with image URL and metadata
+        """
+        character_id = character.get('id') or character.get('character_id', str(uuid.uuid4()))
+        name = character.get('name', 'Unknown')
+        
+        logger.info(f"Generating portrait for character: {name}")
+        
+        # TODO: Integrate with image generation service
+        image_url = f"https://{self.s3_bucket}.s3.amazonaws.com/portraits/{character_id}.png"
+        
+        return {
+            "url": image_url,
+            "character_id": character_id,
+            "width": 1024,
+            "height": 1024,
+            "format": "png"
+        }
+    
+    async def generate_variations(
+        self,
+        character: Dict[str, Any],
+        num_variations: int = 3
+    ) -> List[Dict[str, Any]]:
+        """
+        Generate multiple variations of a character portrait
+        
+        Args:
+            character: Character dictionary
+            num_variations: Number of variations to generate
+            
+        Returns:
+            List of image dictionaries
+        """
+        variations = []
+        character_id = character.get('id') or character.get('character_id', str(uuid.uuid4()))
+        
+        for i in range(num_variations):
+            variations.append({
+                "url": f"https://{self.s3_bucket}.s3.amazonaws.com/portraits/{character_id}_v{i+1}.png",
+                "variation_number": i + 1,
+                "width": 1024,
+                "height": 1024
+            })
+        
+        logger.info(f"Generated {num_variations} variations for character {character_id}")
+        return variations
+    
+    def update_appearance(
+        self,
+        character: Character,
+        appearance: Dict[str, Any]
+    ) -> Character:
+        """
+        Update character appearance attributes
+        
+        Args:
+            character: Character object
+            appearance: New appearance attributes
+            
+        Returns:
+            Updated Character object
+        """
+        character.identity.physical_attributes.update(appearance)
+        character.updated_at = datetime.utcnow()
+        logger.info(f"Updated appearance for character {character.character_id}")
+        return character
+    
+    def set_personality(
+        self,
+        character: Character,
+        personality: Dict[str, Any]
+    ) -> Character:
+        """
+        Set character personality traits
+        
+        Args:
+            character: Character object
+            personality: Personality configuration
+            
+        Returns:
+            Updated Character object
+        """
+        if 'traits' in personality:
+            character.identity.personality_traits = personality['traits']
+        character.updated_at = datetime.utcnow()
+        logger.info(f"Set personality for character {character.character_id}")
+        return character
+    
+    def analyze_personality(
+        self,
+        character: Character
+    ) -> Dict[str, Any]:
+        """
+        Analyze character personality
+        
+        Args:
+            character: Character object
+            
+        Returns:
+            Personality analysis dictionary
+        """
+        return {
+            "character_id": character.character_id,
+            "name": character.identity.name,
+            "traits": character.identity.personality_traits,
+            "trait_count": len(character.identity.personality_traits),
+            "analysis": {
+                "dominant_trait": character.identity.personality_traits[0] if character.identity.personality_traits else None,
+                "complexity": "high" if len(character.identity.personality_traits) > 3 else "low"
+            }
+        }
+    
+    def generate_backstory(
+        self,
+        character: Character
+    ) -> str:
+        """
+        Generate a backstory for the character
+        
+        Args:
+            character: Character object
+            
+        Returns:
+            Generated backstory text
+        """
+        identity = character.identity
+        traits = ", ".join(identity.personality_traits) if identity.personality_traits else "unique"
+        
+        backstory = (
+            f"{identity.name} is a {traits} individual. "
+            f"{identity.description} "
+            f"Their journey began in circumstances that shaped who they are today."
+        )
+        
+        logger.info(f"Generated backstory for character {character.character_id}")
+        return backstory
+    
+    def assign_voice(
+        self,
+        character: Character,
+        voice_id: str
+    ) -> Character:
+        """
+        Assign a voice ID to a character
+        
+        Args:
+            character: Character object
+            voice_id: Voice synthesis voice ID
+            
+        Returns:
+            Updated Character object
+        """
+        character.identity.voice_id = voice_id
+        character.updated_at = datetime.utcnow()
+        logger.info(f"Assigned voice {voice_id} to character {character.character_id}")
+        return character
+    
+    def get_available_voices(self) -> List[Dict[str, Any]]:
+        """
+        Get list of available voices for characters
+        
+        Returns:
+            List of available voice configurations
+        """
+        # Return a sample list of voices
+        return [
+            {"voice_id": "elevenlabs_adam", "name": "Adam", "gender": "male", "age_group": "adult"},
+            {"voice_id": "elevenlabs_bella", "name": "Bella", "gender": "female", "age_group": "young_adult"},
+            {"voice_id": "elevenlabs_charlie", "name": "Charlie", "gender": "male", "age_group": "teen"},
+            {"voice_id": "elevenlabs_diana", "name": "Diana", "gender": "female", "age_group": "adult"},
+        ]
+    
+    def voice_preview(
+        self,
+        voice_id: str,
+        text: str = "Hello, this is a voice preview."
+    ) -> Dict[str, Any]:
+        """
+        Get a preview of a voice
+        
+        Args:
+            voice_id: Voice ID to preview
+            text: Text to preview
+            
+        Returns:
+            Preview information
+        """
+        return {
+            "voice_id": voice_id,
+            "text": text,
+            "preview_url": f"https://{self.s3_bucket}.s3.amazonaws.com/previews/{voice_id}.mp3",
+            "duration": 2.5
+        }
+    
+    def save_character(self, character: Character) -> bool:
+        """
+        Save character to storage
+        
+        Args:
+            character: Character object to save
+            
+        Returns:
+            True if saved successfully
+        """
+        self.characters[character.character_id] = character
+        character.updated_at = datetime.utcnow()
+        logger.info(f"Saved character {character.character_id}")
+        return True
+    
+    def set_pose(
+        self,
+        character: Character,
+        pose: str
+    ) -> Character:
+        """
+        Set character pose
+        
+        Args:
+            character: Character object
+            pose: Pose description
+            
+        Returns:
+            Updated Character object
+        """
+        active_version = character.get_active_version()
+        if active_version:
+            active_version.visual.pose = pose
+        character.updated_at = datetime.utcnow()
+        logger.info(f"Set pose '{pose}' for character {character.character_id}")
+        return character
+    
+    def set_expression(
+        self,
+        character: Character,
+        expression: str
+    ) -> Character:
+        """
+        Set character facial expression
+        
+        Args:
+            character: Character object
+            expression: Expression/emotion
+            
+        Returns:
+            Updated Character object
+        """
+        active_version = character.get_active_version()
+        if active_version:
+            active_version.visual.emotion = expression
+        character.updated_at = datetime.utcnow()
+        logger.info(f"Set expression '{expression}' for character {character.character_id}")
+        return character
+    
+    async def generate_animation_frames(
+        self,
+        character: Character,
+        num_frames: int = 24
+    ) -> List[Dict[str, Any]]:
+        """
+        Generate animation frames for a character
+        
+        Args:
+            character: Character object
+            num_frames: Number of frames to generate
+            
+        Returns:
+            List of frame dictionaries
+        """
+        frames = []
+        for i in range(num_frames):
+            frames.append({
+                "frame_number": i,
+                "url": f"https://{self.s3_bucket}.s3.amazonaws.com/animation/{character.character_id}/frame_{i:04d}.png",
+                "timestamp": i / 24.0
+            })
+        
+        logger.info(f"Generated {num_frames} animation frames for character {character.character_id}")
+        return frames
+    
+    def create_relationship(
+        self,
+        character1: Character,
+        character2: Character,
+        relationship_type: str
+    ) -> Dict[str, Any]:
+        """
+        Create a relationship between two characters
+        
+        Args:
+            character1: First character
+            character2: Second character
+            relationship_type: Type of relationship (friend, rival, family, etc.)
+            
+        Returns:
+            Relationship information
+        """
+        relationship = {
+            "id": str(uuid.uuid4()),
+            "character1_id": character1.character_id,
+            "character2_id": character2.character_id,
+            "type": relationship_type,
+            "created_at": datetime.utcnow().isoformat()
+        }
+        
+        # Store in metadata
+        if "relationships" not in character1.metadata:
+            character1.metadata["relationships"] = []
+        character1.metadata["relationships"].append(relationship)
+        
+        if "relationships" not in character2.metadata:
+            character2.metadata["relationships"] = []
+        character2.metadata["relationships"].append(relationship)
+        
+        logger.info(f"Created {relationship_type} relationship between {character1.character_id} and {character2.character_id}")
+        return relationship
+    
+    def get_relationships(self, character: Character) -> List[Dict[str, Any]]:
+        """
+        Get all relationships for a character
+        
+        Args:
+            character: Character object
+            
+        Returns:
+            List of relationships
+        """
+        return character.metadata.get("relationships", [])

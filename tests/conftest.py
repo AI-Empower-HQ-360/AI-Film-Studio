@@ -40,12 +40,17 @@ def setup_test_environment():
 
 # ==================== Event Loop ====================
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def event_loop():
-    """Create an event loop for async tests"""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
+    """Create an event loop for async tests - function-scoped to avoid closed loop issues"""
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    asyncio.set_event_loop(loop)
     yield loop
-    loop.close()
+    try:
+        loop.close()
+    except Exception:
+        pass  # Ignore errors on cleanup
 
 
 # ==================== API Client Fixtures ====================
