@@ -68,6 +68,9 @@ export default function Navigation({ currentPage, className = '' }: NavigationPr
             >
               Dashboard
             </Link>
+            <Link href="/admin/dashboard" className="text-slate-400 hover:text-white transition-colors text-sm">
+              Admin
+            </Link>
             <Link href="/signin" className="text-slate-300 hover:text-white transition-colors">
               Sign In
             </Link>

@@ -17,7 +17,7 @@ export default function PricingPage() {
     },
     {
       question: "What happens if I exceed my monthly limit?",
-      answer: "When you reach your monthly generation limit, you can either wait for the next billing cycle or upgrade to a higher plan for immediate access to more generations."
+      answer: "When you reach your monthly generation limit, you can either wait for the next billing cycle, upgrade to a higher plan, or purchase credit top-ups ($5 for 10 credits) for immediate access."
     },
     {
       question: "Do you offer refunds?",
@@ -25,64 +25,66 @@ export default function PricingPage() {
     },
     {
       question: "Can I use the films commercially?",
-      answer: "Yes! All Standard and Pro plans include full commercial usage rights. Fee plan films have a watermark and are for personal/educational use only."
+      answer: "Yes! Pro and Enterprise plans include full commercial usage rights. Free tier films have a watermark and are for personal/educational use only."
+    },
+    {
+      question: "How do credit top-ups work?",
+      answer: "You can purchase additional credits anytime: $5 for 10 credits. Credits are added instantly after payment (Stripe). Each film generation uses 1 credit."
     }
   ];
+  /* Aligned with FRD: Free, Pro $29/mo, Enterprise $299/mo. FR-030, FR-031. */
   const plans = [
     {
-      name: 'Fee',
+      name: 'Free',
       price: '$0',
       duration: '/month',
       description: 'Perfect for trying out AI Film Studio',
       features: [
         '3 film generations per month',
-        '30-second films only',
+        '30–90 second films',
         'Basic templates',
         'Standard resolution (720p)',
         'Community support',
         'Watermarked output'
       ],
-      buttonText: 'Start Fee',
+      buttonText: 'Start Free',
       buttonStyle: 'bg-slate-700 hover:bg-slate-600 text-white',
       popular: false
     },
     {
-      name: 'Standard',
+      name: 'Pro',
       price: '$29',
       duration: '/month',
       description: 'For content creators and small businesses',
       features: [
-        '50 film generations per month',
+        '30 film generations per month',
         'Up to 90-second films',
         'Premium templates & styles',
         'HD resolution (1080p)',
-        'Advanced AI models',
         'No watermarks',
         'Priority support',
-        'Custom branding'
+        'Credit top-ups: $5 for 10 credits'
       ],
-      buttonText: 'Start Standard Trial',
+      buttonText: 'Start Pro Trial',
       buttonStyle: 'bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white',
       popular: true
     },
     {
-      name: 'Pro',
-      price: '$59',
+      name: 'Enterprise',
+      price: '$299',
       duration: '/month',
-      description: 'For agencies and large organizations',
+      description: 'For studios and large organizations',
       features: [
         'Unlimited film generations',
+        'Priority queue',
         'Custom film durations',
-        'White-label solution',
         '4K resolution support',
-        'Custom AI model training',
         'API access',
-        'Dedicated support manager',
+        'Dedicated support',
         'SLA guarantee',
-        'Team collaboration tools',
-        'Advanced analytics'
+        'Multi-tenancy & audit logs'
       ],
-      buttonText: 'Start Pro',
+      buttonText: 'Contact Sales',
       buttonStyle: 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-500',
       popular: false
     }

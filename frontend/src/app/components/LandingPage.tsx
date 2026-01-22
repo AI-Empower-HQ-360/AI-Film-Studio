@@ -16,8 +16,11 @@ export default function LandingPage() {
     return youtubeRegex.test(url);
   };
 
+  const wordCount = script.trim() ? script.trim().split(/\s+/).filter(Boolean).length : 0;
+  const scriptOk = inputMode === 'script' && script.trim() && wordCount <= 500;
+
   const handleQuickStart = () => {
-    if (inputMode === 'script' && script.trim()) {
+    if (scriptOk) {
       sessionStorage.setItem('quickStartScript', script);
       router.push('/dashboard');
     } else if (inputMode === 'youtube' && youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl)) {
@@ -43,8 +46,8 @@ export default function LandingPage() {
             </span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-10">
-            AI-powered platform that converts text scripts into stunning short films 
-            (30-90 seconds) using cutting-edge AI image and video generation technology.
+            Enterprise Studio Operating System: 8-engine AI platform. Transform scripts into 30–90 second
+            cinematic films in 3–5 minutes. Character-first, scene-aware voice & music, multi-language.
           </p>
 
           {/* Quick Script Input Section */}
@@ -90,21 +93,21 @@ export default function LandingPage() {
                 {inputMode === 'script' ? (
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-slate-300 mb-2">
-                      ✨ Paste your script here to get started (up to 10,000 characters)
+                      ✨ Paste your script (max 500 words, FR-010). .txt, .docx, .pdf supported later.
                     </label>
                     <textarea
                       value={script}
                       onChange={(e) => setScript(e.target.value)}
-                      maxLength={10000}
+                      maxLength={4000}
                       placeholder="Example: A hero stands on a cliff at sunset, looking at the vast ocean. The wind blows through their hair as they take a deep breath, ready to face their destiny..."
                       className="w-full h-40 px-4 py-3 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 resize-none"
                     />
                     <div className="flex items-center justify-between mt-2">
-                      <span className={`text-sm ${script.length > 9500 ? 'text-orange-400' : 'text-slate-400'}`}>
-                        {script.length.toLocaleString()} / 10,000 characters
+                      <span className={`text-sm ${(script.trim().split(/\s+/).filter(Boolean).length > 500 ? 'text-orange-400' : 'text-slate-400')}`}>
+                        {script.trim() ? script.trim().split(/\s+/).filter(Boolean).length : 0} / 500 words
                       </span>
                       <span className="text-sm text-slate-400">
-                        {script.trim() ? '30-90 seconds recommended' : ''}
+                        {script.trim() ? '30–90 sec films, 3–5 min gen' : ''}
                       </span>
                     </div>
                   </div>
@@ -141,21 +144,19 @@ export default function LandingPage() {
                   <button
                     onClick={handleQuickStart}
                     disabled={
-                      inputMode === 'script' 
-                        ? !script.trim() 
+                      inputMode === 'script'
+                        ? !script.trim() || wordCount > 500
                         : !youtubeUrl.trim() || !validateYoutubeUrl(youtubeUrl)
                     }
                     className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all ${
-                      (inputMode === 'script' ? script.trim() : youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl))
+                      (inputMode === 'script' ? scriptOk : youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl))
                         ? 'bg-gradient-to-r from-sky-500 to-purple-600 hover:from-sky-600 hover:to-purple-700 text-white shadow-lg shadow-sky-500/25'
                         : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                     }`}
                   >
-                    {(inputMode === 'script' ? script.trim() : youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl))
-                      ? '🚀 Create Film Now' 
-                      : inputMode === 'script' 
-                        ? 'Enter script to continue' 
-                        : 'Enter YouTube URL to continue'}
+                    {inputMode === 'script'
+                      ? (wordCount > 500 ? `Over 500 words (${wordCount}) — trim to continue` : scriptOk ? '🚀 Create Film Now' : 'Enter script to continue')
+                      : (youtubeUrl.trim() && validateYoutubeUrl(youtubeUrl) ? '🚀 Create Film Now' : 'Enter YouTube URL to continue')}
                   </button>
                   <button
                     onClick={() => {
@@ -555,8 +556,8 @@ export default function LandingPage() {
                 <li><Link href="#features" className="text-slate-400 hover:text-white transition-colors">Features</Link></li>
                 <li><Link href="/pricing" className="text-slate-400 hover:text-white transition-colors">Pricing</Link></li>
                 <li><Link href="/dashboard" className="text-slate-400 hover:text-white transition-colors">Dashboard</Link></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">API Access</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Documentation</a></li>
+                <li><Link href="/docs" className="text-slate-400 hover:text-white transition-colors">Documentation</Link></li>
+                <li><Link href="/features" className="text-slate-400 hover:text-white transition-colors">How It Works</Link></li>
               </ul>
             </div>
 
@@ -564,11 +565,11 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-semibold mb-4">Company</h3>
               <ul className="space-y-3 text-sm">
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Contact</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Press Kit</a></li>
+                <li><Link href="/about" className="text-slate-400 hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/blog" className="text-slate-400 hover:text-white transition-colors">Blog</Link></li>
+                <li><Link href="/careers" className="text-slate-400 hover:text-white transition-colors">Careers</Link></li>
+                <li><Link href="/contact" className="text-slate-400 hover:text-white transition-colors">Contact</Link></li>
+                <li><Link href="/docs" className="text-slate-400 hover:text-white transition-colors">Docs</Link></li>
               </ul>
             </div>
 
@@ -589,9 +590,10 @@ export default function LandingPage() {
           <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between">
             <div className="text-slate-500 text-sm mb-4 md:mb-0">
               © 2026 AI Film Studio by AI-Empower-HQ-360. All rights reserved.
+              <span className="ml-2 text-slate-600">v0.1.0</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-slate-400">
-              <span>Made with ❤️ using AWS, Next.js & Stable Diffusion</span>
+              <span>8-engine Enterprise Studio • 30–90s films in 3–5 min • FRD/NFR aligned</span>
             </div>
           </div>
         </div>

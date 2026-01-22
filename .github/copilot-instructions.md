@@ -109,7 +109,7 @@ When implementing features, reference these docs for context:
 - **Image generation logic**: [`docs/architecture/image-generation-workflow.md`](docs/architecture/image-generation-workflow.md) — explains cultural context integration and character consistency
 - **Full workflow**: [`docs/requirements/MASTER-WORKFLOW-ROADMAP.md`](docs/requirements/MASTER-WORKFLOW-ROADMAP.md) — 7-stage AI pipeline dependencies
 - **System architecture**: [`docs/architecture/system-design.md`](docs/architecture/system-design.md) — AWS infrastructure, VPC, load balancers
-- **Business context**: [`docs/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md`](docs/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md) — subscription model, credit system (3 credits = 1 min video)
+- **Business context**: [`business/investor/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md`](business/investor/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md) — subscription model, credit system (3 credits = 1 min video)
 
 ## Integration Points
 

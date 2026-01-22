@@ -156,7 +156,7 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Script
+                Script (max 500 words, FR-010)
               </label>
               
               {/* YouTube Reference Indicator */}
@@ -211,10 +211,10 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
                     onClick={() => fileInputRef.current?.click()}
                     className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
                   >
-                    📄 Upload Script File
+                    📄 Upload .txt
                   </button>
-                  <span className="text-sm text-slate-400">
-                    {projectData.script?.length || 0} characters
+                  <span className={`text-sm ${((projectData.script || '').trim().split(/\s+/).filter(Boolean).length > 500 ? 'text-orange-400' : 'text-slate-400')}`}>
+                    {(projectData.script || '').trim().split(/\s+/).filter(Boolean).length} / 500 words
                   </span>
                 </div>
                 <input
