@@ -572,8 +572,8 @@ class AIFilmStudioStack(Stack):
                 ec2.InstanceClass.G4DN,
                 ec2.InstanceSize.XLARGE
             ),
-            machine_image=ec2.MachineImage.latest_amazon_linux2(
-                gpu_support=True
+            machine_image=ec2.MachineImage.from_ssm_parameter(
+                "/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id"
             ),
             role=worker_role,
             security_group=ec2.SecurityGroup(
