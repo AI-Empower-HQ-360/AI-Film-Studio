@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+.turbo/
+
+# Config files
+*.config.js
+*.config.mjs
+*.config.ts
+*.config.cjs
+
+# Public assets
+public/
+
+# Test coverage
+coverage/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
