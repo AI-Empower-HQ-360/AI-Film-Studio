@@ -64,6 +64,21 @@ async def root():
         return FileResponse(os.path.join(static_dir, "index.html"))
     return {"message": "AI Film Studio API", "version": VERSION}
 
+@app.get("/about")
+async def about_simple():
+    """Simple about endpoint"""
+    return {
+        "name": "AI Film Studio",
+        "version": VERSION,
+        "description": "Enterprise AI-native studio operating system",
+        "author": "AI Empower HQ 360"
+    }
+
+@app.get("/api/health")
+async def health():
+    """Simple health check"""
+    return {"status": "healthy", "version": VERSION}
+
 @app.get("/api/v1/health")
 async def health_check():
     """Detailed health check"""

@@ -341,8 +341,15 @@ class VoiceSynthesisService:
             
         Returns:
             Dictionary with audio_url and other metadata
+            
+        Raises:
+            ValueError: If text is empty
         """
         import uuid as uuid_module
+        
+        # Validate input
+        if not text or not text.strip():
+            raise ValueError("Text cannot be empty")
         
         # If engine is mocked (has synthesize method that's an AsyncMock), use it
         if hasattr(self.engine, 'synthesize'):
