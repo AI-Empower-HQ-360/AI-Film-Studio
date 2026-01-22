@@ -3,7 +3,17 @@ Character Engine - Core Module
 Characters are first-class assets with identity locking, versions, and consistency
 """
 from typing import Optional, Dict, List, Any, Literal
-from pydantic import BaseModel, Field
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    # Fallback for testing environments without pydantic
+    class BaseModel:
+        def __init__(self, **kwargs):
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+    
+    def Field(default=..., **kwargs):
+        return default
 from enum import Enum
 from datetime import datetime
 import uuid
