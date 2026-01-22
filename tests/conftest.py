@@ -62,7 +62,7 @@ def event_loop():
 
 # ==================== API Client Fixtures ====================
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def test_client() -> Generator[TestClient, None, None]:
     """Synchronous test client for FastAPI"""
     if not HAS_FASTAPI:
@@ -75,9 +75,9 @@ def test_client() -> Generator[TestClient, None, None]:
         pytest.skip("FastAPI app not available")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 async def async_client() -> AsyncGenerator[AsyncClient, None]:
-    """Asynchronous test client for FastAPI"""
+    """Asynchronous test client for FastAPI - function scoped to match event_loop"""
     if not HAS_FASTAPI:
         pytest.skip("FastAPI not installed")
     try:
