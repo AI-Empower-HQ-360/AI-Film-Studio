@@ -16,8 +16,8 @@ export default function About() {
             </span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            We're on a mission to democratize film production by making professional-quality 
-            video creation accessible to everyone through AI technology.
+            8-engine Enterprise Studio. We democratize film production: 30–90s films in 3–5 minutes.
+            FRD/NFR aligned. v0.1.0.
           </p>
         </div>
       </section>
@@ -46,8 +46,8 @@ export default function About() {
             <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700">
               <div className="grid grid-cols-2 gap-6 text-center">
                 <div>
-                  <div className="text-4xl font-bold text-sky-400 mb-2">2025</div>
-                  <p className="text-slate-400">Founded</p>
+                  <div className="text-4xl font-bold text-sky-400 mb-2">v0.1.0</div>
+                  <p className="text-slate-400">Version (2025-12-27)</p>
                 </div>
                 <div>
                   <div className="text-4xl font-bold text-purple-400 mb-2">10K+</div>

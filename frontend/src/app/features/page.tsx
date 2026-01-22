@@ -162,7 +162,7 @@ export default function Features() {
             </span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            A complete AI-powered filmmaking pipeline that transforms your stories into professional-quality videos.
+            8-engine Enterprise Studio. 30–90s films in 3–5 min. FRD/NFR aligned. v0.1.0.
           </p>
         </div>
       </section>

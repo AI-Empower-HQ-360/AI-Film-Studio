@@ -1,31 +1,21 @@
 import Navigation from "@/app/components/Navigation";
 
+/* API Reference aligned with FRD (docs/requirements/FRD.md). Base: /api/v1. */
+
 export default function Docs() {
   const endpoints = [
-    {
-      method: "POST",
-      path: "/v1/generate",
-      description: "Generate a video from a text script",
-      params: ["script", "duration", "voice", "style"]
-    },
-    {
-      method: "GET",
-      path: "/v1/videos/:id",
-      description: "Get video generation status and download URL",
-      params: ["id"]
-    },
-    {
-      method: "POST",
-      path: "/v1/characters",
-      description: "Generate character images",
-      params: ["description", "count", "style"]
-    },
-    {
-      method: "GET",
-      path: "/v1/voices",
-      description: "List available voice options",
-      params: []
-    }
+    { method: "POST", path: "/api/v1/auth/register", description: "User registration (FR-001). Email/password, 8+ chars, 1 upper, 1 number.", params: ["email", "password"] },
+    { method: "POST", path: "/api/v1/auth/login", description: "User login (FR-002). Returns JWT, refresh token, 24h expiry.", params: ["email", "password"] },
+    { method: "POST", path: "/api/v1/auth/forgot-password", description: "Password reset (FR-003). Reset link expires in 1h.", params: ["email"] },
+    { method: "POST", path: "/api/v1/projects", description: "Create project (FR-010). Title max 100 chars, script max 500 words.", params: ["title", "script"] },
+    { method: "GET", path: "/api/v1/projects?page=1&status=all", description: "List projects (FR-011). Paginated, filter by status.", params: ["page", "status"] },
+    { method: "PATCH", path: "/api/v1/projects/:projectId", description: "Update project (FR-012). Draft only.", params: ["title", "script"] },
+    { method: "DELETE", path: "/api/v1/projects/:projectId", description: "Delete project (FR-013). Soft delete.", params: [] },
+    { method: "POST", path: "/api/v1/projects/:projectId/generate", description: "Submit film generation job (FR-020). Deducts 1 credit.", params: [] },
+    { method: "GET", path: "/api/v1/jobs/:jobId", description: "Track job progress (FR-021). Status, progress %, currentStep.", params: [] },
+    { method: "GET", path: "/api/v1/jobs/:jobId/download", description: "Download completed film (FR-022). Signed S3 URL, 1h.", params: [] },
+    { method: "GET", path: "/api/v1/users/me/credits", description: "View credit balance (FR-030). Balance, tier, resetDate, history.", params: [] },
+    { method: "POST", path: "/api/v1/credits/purchase", description: "Purchase credits (FR-031). $5 for 10 credits, Stripe.", params: ["quantity"] },
   ];
 
   const sdks = [
@@ -91,8 +81,9 @@ var video = await client.GenerateAsync(new VideoRequest
             </span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            Integrate AI Film Studio into your applications with our powerful RESTful API.
+            RESTful API aligned with FRD. v0.1.0. Base URL: <code className="text-sky-400">/api/v1</code>.
           </p>
+          <span className="inline-block mt-4 px-4 py-1 rounded-full bg-slate-700 text-slate-400 text-sm">FRD-aligned</span>
         </div>
       </section>
 
@@ -220,21 +211,19 @@ var video = await client.GenerateAsync(new VideoRequest
           
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-              <h3 className="text-lg font-semibold text-white mb-2">Free Tier</h3>
-              <p className="text-3xl font-bold text-sky-400 mb-2">10</p>
-              <p className="text-slate-400">requests per hour</p>
+              <h3 className="text-lg font-semibold text-white mb-2">Free (FRD)</h3>
+              <p className="text-3xl font-bold text-sky-400 mb-2">3</p>
+              <p className="text-slate-400">films / month, watermarked</p>
             </div>
-
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-              <h3 className="text-lg font-semibold text-white mb-2">Pro Tier</h3>
-              <p className="text-3xl font-bold text-purple-400 mb-2">100</p>
-              <p className="text-slate-400">requests per hour</p>
+              <h3 className="text-lg font-semibold text-white mb-2">Pro $29/mo</h3>
+              <p className="text-3xl font-bold text-purple-400 mb-2">30</p>
+              <p className="text-slate-400">films / month, no watermark</p>
             </div>
-
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-              <h3 className="text-lg font-semibold text-white mb-2">Enterprise</h3>
-              <p className="text-3xl font-bold text-pink-400 mb-2">Custom</p>
-              <p className="text-slate-400">unlimited requests</p>
+              <h3 className="text-lg font-semibold text-white mb-2">Enterprise $299/mo</h3>
+              <p className="text-3xl font-bold text-pink-400 mb-2">∞</p>
+              <p className="text-slate-400">unlimited, priority queue</p>
             </div>
           </div>
         </div>

@@ -314,6 +314,25 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
                   <option value="4k">4K (Highest quality)</option>
                 </select>
               </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-300 mb-3">Cultural context (FR-027)</label>
+                <select
+                  defaultValue=""
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-sky-500"
+                  aria-describedby="cultural-desc"
+                >
+                  <option value="">Auto-detect from script</option>
+                  <option value="south_indian">South Indian (Tamil, Telugu, Malayalam, Kannada)</option>
+                  <option value="north_indian">North Indian (Hindi, Punjabi, Bengali)</option>
+                  <option value="east_asian">East Asian (Chinese, Japanese, Korean)</option>
+                  <option value="western">Western (American, European)</option>
+                  <option value="middle_eastern">Middle Eastern</option>
+                  <option value="african">African</option>
+                  <option value="fantasy">Fantasy / Custom</option>
+                </select>
+                <p id="cultural-desc" className="text-xs text-slate-500 mt-1">Optional. Affects character attire, props, scenery.</p>
+              </div>
             </div>
           </div>
         );
@@ -409,12 +428,18 @@ export default function FilmCreationWizard({ onClose, onProjectCreate, initialSc
     }
   };
 
+  const scriptWordCount = (projectData.script || '').trim().split(/\s+/).filter(Boolean).length;
+
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return projectData.title?.trim() && projectData.script?.trim();
+        return (
+          !!projectData.title?.trim() &&
+          !!projectData.script?.trim() &&
+          scriptWordCount <= 500
+        );
       case 2:
-        return true; // Settings have defaults
+        return true;
       case 3:
         return true;
       case 4:
