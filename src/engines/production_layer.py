@@ -3,11 +3,39 @@ AI / Real Shoot Production Layer
 Hybrid production execution supporting real footage + AI
 """
 from typing import Optional, Dict, List, Any
-from pydantic import BaseModel, Field
 from enum import Enum
 from datetime import datetime
 import uuid
 import logging
+
+# Handle optional pydantic import
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    # Fallback for testing environments without pydantic
+    class BaseModel:
+        def __init__(self, **kwargs):
+            annotations = getattr(self.__class__, '__annotations__', {})
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            for key, field_type in annotations.items():
+                if not hasattr(self, key):
+                    field_value = getattr(self.__class__, key, None)
+                    if callable(field_value):
+                        setattr(self, key, field_value())
+                    elif field_value is None and key in ['shot_id', 'match_id']:
+                        setattr(self, key, str(uuid.uuid4()))
+                    elif field_value is None and key in ['created_at', 'updated_at', 'timestamp']:
+                        setattr(self, key, datetime.utcnow())
+                    elif field_value is None and key in ['metadata']:
+                        setattr(self, key, {})
+    
+    def Field(default=..., default_factory=None, **kwargs):
+        if default_factory is not None:
+            return default_factory
+        if default is not ...:
+            return default
+        return None
 
 logger = logging.getLogger(__name__)
 

@@ -373,6 +373,8 @@ class TestRDSIntegration:
     async def test_transaction_commit(self, db_service, mock_database):
         """Test transaction with commit"""
         mock_transaction = MagicMock()
+        # Make execute an AsyncMock
+        mock_transaction.execute = AsyncMock(return_value=None)
         mock_database.transaction.return_value.__aenter__ = AsyncMock(return_value=mock_transaction)
         mock_database.transaction.return_value.__aexit__ = AsyncMock()
         
@@ -386,11 +388,12 @@ class TestRDSIntegration:
     async def test_transaction_rollback(self, db_service, mock_database):
         """Test transaction rollback on error"""
         mock_transaction = MagicMock()
-        mock_transaction.execute.side_effect = Exception("DB Error")
+        # Make execute an AsyncMock that raises an exception
+        mock_transaction.execute = AsyncMock(side_effect=Exception("DB Error"))
         mock_database.transaction.return_value.__aenter__ = AsyncMock(return_value=mock_transaction)
         mock_database.transaction.return_value.__aexit__ = AsyncMock()
         
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="DB Error"):
             async with db_service.transaction() as tx:
                 await tx.execute("INVALID SQL")
         

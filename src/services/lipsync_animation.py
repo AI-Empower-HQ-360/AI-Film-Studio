@@ -42,6 +42,16 @@ class LipsyncAnimationResponse(BaseModel):
     duration: Optional[float] = None
     processing_time: Optional[float] = None
     error_message: Optional[str] = None
+    
+    @property
+    def success(self) -> bool:
+        """Check if lipsync was successful"""
+        return self.status == "completed" and self.error_message is None
+    
+    @property
+    def output_url(self) -> Optional[str]:
+        """Alias for output_video_url for compatibility"""
+        return self.output_video_url
 
 
 class LipsyncAnimationService:
@@ -53,20 +63,33 @@ class LipsyncAnimationService:
     
     async def generate_lipsync(
         self,
-        request: LipsyncRequest,
-        job_id: str
+        request: LipsyncRequest | Dict[str, Any],
+        job_id: Optional[str] = None
     ) -> LipsyncAnimationResponse:
         """
         Generate lip-synced video from character image and audio
         
         Args:
-            request: Lip-sync request
+            request: Lip-sync request (typed or dict)
             job_id: Unique job identifier
             
         Returns:
             LipsyncAnimationResponse with output video URL
         """
         try:
+            # Handle dict input for test compatibility
+            if isinstance(request, dict):
+                job_id = job_id or request.pop("job_id", f"job_{asyncio.get_event_loop().time()}")
+                # Map dict keys to request model
+                request = LipsyncRequest(
+                    character_image_url=request.get("video_url", request.get("character_image_url", "")),
+                    audio_url=request.get("audio_url", ""),
+                    model_name=request.get("model", request.get("model_name", "wav2lip"))
+                )
+            
+            if not job_id:
+                job_id = f"job_{asyncio.get_event_loop().time()}"
+                
             logger.info(f"Starting lip-sync generation for job {job_id}")
             
             # Get model configuration
@@ -110,10 +133,11 @@ class LipsyncAnimationService:
             
         except Exception as e:
             logger.error(f"Error generating lip-sync for job {job_id}: {str(e)}")
-            self.active_jobs[job_id]["status"] = "failed"
+            if job_id and job_id in self.active_jobs:
+                self.active_jobs[job_id]["status"] = "failed"
             
             return LipsyncAnimationResponse(
-                job_id=job_id,
+                job_id=job_id or "unknown",
                 status="failed",
                 error_message=str(e)
             )

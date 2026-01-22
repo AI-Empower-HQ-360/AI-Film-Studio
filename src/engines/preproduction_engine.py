@@ -3,10 +3,50 @@ AI Pre-Production Engine
 Converts scripts into executable production plans
 """
 from typing import Optional, Dict, List, Any
-from pydantic import BaseModel, Field
 from datetime import datetime, date, time
 import uuid
 import logging
+
+# Handle optional pydantic import
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    # Fallback for testing environments without pydantic
+    class BaseModel:
+        def __init__(self, **kwargs):
+            # Get class annotations to find fields with default_factory
+            annotations = getattr(self.__class__, '__annotations__', {})
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            
+            # Initialize fields with default_factory if not provided
+            for key, field_type in annotations.items():
+                if not hasattr(self, key):
+                    # Check if Field was used with default_factory
+                    field_value = getattr(self.__class__, key, None)
+                    if callable(field_value):
+                        setattr(self, key, field_value())
+                    elif field_value is None and key in ['plan_id', 'schedule_id', 'breakdown_id', 'budget_id', 'call_sheet_id', 'item_id']:
+                        # UUID fields
+                        setattr(self, key, str(uuid.uuid4()))
+                    elif field_value is None and key in ['created_at', 'updated_at', 'start_date', 'end_date']:
+                        # Datetime fields
+                        setattr(self, key, datetime.utcnow())
+                    elif field_value is None and key in ['scenes', 'cast', 'locations', 'props', 'equipment', 'crew', 'conflicts', 'scene_ids', 'shooting_days', 'items']:
+                        # List fields
+                        setattr(self, key, [])
+                    elif field_value is None and key in ['metadata', 'categories']:
+                        # Dict fields
+                        setattr(self, key, {})
+    
+    def Field(default=..., default_factory=None, **kwargs):
+        # For default_factory, return the factory function itself
+        # The BaseModel __init__ will call it
+        if default_factory is not None:
+            return default_factory
+        if default is not ...:
+            return default
+        return None
 
 logger = logging.getLogger(__name__)
 

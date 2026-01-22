@@ -94,10 +94,25 @@ async def async_client() -> AsyncGenerator[AsyncClient, None]:
 def mock_database():
     """Mock database connection"""
     db = MagicMock()
-    db.execute = MagicMock(return_value=MagicMock())
+    # Make execute async-compatible
+    mock_result = MagicMock()
+    mock_result.fetchone = AsyncMock(return_value={"id": "proj_001", "name": "Test Project"})
+    mock_result.fetchrow = AsyncMock(return_value={"id": "proj_001", "name": "Test Project"})
+    mock_result.fetch = AsyncMock(return_value=[{"id": "proj_001", "name": "Test Project"}])
+    db.execute = AsyncMock(return_value=mock_result)
+    db.fetchrow = AsyncMock(return_value={"id": "proj_001", "name": "Test Project"})
+    db.fetch = AsyncMock(return_value=[{"id": "proj_001", "name": "Test Project"}])
+    db.fetch_one = AsyncMock(return_value={"id": "proj_001", "name": "Test Project"})
+    db.fetch_all = AsyncMock(return_value=[{"id": "proj_001", "name": "Test Project"}])
     db.commit = MagicMock()
     db.rollback = MagicMock()
     db.close = MagicMock()
+    # Transaction support
+    mock_transaction = MagicMock()
+    mock_transaction.execute = AsyncMock()
+    db.transaction = MagicMock()
+    db.transaction.return_value.__aenter__ = AsyncMock(return_value=mock_transaction)
+    db.transaction.return_value.__aexit__ = AsyncMock(return_value=None)
     return db
 
 

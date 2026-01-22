@@ -9,11 +9,39 @@ except ImportError:
     # Fallback for testing environments without pydantic
     class BaseModel:
         def __init__(self, **kwargs):
+            # Get class annotations to find fields with default_factory
+            annotations = getattr(self.__class__, '__annotations__', {})
             for key, value in kwargs.items():
                 setattr(self, key, value)
+            
+            # Initialize fields with default_factory if not provided
+            for key, field_type in annotations.items():
+                if not hasattr(self, key):
+                    # Check if Field was used with default_factory
+                    field_value = getattr(self.__class__, key, None)
+                    if callable(field_value):
+                        setattr(self, key, field_value())
+                    elif field_value is None and key in ['character_id', 'version_id', 'record_id', 'period_id', 'key_id', 'sla_id']:
+                        # UUID fields
+                        setattr(self, key, str(uuid.uuid4()))
+                    elif field_value is None and key in ['created_at', 'updated_at', 'timestamp']:
+                        # Datetime fields
+                        setattr(self, key, datetime.utcnow())
+                    elif field_value is None and key in ['metadata', 'usage', 'permissions', 'physical_attributes', 'personality_traits', 'scene_assignments', 'versions']:
+                        # Dict/list fields
+                        if 'Dict' in str(field_type) or 'dict' in str(field_type).lower():
+                            setattr(self, key, {})
+                        elif 'List' in str(field_type) or 'list' in str(field_type).lower():
+                            setattr(self, key, [])
     
-    def Field(default=..., **kwargs):
-        return default
+    def Field(default=..., default_factory=None, **kwargs):
+        # For default_factory, return the factory function itself
+        # The BaseModel __init__ will call it
+        if default_factory is not None:
+            return default_factory
+        if default is not ...:
+            return default
+        return None
 from enum import Enum
 from datetime import datetime
 import uuid
@@ -99,6 +127,20 @@ class Character(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
+    
+    def __init__(self, **kwargs):
+        # Handle default_factory for fields
+        if 'character_id' not in kwargs:
+            kwargs['character_id'] = str(uuid.uuid4())
+        if 'versions' not in kwargs:
+            kwargs['versions'] = []
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        if 'updated_at' not in kwargs:
+            kwargs['updated_at'] = datetime.utcnow()
+        if 'metadata' not in kwargs:
+            kwargs['metadata'] = {}
+        super().__init__(**kwargs)
     
     @property
     def name(self) -> str:

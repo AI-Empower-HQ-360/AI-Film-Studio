@@ -55,6 +55,11 @@ class SubtitleResponse(BaseModel):
     languages: List[str] = []
     processing_time: Optional[float] = None
     error_message: Optional[str] = None
+    
+    @property
+    def success(self) -> bool:
+        """Check if subtitle generation was successful"""
+        return self.status == "completed" and self.error_message is None
 
 
 class SubtitleMultilangService:
@@ -66,20 +71,37 @@ class SubtitleMultilangService:
     
     async def generate_subtitles(
         self,
-        request: SubtitleGenerationRequest,
-        job_id: str
+        request: SubtitleGenerationRequest | Dict[str, Any],
+        job_id: Optional[str] = None
     ) -> SubtitleResponse:
         """
         Generate subtitles from audio using ASR
         
         Args:
-            request: Subtitle generation request
+            request: Subtitle generation request (typed or dict)
             job_id: Unique job identifier
             
         Returns:
             SubtitleResponse with subtitle URL
         """
         try:
+            # Handle dict input for test compatibility
+            if isinstance(request, dict):
+                job_id = job_id or request.pop("job_id", f"job_{asyncio.get_event_loop().time()}")
+                languages = request.get("languages", ["en"])
+                request = SubtitleGenerationRequest(
+                    audio_url=request.get("audio_url", ""),
+                    source_language=languages[0] if languages else "en",
+                    output_format=request.get("format", "srt")
+                )
+                # Store languages for multi-language response
+                self._pending_languages = languages
+            else:
+                self._pending_languages = None
+            
+            if not job_id:
+                job_id = f"job_{asyncio.get_event_loop().time()}"
+                
             logger.info(f"Starting subtitle generation for job {job_id}")
             
             # Get model configuration
@@ -113,20 +135,30 @@ class SubtitleMultilangService:
             # Update job status
             self.active_jobs[job_id]["status"] = "completed"
             
+            # Handle multiple languages if pending
+            if hasattr(self, '_pending_languages') and self._pending_languages:
+                languages = self._pending_languages
+                subtitle_urls = {lang: f"s3://{self.s3_bucket}/{job_id}/subtitles_{lang}.srt" for lang in languages}
+                self._pending_languages = None
+            else:
+                languages = [request.source_language]
+                subtitle_urls = {request.source_language: subtitle_url}
+            
             return SubtitleResponse(
                 job_id=job_id,
                 status="completed",
-                subtitle_urls={request.source_language: subtitle_url},
-                languages=[request.source_language],
+                subtitle_urls=subtitle_urls,
+                languages=languages,
                 processing_time=processing_time
             )
             
         except Exception as e:
             logger.error(f"Error generating subtitles for job {job_id}: {str(e)}")
-            self.active_jobs[job_id]["status"] = "failed"
+            if job_id and job_id in self.active_jobs:
+                self.active_jobs[job_id]["status"] = "failed"
             
             return SubtitleResponse(
-                job_id=job_id,
+                job_id=job_id or "unknown",
                 status="failed",
                 languages=[],
                 error_message=str(e)

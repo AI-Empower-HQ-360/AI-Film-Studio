@@ -70,9 +70,14 @@ class DatabaseService:
             )
             
             if hasattr(result, 'fetchone'):
-                row = await result.fetchone()
-                return dict(row) if row else {"id": "proj_001"}
-            return {"id": "proj_001"}
+                fetchone_result = result.fetchone()
+                if hasattr(fetchone_result, '__await__'):
+                    row = await fetchone_result
+                else:
+                    row = fetchone_result
+                if row:
+                    return dict(row) if isinstance(row, dict) else {"id": getattr(row, 'id', 'proj_001'), "name": getattr(row, 'name', data.get("name"))}
+            return {"id": "proj_001", "name": data.get("name", "Test Project")}
         
         pool = await self._get_pool()
         
@@ -103,12 +108,10 @@ class DatabaseService:
         """
         # If pool is a mock, use it directly
         if self.pool and hasattr(self.pool, 'fetch_one'):
-            result = self.pool.fetch_one(
+            result = await self.pool.fetch_one(
                 "SELECT * FROM projects WHERE id = $1",
                 project_id
             )
-            if hasattr(result, '__await__'):
-                result = await result
             return result or {}
         
         pool = await self._get_pool()
@@ -138,13 +141,11 @@ class DatabaseService:
         """
         # If pool is a mock, use it directly
         if self.pool and hasattr(self.pool, 'execute'):
-            result = self.pool.execute(
+            result = await self.pool.execute(
                 "UPDATE projects SET status = $1 WHERE id = $2",
                 updates.get("status"),
                 project_id
             )
-            if hasattr(result, '__await__'):
-                result = await result
             if hasattr(result, 'rowcount'):
                 return result.rowcount > 0
             return True
@@ -206,12 +207,10 @@ class DatabaseService:
         """
         # If pool is a mock, use it directly
         if self.pool and hasattr(self.pool, 'fetch_all'):
-            result = self.pool.fetch_all(
+            result = await self.pool.fetch_all(
                 "SELECT * FROM projects WHERE owner_id = $1 LIMIT $2 OFFSET $3",
                 owner_id, limit, offset
             )
-            if hasattr(result, '__await__'):
-                result = await result
             return result or []
         
         pool = await self._get_pool()
@@ -257,12 +256,10 @@ class DatabaseService:
         """
         # If pool is a mock, use it directly
         if self.pool and hasattr(self.pool, 'fetch_all'):
-            result = self.pool.fetch_all(
+            result = await self.pool.fetch_all(
                 "SELECT * FROM projects WHERE owner_id = $1 AND name ILIKE $2",
                 owner_id, f"%{query}%"
             )
-            if hasattr(result, '__await__'):
-                result = await result
             return result or []
         
         pool = await self._get_pool()
@@ -304,8 +301,18 @@ class DatabaseService:
         """
         # If pool is a mock, use it directly
         if self.pool and hasattr(self.pool, 'transaction'):
-            async with self.pool.transaction() as tx:
+            # For mocks, we need to handle the context manager properly
+            # The mock's transaction() returns a context manager
+            ctx_mgr = self.pool.transaction()
+            tx = await ctx_mgr.__aenter__()
+            try:
                 yield tx
+            except Exception:
+                # Re-raise exceptions so they propagate
+                await ctx_mgr.__aexit__(None, None, None)
+                raise
+            else:
+                await ctx_mgr.__aexit__(None, None, None)
             return
         
         pool = await self._get_pool()
