@@ -29,6 +29,26 @@ except ImportError:
                         setattr(self, key, datetime.utcnow())
                     elif field_value is None and key in ['metadata']:
                         setattr(self, key, {})
+        
+        def model_dump(self, **kwargs) -> Dict[str, Any]:
+            """Convert model to dictionary"""
+            result = {}
+            for key in dir(self):
+                if not key.startswith('_') and not callable(getattr(self, key)):
+                    value = getattr(self, key, None)
+                    if isinstance(value, BaseModel):
+                        result[key] = value.model_dump(**kwargs)
+                    elif isinstance(value, list):
+                        result[key] = [item.model_dump(**kwargs) if isinstance(item, BaseModel) else item for item in value]
+                    elif isinstance(value, dict):
+                        result[key] = {k: v.model_dump(**kwargs) if isinstance(v, BaseModel) else v for k, v in value.items()}
+                    else:
+                        result[key] = value
+            return result
+        
+        def dict(self, **kwargs) -> Dict[str, Any]:
+            """Alias for model_dump for compatibility"""
+            return self.model_dump(**kwargs)
     
     def Field(default=..., default_factory=None, **kwargs):
         if default_factory is not None:
@@ -53,6 +73,7 @@ class ShotType(str, Enum):
     AI_GENERATED = "ai_generated"
     PRE_VIS = "pre_vis"  # Pre-visualization placeholder
     INSERT = "insert"  # AI insert into real footage
+    HYBRID = "hybrid"  # Mix of real footage and AI
 
 
 class Shot(BaseModel):
@@ -380,7 +401,19 @@ class ProductionLayer:
         import asyncio
         gaps = [(0.0, duration)]  # Simplified - would calculate actual gap
         result = asyncio.run(self.fill_gaps_with_ai(scene_id, gaps, f"Gap between {start_shot} and {end_shot}"))
-        return result[0].dict() if result and len(result) > 0 else {}
+        if result and len(result) > 0:
+            shot = result[0]
+            if hasattr(shot, 'dict'):
+                return shot.dict()
+            elif hasattr(shot, 'model_dump'):
+                return shot.model_dump()
+            else:
+                return {
+                    "shot_id": getattr(shot, 'shot_id', str(uuid.uuid4())),
+                    "scene_id": getattr(shot, 'scene_id', scene_id),
+                    "shot_type": str(getattr(shot, 'shot_type', "ai_generated"))
+                }
+        return {}
     
     async def compose_hybrid_scene(
         self,

@@ -21,7 +21,7 @@ except ImportError:
                     field_value = getattr(self.__class__, key, None)
                     if callable(field_value):
                         setattr(self, key, field_value())
-                    elif field_value is None and key in ['character_id', 'version_id', 'record_id', 'period_id', 'key_id', 'sla_id']:
+                    elif field_value is None and key in ['character_id', 'version_id', 'record_id', 'period_id', 'key_id', 'sla_id', 'id']:
                         # UUID fields
                         setattr(self, key, str(uuid.uuid4()))
                     elif field_value is None and key in ['created_at', 'updated_at', 'timestamp']:
@@ -33,6 +33,26 @@ except ImportError:
                             setattr(self, key, {})
                         elif 'List' in str(field_type) or 'list' in str(field_type).lower():
                             setattr(self, key, [])
+        
+        def model_dump(self, **kwargs) -> Dict[str, Any]:
+            """Convert model to dictionary"""
+            result = {}
+            for key in dir(self):
+                if not key.startswith('_') and not callable(getattr(self, key)):
+                    value = getattr(self, key, None)
+                    if isinstance(value, BaseModel):
+                        result[key] = value.model_dump(**kwargs)
+                    elif isinstance(value, list):
+                        result[key] = [item.model_dump(**kwargs) if isinstance(item, BaseModel) else item for item in value]
+                    elif isinstance(value, dict):
+                        result[key] = {k: v.model_dump(**kwargs) if isinstance(v, BaseModel) else v for k, v in value.items()}
+                    else:
+                        result[key] = value
+            return result
+        
+        def dict(self, **kwargs) -> Dict[str, Any]:
+            """Alias for model_dump for compatibility"""
+            return self.model_dump(**kwargs)
     
     def Field(default=..., default_factory=None, **kwargs):
         # For default_factory, return the factory function itself
@@ -1173,24 +1193,36 @@ class CharacterEngine:
         # Store relationship
         if character1_id not in self.relationships:
             self.relationships[character1_id] = []
-        self.relationships[character1_id].append(relationship.model_dump())
+        # Handle model_dump or dict()
+        if hasattr(relationship, 'model_dump'):
+            rel_dict = relationship.model_dump()
+        elif hasattr(relationship, 'dict'):
+            rel_dict = relationship.dict()
+        else:
+            rel_dict = {
+                "id": getattr(relationship, 'id', str(uuid.uuid4())),
+                "character1_id": getattr(relationship, 'character1_id', character1_id),
+                "character2_id": getattr(relationship, 'character2_id', character2_id),
+                "type": getattr(relationship, 'type', rel_type)
+            }
+        self.relationships[character1_id].append(rel_dict)
         
         if character2_id not in self.relationships:
             self.relationships[character2_id] = []
-        self.relationships[character2_id].append(relationship.model_dump())
+        self.relationships[character2_id].append(rel_dict)
         
         # Also update character metadata if character exists
         if character1_id in self.characters:
             char1 = self.characters[character1_id]
             if "relationships" not in char1.metadata:
                 char1.metadata["relationships"] = []
-            char1.metadata["relationships"].append(relationship.model_dump())
+            char1.metadata["relationships"].append(rel_dict)
         
         if character2_id in self.characters:
             char2 = self.characters[character2_id]
             if "relationships" not in char2.metadata:
                 char2.metadata["relationships"] = []
-            char2.metadata["relationships"].append(relationship.model_dump())
+            char2.metadata["relationships"].append(rel_dict)
         
         logger.info(f"Created {rel_type} relationship between {character1_id} and {character2_id}")
         return relationship

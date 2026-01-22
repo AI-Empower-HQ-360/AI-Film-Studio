@@ -134,7 +134,7 @@ class TestPreProductionEngine:
         )
         
         if len(schedule.shooting_days) > 0:
-            call_sheet = preproduction_engine.generate_call_sheet(
+            call_sheet = preproduction_engine.create_call_sheet(
                 schedule_id=schedule.schedule_id,
                 day_number=1
             )

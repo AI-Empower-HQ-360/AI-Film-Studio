@@ -251,7 +251,8 @@ class WritingEngine:
             genre=genre,
             logline=prompt,
             characters=character_ids or [],
-            project_id=project_id
+            project_id=project_id,
+            scenes=[]
         )
         
         self.scripts[script_id] = script

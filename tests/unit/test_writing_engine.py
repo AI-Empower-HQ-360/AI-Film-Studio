@@ -46,7 +46,7 @@ class TestWritingEngine:
             result = writing_engine.generate_script(prompt)
             
             assert result is not None
-            assert 'title' in result or hasattr(result, 'title')
+            assert hasattr(result, 'title') or (isinstance(result, dict) and 'title' in result)
             mock_openai_client.chat.completions.create.assert_called()
 
     @pytest.mark.unit

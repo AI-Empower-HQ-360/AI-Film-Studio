@@ -33,12 +33,32 @@ except ImportError:
                     elif field_value is None and key in ['created_at', 'updated_at', 'due_date', 'target_date', 'completed_at']:
                         # Datetime fields
                         setattr(self, key, datetime.utcnow())
-                    elif field_value is None and key in ['tags', 'members', 'assets', 'milestones', 'reviews', 'audit_logs']:
-                        # List fields
+                    elif 'List' in str(field_type) or 'list' in str(field_type).lower() or key in ['tags', 'members', 'assets', 'milestones', 'reviews', 'audit_logs']:
+                        # List fields - always initialize as list
                         setattr(self, key, [])
                     elif field_value is None and key in ['metadata', 'usage', 'permissions']:
                         # Dict fields
                         setattr(self, key, {})
+        
+        def model_dump(self, **kwargs) -> Dict[str, Any]:
+            """Convert model to dictionary"""
+            result = {}
+            for key in dir(self):
+                if not key.startswith('_') and not callable(getattr(self, key)):
+                    value = getattr(self, key, None)
+                    if isinstance(value, BaseModel):
+                        result[key] = value.model_dump(**kwargs)
+                    elif isinstance(value, list):
+                        result[key] = [item.model_dump(**kwargs) if isinstance(item, BaseModel) else item for item in value]
+                    elif isinstance(value, dict):
+                        result[key] = {k: v.model_dump(**kwargs) if isinstance(v, BaseModel) else v for k, v in value.items()}
+                    else:
+                        result[key] = value
+            return result
+        
+        def dict(self, **kwargs) -> Dict[str, Any]:
+            """Alias for model_dump for compatibility"""
+            return self.model_dump(**kwargs)
     
     def Field(default=..., default_factory=None, **kwargs):
         # For default_factory, return the factory function itself
@@ -380,6 +400,9 @@ class ProductionManager:
             status=status or MilestoneStatus.NOT_STARTED
         )
         
+        # Force initialize list fields
+        if not hasattr(timeline, 'milestones') or not isinstance(timeline.milestones, list):
+            timeline.milestones = []
         timeline.milestones.append(milestone)
         
         logger.info(f"Created milestone {milestone.milestone_id} for project {project_id}")
