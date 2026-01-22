@@ -1,16 +1,28 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+// ESLint 9.x Flat Config for Next.js
+// This is a minimal flat config that works with ESLint 9.x
+// Next.js will use .eslintrc.json, but this provides additional rules
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Ignore patterns (must be first in flat config)
+  {
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "dist/**",
+      "build/**",
+      "*.config.js",
+      "*.config.mjs",
+      "*.config.ts",
+      "*.config.cjs",
+      "public/**",
+      "coverage/**",
+      ".turbo/**",
+      ".eslintrc.json.bak",
+    ],
+  },
+  
+  // Custom rules (Next.js rules come from .eslintrc.json)
   {
     rules: {
       // TypeScript rules
@@ -28,30 +40,10 @@ const eslintConfig = [
       "react/no-unescaped-entities": "warn",
       "react-hooks/exhaustive-deps": "warn",
       
-      // Next.js rules
-      "@next/next/no-html-link-for-pages": "warn",
-      "@next/next/no-img-element": "warn",
-      
       // General rules
       "no-console": ["warn", { allow: ["warn", "error"] }],
       "prefer-const": "warn",
     },
-  },
-  {
-    ignores: [
-      "node_modules/**",
-      ".next/**",
-      "out/**",
-      "dist/**",
-      "build/**",
-      "*.config.js",
-      "*.config.mjs",
-      "*.config.ts",
-      "*.config.cjs",
-      "public/**",
-      "coverage/**",
-      ".turbo/**",
-    ],
   },
 ];
 
