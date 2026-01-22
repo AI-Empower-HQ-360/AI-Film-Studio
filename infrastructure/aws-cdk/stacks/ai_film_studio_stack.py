@@ -214,6 +214,14 @@ class AIFilmStudioStack(Stack):
             retention_period=Duration.days(14)
         )
 
+        backend_sg = ec2.SecurityGroup(
+            self,
+            "BackendSecurityGroup",
+            vpc=vpc,
+            description="Security group for backend API",
+            allow_all_outbound=True
+        )
+
         # ==================== ElastiCache Redis ====================
         # Redis subnet group
         redis_subnet_group = elasticache.CfnSubnetGroup(
@@ -244,8 +252,7 @@ class AIFilmStudioStack(Stack):
             vpc_security_group_ids=[redis_sg.security_group_id],
             engine_version="7.0",
             preferred_maintenance_window="sun:05:00-sun:06:00",
-            snapshot_retention_limit=7 if env_name == "production" else 1,
-            automatic_failover_enabled=(env_name == "production")
+            snapshot_retention_limit=7 if env_name == "production" else 1
         )
 
         # Allow backend access to Redis
@@ -354,14 +361,6 @@ class AIFilmStudioStack(Stack):
 
         # ==================== Security Groups ====================
         # Backend security group
-        backend_sg = ec2.SecurityGroup(
-            self,
-            "BackendSecurityGroup",
-            vpc=vpc,
-            description="Security group for backend API",
-            allow_all_outbound=True
-        )
-
         # Allow database access from backend
         db_security_group.add_ingress_rule(
             backend_sg,
@@ -489,8 +488,7 @@ class AIFilmStudioStack(Stack):
             vpc_subnets=ec2.SubnetSelection(
                 subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS
             ),
-            assign_public_ip=False,
-            enable_logging=True
+            assign_public_ip=False
         )
 
         backend_service.attach_to_application_target_group(backend_target_group)
