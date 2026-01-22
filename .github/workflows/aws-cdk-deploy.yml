@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     environment:
-      name: development
+      name: dev
       url: https://dev.aifilmstudio.com
     defaults:
       run:
@@ -99,7 +99,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -119,7 +119,9 @@ jobs:
       - name: Bootstrap CDK (if needed)
         run: |
           source .venv/bin/activate
-          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ env.AWS_REGION }} || true
+          ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          REGION=${{ secrets.AWS_REGION || 'us-east-1' }}
+          cdk bootstrap aws://$ACCOUNT_ID/$REGION || true
 
       - name: CDK Diff
         run: |
