@@ -10,20 +10,38 @@
 
 **Command:**
 ```bash
-pytest tests/unit/ -v --tb=short
+pytest tests/unit/ --tb=no -q
 ```
 
-**Status:** ⚠️ Tests running but many failures detected
+**Results:**
+- ✅ **79 passed**
+- ❌ **73 failed**
+- ⚠️ **170 warnings**
 
-**Issues Found:**
-- Multiple test failures in `test_character_engine.py`
-- Some failures in `test_enterprise_platform.py`
-- RuntimeWarning: coroutine 'EnterprisePlatform.record_usage' was never awaited
+**Main Issues:**
+1. **Async/Await Issues:**
+   - `EnterprisePlatform.record_usage()` - coroutine never awaited
+   - `ProductionLayer.upload_real_footage()` - async method called sync
+   - `ProductionManager.create_milestone()` - async method called sync
+
+2. **Missing Methods:**
+   - `PreProductionEngine.create_schedule()` - not found
+   - `PreProductionEngine.create_breakdown()` - not found
+   - `PostProductionEngine.mix_audio()` - not found
+
+3. **Project Lookup Issues:**
+   - Multiple "Project not found" errors in `test_production_management.py`
+   - Tests create projects but can't find them later
+
+4. **Validation Errors:**
+   - `Shot` model validation errors
+   - Video generation service error handling
 
 **Next Steps:**
-1. Review specific test failures
-2. Fix async/await issues
-3. Align test expectations with implementation
+1. Fix async/await issues (add sync wrappers or await calls)
+2. Add missing methods to engines
+3. Fix project lookup in ProductionManager
+4. Review and fix validation errors
 
 ### Frontend E2E Tests
 
@@ -32,7 +50,18 @@ pytest tests/unit/ -v --tb=short
 cd frontend && npm run test:e2e
 ```
 
-**Status:** ✅ Dependencies installed, ready to run
+**Status:** ⚠️ Missing dependency: `axe-playwright`
+
+**Error:**
+```
+Error: Cannot find module 'axe-playwright'
+```
+
+**Fix Applied:**
+```bash
+cd frontend
+npm install --save-dev axe-playwright
+```
 
 **Note:** E2E tests require the frontend to be running or deployed.
 
