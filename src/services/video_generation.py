@@ -719,8 +719,20 @@ class VideoGenerationService:
             Job ID
         """
         import uuid
+        import json
+        import os
         
         job_id = str(uuid.uuid4())
+        
+        if self.sqs_client:
+            self.sqs_client.send_message(
+                QueueUrl=os.environ.get("SQS_VIDEO_QUEUE", "video-queue"),
+                MessageBody=json.dumps({
+                    "job_id": job_id,
+                    "request": request.dict(),
+                    "priority": priority
+                })
+            )
         
         self.active_jobs[job_id] = {
             "status": "queued",
@@ -751,34 +763,3 @@ class VideoGenerationService:
                 pass
         
         return self.get_job_status(job_id)
-    
-    async def submit_job(self, job_data: Dict[str, Any]) -> str:
-        """
-        Submit a job to the video generation queue (alias for submit_to_queue)
-        
-        Args:
-            job_data: Job configuration dictionary
-            
-        Returns:
-            Job ID
-        """
-        import uuid
-        
-        job_id = str(uuid.uuid4())
-        
-        if self.sqs_client:
-            self.sqs_client.send_message(
-                QueueUrl=os.environ.get("SQS_VIDEO_QUEUE", "video-queue"),
-                MessageBody=json.dumps({
-                    "job_id": job_id,
-                    **job_data
-                })
-            )
-        
-        self.active_jobs[job_id] = {
-            "status": "queued",
-            "data": job_data
-        }
-        
-        logger.info(f"Submitted job {job_id} to queue")
-        return job_id
