@@ -1,0 +1,32 @@
+{
+  "name": "ai-film-studio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "AI Film Studio - Enterprise Studio Operating System",
+  "scripts": {
+    "test:backend": "pytest tests/unit/ -v --tb=short",
+    "test:backend:smoke": "pytest tests/unit/ -v --tb=short -m smoke",
+    "test:backend:coverage": "pytest tests/unit/ --cov=src --cov-report=html --cov-report=term",
+    "test:frontend": "cd frontend && npm run test:run",
+    "test:e2e": "cd frontend && npm run test:e2e",
+    "test:e2e:ui": "cd frontend && npm run test:e2e:ui",
+    "test:e2e:production": "cd frontend && npm run test:e2e:production",
+    "test:all": "npm run test:backend && npm run test:frontend && npm run test:e2e",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "pip install -r requirements.txt",
+    "install:all": "npm run install:backend && npm run install:frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AI-Empower-HQ-360/AI-Film-Studio.git"
+  },
+  "keywords": [
+    "ai",
+    "film",
+    "studio",
+    "video-generation",
+    "enterprise"
+  ],
+  "author": "AI-Empower-HQ-360",
+  "license": "MIT"
+}
