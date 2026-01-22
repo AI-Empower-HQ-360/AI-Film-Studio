@@ -7,6 +7,8 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  Python 3.12 Local Setup for CDK" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
+Write-Host "Current directory: $((Get-Location).Path)" -ForegroundColor Gray
+Write-Host ""
 
 # Create directory
 $pythonDir = "python-3.12-local"
@@ -29,23 +31,65 @@ if (-not $skipDownload) {
     $pythonUrl = "https://www.python.org/ftp/python/3.12.0/python-3.12.0-embed-amd64.zip"
     $zipFile = "python-3.12.0-embed-amd64.zip"
 
-    Write-Host "📥 Downloading Python 3.12 embeddable package..." -ForegroundColor Cyan
-    Write-Host "   URL: $pythonUrl" -ForegroundColor Gray
+    Write-Host "[*] Downloading Python 3.12 embeddable package..." -ForegroundColor Cyan
+    Write-Host "    URL: $pythonUrl" -ForegroundColor Gray
+    Write-Host "    This may take a few minutes..." -ForegroundColor Gray
+    
     try {
-        Invoke-WebRequest -Uri $pythonUrl -OutFile $zipFile -UseBasicParsing
-        Write-Host "✅ Download complete" -ForegroundColor Green
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri $pythonUrl -OutFile $zipFile -UseBasicParsing -ErrorAction Stop
+        
+        # Verify file was downloaded
+        if (-not (Test-Path $zipFile)) {
+            throw "Downloaded file not found: $zipFile"
+        }
+        
+        $fileSize = (Get-Item $zipFile).Length
+        if ($fileSize -lt 1000000) {
+            throw "Downloaded file is too small ($fileSize bytes). Download may have failed."
+        }
+        
+        Write-Host "[OK] Download complete ($([math]::Round($fileSize/1MB, 2)) MB)" -ForegroundColor Green
     } catch {
-        Write-Host "❌ Download failed: $_" -ForegroundColor Red
+        Write-Host "[ERROR] Download failed: $_" -ForegroundColor Red
+        if (Test-Path $zipFile) {
+            Remove-Item $zipFile -ErrorAction SilentlyContinue
+        }
         exit 1
     }
 
     # Extract
-    Write-Host "📦 Extracting Python..." -ForegroundColor Cyan
+    Write-Host "[*] Extracting Python..." -ForegroundColor Cyan
+    
+    # Verify zip file exists before extraction
+    if (-not (Test-Path $zipFile)) {
+        Write-Host "[ERROR] Zip file not found: $zipFile" -ForegroundColor Red
+        exit 1
+    }
+    
     try {
-        Expand-Archive -Path $zipFile -DestinationPath $pythonDir -Force
-        Write-Host "✅ Extraction complete" -ForegroundColor Green
+        # Create destination directory if it doesn't exist
+        if (-not (Test-Path $pythonDir)) {
+            New-Item -ItemType Directory -Path $pythonDir -Force | Out-Null
+        }
+        
+        Expand-Archive -Path $zipFile -DestinationPath $pythonDir -Force -ErrorAction Stop
+        
+        # Verify extraction
+        $pythonExe = Join-Path $pythonDir "python.exe"
+        if (-not (Test-Path $pythonExe)) {
+            throw "Python executable not found after extraction: $pythonExe"
+        }
+        
+        Write-Host "[OK] Extraction complete" -ForegroundColor Green
     } catch {
-        Write-Host "❌ Extraction failed: $_" -ForegroundColor Red
+        Write-Host "[ERROR] Extraction failed: $_" -ForegroundColor Red
+        Write-Host "       Zip file location: $((Get-Location).Path)\$zipFile" -ForegroundColor Gray
+        if (Test-Path $zipFile) {
+            Write-Host "       Zip file exists: Yes ($((Get-Item $zipFile).Length) bytes)" -ForegroundColor Gray
+        } else {
+            Write-Host "       Zip file exists: No" -ForegroundColor Gray
+        }
         exit 1
     }
 
@@ -53,25 +97,47 @@ if (-not $skipDownload) {
     Remove-Item $zipFile -ErrorAction SilentlyContinue
 
     # Download get-pip.py
-    Write-Host "📥 Setting up pip..." -ForegroundColor Cyan
+    Write-Host "[*] Setting up pip..." -ForegroundColor Cyan
     $getPipUrl = "https://bootstrap.pypa.io/get-pip.py"
     $getPipFile = Join-Path $pythonDir "get-pip.py"
     try {
-        Invoke-WebRequest -Uri $getPipUrl -OutFile $getPipFile -UseBasicParsing
-        Write-Host "✅ pip setup script downloaded" -ForegroundColor Green
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri $getPipUrl -OutFile $getPipFile -UseBasicParsing -ErrorAction Stop
+        Write-Host "[OK] pip setup script downloaded" -ForegroundColor Green
     } catch {
-        Write-Host "❌ Failed to download pip setup: $_" -ForegroundColor Red
-        exit 1
+        Write-Host "[ERROR] Failed to download pip setup: $_" -ForegroundColor Red
+        Write-Host "        Trying alternative URL..." -ForegroundColor Yellow
+        
+        # Try alternative URL
+        $getPipUrlAlt = "https://raw.githubusercontent.com/pypa/get-pip/main/public/get-pip.py"
+        try {
+            Invoke-WebRequest -Uri $getPipUrlAlt -OutFile $getPipFile -UseBasicParsing -ErrorAction Stop
+            Write-Host "[OK] pip setup script downloaded (alternative URL)" -ForegroundColor Green
+        } catch {
+            Write-Host "[ERROR] Both URLs failed. Please download manually:" -ForegroundColor Red
+            Write-Host "        https://bootstrap.pypa.io/get-pip.py" -ForegroundColor Gray
+            exit 1
+        }
     }
 
     # Install pip
-    Write-Host "🔧 Installing pip..." -ForegroundColor Cyan
+    Write-Host "[*] Installing pip..." -ForegroundColor Cyan
     $pythonExe = Join-Path $pythonDir "python.exe"
+    if (-not (Test-Path $pythonExe)) {
+        Write-Host "[ERROR] Python executable not found: $pythonExe" -ForegroundColor Red
+        exit 1
+    }
+    
     try {
-        & $pythonExe $getPipFile
-        Write-Host "✅ pip installed" -ForegroundColor Green
+        & $pythonExe $getPipFile 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "[OK] pip installed" -ForegroundColor Green
+        } else {
+            throw "pip installation returned exit code: $LASTEXITCODE"
+        }
     } catch {
-        Write-Host "❌ pip installation failed: $_" -ForegroundColor Red
+        Write-Host "[ERROR] pip installation failed: $_" -ForegroundColor Red
+        Write-Host "        You may need to install pip manually" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -133,27 +199,51 @@ try {
 
 # Verify installation
 Write-Host ""
-Write-Host "🔍 Verifying installation..." -ForegroundColor Cyan
-$pythonVersion = python --version 2>&1
-Write-Host "   Python: $pythonVersion" -ForegroundColor White
+Write-Host "[*] Verifying installation..." -ForegroundColor Cyan
 
+# Check if virtual environment is activated
+$venvPython = ".venv-cdk\Scripts\python.exe"
+if (Test-Path $venvPython) {
+    $pythonVersion = & $venvPython --version 2>&1
+    Write-Host "[OK] Python: $pythonVersion" -ForegroundColor Green
+} else {
+    Write-Host "[WARN] Virtual environment Python not found" -ForegroundColor Yellow
+    Write-Host "       Activate environment first: .venv-cdk\Scripts\Activate.ps1" -ForegroundColor Gray
+}
+
+# Check pip
+if (Test-Path $venvPython) {
+    $pipVersion = & $venvPython -m pip --version 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "[OK] pip: $($pipVersion -split ' ' | Select-Object -First 2 -Join ' ')" -ForegroundColor Green
+    }
+}
+
+# Check CDK
 try {
     $cdkVersion = cdk --version 2>&1
-    Write-Host "   CDK: $cdkVersion" -ForegroundColor White
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "[OK] CDK: $cdkVersion" -ForegroundColor Green
+    }
 } catch {
-    Write-Host "   CDK: Not installed (install with: npm install -g aws-cdk)" -ForegroundColor Yellow
+    Write-Host "[INFO] CDK: Not installed globally" -ForegroundColor Yellow
+    Write-Host "        Install with: npm install -g aws-cdk" -ForegroundColor Gray
 }
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
-Write-Host "  ✅ Setup Complete!" -ForegroundColor Green
+Write-Host "  [OK] Setup Complete!" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "To activate the environment:" -ForegroundColor Yellow
-Write-Host "  .venv-cdk\Scripts\Activate.ps1" -ForegroundColor White
+Write-Host "Next steps:" -ForegroundColor Yellow
+Write-Host "  1. Activate the environment:" -ForegroundColor White
+Write-Host "     .venv-cdk\Scripts\Activate.ps1" -ForegroundColor Gray
 Write-Host ""
-Write-Host "To test CDK:" -ForegroundColor Yellow
-Write-Host "  cdk ls      # List stacks" -ForegroundColor White
-Write-Host "  cdk synth   # Synthesize CloudFormation" -ForegroundColor White
-Write-Host "  cdk diff    # Show differences" -ForegroundColor White
+Write-Host "  2. Verify Python version:" -ForegroundColor White
+Write-Host "     python --version" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  3. Test CDK commands:" -ForegroundColor White
+Write-Host "     cdk ls      # List stacks" -ForegroundColor Gray
+Write-Host "     cdk synth   # Synthesize CloudFormation" -ForegroundColor Gray
+Write-Host "     cdk diff    # Show differences" -ForegroundColor Gray
 Write-Host ""
