@@ -818,48 +818,85 @@ class CharacterEngine:
         logger.info(f"Saved character {character.character_id}")
         return True
     
+    def save(self, character: Character) -> bool:
+        """
+        Save character (alias for save_character for test compatibility)
+        
+        Args:
+            character: Character object to save
+            
+        Returns:
+            True if saved successfully
+        """
+        return self.save_character(character)
+    
+    def load(self, character_id: str) -> Optional[Character]:
+        """
+        Load character from storage
+        
+        Args:
+            character_id: Character ID to load
+            
+        Returns:
+            Character object or None if not found
+        """
+        if character_id in self.characters:
+            return self.characters[character_id]
+        logger.warning(f"Character {character_id} not found")
+        return None
+    
     def set_pose(
         self,
-        character: Character,
+        character_id: str,
         pose: str
-    ) -> Character:
+    ) -> Optional[Character]:
         """
         Set character pose
         
         Args:
-            character: Character object
+            character_id: Character ID
             pose: Pose description
             
         Returns:
-            Updated Character object
+            Updated Character object or None if not found
         """
+        if character_id not in self.characters:
+            logger.warning(f"Character {character_id} not found")
+            return None
+        
+        character = self.characters[character_id]
         active_version = character.get_active_version()
         if active_version:
             active_version.visual.pose = pose
         character.updated_at = datetime.utcnow()
-        logger.info(f"Set pose '{pose}' for character {character.character_id}")
+        logger.info(f"Set pose '{pose}' for character {character_id}")
         return character
     
     def set_expression(
         self,
-        character: Character,
+        character_id: str,
         expression: str
-    ) -> Character:
+    ) -> Optional[Character]:
         """
         Set character facial expression
         
         Args:
-            character: Character object
+            character_id: Character ID
             expression: Expression/emotion
             
         Returns:
-            Updated Character object
+            Updated Character object or None if not found
         """
+        if character_id not in self.characters:
+            logger.warning(f"Character {character_id} not found")
+            return None
+        
+        character = self.characters[character_id]
         active_version = character.get_active_version()
         if active_version:
             active_version.visual.emotion = expression
         character.updated_at = datetime.utcnow()
-        logger.info(f"Set expression '{expression}' for character {character.character_id}")
+        logger.info(f"Set expression '{expression}' for character {character_id}")
         return character
     
     async def generate_animation_frames(
@@ -886,6 +923,37 @@ class CharacterEngine:
             })
         
         logger.info(f"Generated {num_frames} animation frames for character {character.character_id}")
+        return frames
+    
+    async def generate_animation(
+        self,
+        character_id: str,
+        animation_type: str = "walk",
+        num_frames: int = 8
+    ) -> List[Dict[str, Any]]:
+        """
+        Generate animation for a character (test-compatible wrapper)
+        
+        Args:
+            character_id: Character ID
+            animation_type: Type of animation (walk, run, idle, etc.)
+            num_frames: Number of frames to generate
+            
+        Returns:
+            List of frame dictionaries
+        """
+        if character_id not in self.characters:
+            logger.warning(f"Character {character_id} not found")
+            return []
+        
+        character = self.characters[character_id]
+        frames = await self.generate_animation_frames(character, num_frames)
+        
+        # Add animation type metadata
+        for frame in frames:
+            frame["animation_type"] = animation_type
+        
+        logger.info(f"Generated {num_frames} {animation_type} animation frames for character {character_id}")
         return frames
     
     def create_relationship(
@@ -925,14 +993,31 @@ class CharacterEngine:
         logger.info(f"Created {relationship_type} relationship between {character1.character_id} and {character2.character_id}")
         return relationship
     
-    def get_relationships(self, character: Character) -> List[Dict[str, Any]]:
+    def get_relationships(self, character_id: str) -> List[Dict[str, Any]]:
         """
         Get all relationships for a character
+        
+        Args:
+            character_id: Character ID
+            
+        Returns:
+            List of relationships
+        """
+        if character_id not in self.characters:
+            logger.warning(f"Character {character_id} not found")
+            return []
+        
+        character = self.characters[character_id]
+        return character.metadata.get("relationships", [])
+    
+    def to_dict(self, character: Character) -> Dict[str, Any]:
+        """
+        Convert character to dictionary (for serialization)
         
         Args:
             character: Character object
             
         Returns:
-            List of relationships
+            Dictionary representation of character
         """
-        return character.metadata.get("relationships", [])
+        return character.model_dump()

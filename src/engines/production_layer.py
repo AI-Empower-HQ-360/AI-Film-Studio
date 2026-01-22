@@ -38,6 +38,11 @@ class Shot(BaseModel):
     duration: Optional[float] = None
     timestamp: Optional[float] = None  # Position in scene
     metadata: Dict[str, Any] = Field(default_factory=dict)
+    
+    @property
+    def is_real_footage(self) -> bool:
+        """Check if shot is real footage"""
+        return self.shot_type == ShotType.REAL_FOOTAGE
 
 
 class ContinuityMatch(BaseModel):
@@ -135,7 +140,8 @@ class ProductionLayer:
     async def generate_ai_shot(
         self,
         scene_id: str,
-        prompt: str,
+        description: Optional[str] = None,
+        prompt: Optional[str] = None,
         character_ids: Optional[List[str]] = None,
         duration: float = 5.0,
         style: str = "cinematic"
@@ -150,15 +156,19 @@ class ProductionLayer:
         """
         # TODO: Integrate with video generation service
         # Would generate shot matching scene requirements
+        shot_id = str(uuid.uuid4())
+        prompt_text = prompt or description or "AI-generated scene"
         
         shot = Shot(
+            shot_id=shot_id,
             scene_id=scene_id,
             shot_type=ShotType.AI_GENERATED,
             source_type="generated",
             duration=duration,
-            video_url=f"s3://{self.s3_bucket}/shots/{shot.shot_id}/shot.mp4",
+            video_url=f"s3://{self.s3_bucket}/shots/{shot_id}/shot.mp4",
             metadata={
-                "prompt": prompt,
+                "prompt": prompt_text,
+                "description": description,
                 "character_ids": character_ids or [],
                 "style": style
             }
