@@ -421,6 +421,24 @@ class CharacterEngine:
         logger.info(f"Deleted character {character_id}")
         return True
     
+    def delete(self, character_id: str) -> bool:
+        """
+        Delete a character (synchronous alias for delete_character)
+        
+        Args:
+            character_id: ID of character to delete
+            
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            return loop.run_until_complete(self.delete_character(character_id))
+        except RuntimeError:
+            # If no event loop, create a new one
+            return asyncio.run(self.delete_character(character_id))
+    
     async def clone_character(
         self,
         character_id: str,
@@ -495,3 +513,26 @@ class CharacterEngine:
         logger.info(f"Cloned character {character_id} to {new_character_id}")
         
         return cloned_character
+    
+    def clone(
+        self,
+        character_id: str,
+        new_name: Optional[str] = None
+    ) -> Character:
+        """
+        Clone a character (synchronous alias for clone_character)
+        
+        Args:
+            character_id: ID of character to clone
+            new_name: Optional new name for the clone
+            
+        Returns:
+            Cloned Character object
+        """
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            return loop.run_until_complete(self.clone_character(character_id, new_name))
+        except RuntimeError:
+            # If no event loop, create a new one
+            return asyncio.run(self.clone_character(character_id, new_name))
