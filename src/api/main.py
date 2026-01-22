@@ -161,10 +161,11 @@ async def get_script(script_id: str):
     return await writing_engine.get_script(script_id)
 
 # Production Management endpoints
-@app.post("/api/v1/projects")
+@app.post("/api/v1/projects", status_code=201)
 async def create_project(project_data: dict):
     """Create a new production project"""
-    return await production_manager.create_project(**project_data)
+    project = production_manager.create_project(**project_data)
+    return {"id": project.project_id, "name": project.name, "status": "created"}
 
 @app.get("/api/v1/projects/{project_id}")
 async def get_project(project_id: str):

@@ -176,18 +176,27 @@ class ProductionManager:
     
     def create_project(
         self,
-        name: str,
-        created_by: str,
+        name: str = None,
+        created_by: str = "system",
         description: Optional[str] = None,
-        organization_id: Optional[str] = None
+        organization_id: Optional[str] = None,
+        **kwargs
     ) -> Project:
         """Create a new production project (synchronous - tests expect sync)"""
+        # Handle if name not provided but in kwargs
+        if name is None:
+            name = kwargs.get("title", "Untitled Project")
+        
         project = Project(
             name=name,
             description=description,
             created_by=created_by,
             organization_id=organization_id
         )
+        
+        # Store additional kwargs in metadata
+        if kwargs:
+            project.metadata.update(kwargs)
         
         self.projects[project.project_id] = project
         
