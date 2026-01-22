@@ -16,7 +16,13 @@ from src.engines import (
     ProductionLayer,
     PostProductionEngine,
     MarketingEngine,
-    EnterprisePlatform
+    EnterprisePlatform,
+    ImageCreationEngine,
+    DirectorEngine,
+    ScreenplayEngine,
+    VoiceModulationEngine,
+    MovementEngine,
+    DialoguesEngine
 )
 from src.engines.postproduction_engine import SceneAwareVoiceRequest, SceneAwareMusicRequest
 import os
@@ -52,6 +58,12 @@ production_layer = ProductionLayer()
 postproduction_engine = PostProductionEngine()
 marketing_engine = MarketingEngine()
 enterprise_platform = EnterprisePlatform()
+image_creation_engine = ImageCreationEngine()
+director_engine = DirectorEngine()
+screenplay_engine = ScreenplayEngine()
+voice_modulation_engine = VoiceModulationEngine()
+movement_engine = MovementEngine()
+dialogues_engine = DialoguesEngine()
 
 # Mount static files
 static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static")
@@ -487,10 +499,16 @@ async def rate_limit_test():
     return {"status": "ok"}
 
 # ==================== Podcast API Endpoints ====================
-from src.api.routes import podcast, subtitles
+from src.api.routes import podcast, subtitles, images, director, screenplay, voice_modulation, movement, dialogues
 
 app.include_router(podcast.router)
 app.include_router(subtitles.router)
+app.include_router(images.router)
+app.include_router(director.router)
+app.include_router(screenplay.router)
+app.include_router(voice_modulation.router)
+app.include_router(movement.router)
+app.include_router(dialogues.router)
 
 if __name__ == "__main__":
     import uvicorn

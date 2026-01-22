@@ -15,6 +15,12 @@ from . import delivery
 from . import auth
 from . import podcast
 from . import subtitles
+from . import images
+from . import director
+from . import screenplay
+from . import voice_modulation
+from . import movement
+from . import dialogues
 
 __all__ = [
     "projects",
@@ -26,4 +32,10 @@ __all__ = [
     "auth",
     "podcast",
     "subtitles",
+    "images",
+    "director",
+    "screenplay",
+    "voice_modulation",
+    "movement",
+    "dialogues",
 ]

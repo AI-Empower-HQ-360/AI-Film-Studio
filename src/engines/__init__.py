@@ -44,6 +44,36 @@ try:
 except ImportError:
     EnterprisePlatform = None
 
+try:
+    from .image_creation_engine import ImageCreationEngine, ImageGenerationRequest, GeneratedImage
+except ImportError:
+    ImageCreationEngine = ImageGenerationRequest = GeneratedImage = None
+
+try:
+    from .director_engine import DirectorEngine, ShotComposition, SceneDirection
+except ImportError:
+    DirectorEngine = ShotComposition = SceneDirection = None
+
+try:
+    from .screenplay_engine import ScreenplayEngine, Screenplay, Scene as ScreenplayScene, ScreenplayElement
+except ImportError:
+    ScreenplayEngine = Screenplay = ScreenplayScene = ScreenplayElement = None
+
+try:
+    from .voice_modulation_engine import VoiceModulationEngine, VoiceModulationRequest, VoiceModulationResult
+except ImportError:
+    VoiceModulationEngine = VoiceModulationRequest = VoiceModulationResult = None
+
+try:
+    from .movement_engine import MovementEngine, Movement, Gesture, AnimationSequence
+except ImportError:
+    MovementEngine = Movement = Gesture = AnimationSequence = None
+
+try:
+    from .dialogues_engine import DialoguesEngine, Conversation, DialogueLine
+except ImportError:
+    DialoguesEngine = Conversation = DialogueLine = None
+
 __all__ = [
     "CharacterEngine",
     "Character",
@@ -65,4 +95,24 @@ __all__ = [
     "PostProductionEngine",
     "MarketingEngine",
     "EnterprisePlatform",
+    "ImageCreationEngine",
+    "ImageGenerationRequest",
+    "GeneratedImage",
+    "DirectorEngine",
+    "ShotComposition",
+    "SceneDirection",
+    "ScreenplayEngine",
+    "Screenplay",
+    "ScreenplayScene",
+    "ScreenplayElement",
+    "VoiceModulationEngine",
+    "VoiceModulationRequest",
+    "VoiceModulationResult",
+    "MovementEngine",
+    "Movement",
+    "Gesture",
+    "AnimationSequence",
+    "DialoguesEngine",
+    "Conversation",
+    "DialogueLine",
 ]

@@ -312,6 +312,70 @@ class APIClient {
   async getTranslationServices(): Promise<{ services: any[] }> {
     return this.request("/api/v1/subtitles/translation-services");
   }
+
+  // Image Creation endpoints
+  async generateImage(data: {
+    prompt: string;
+    age_group?: string;
+    gender?: string;
+    cultural_region?: string;
+    body_type?: string;
+    dress_type?: string;
+    location?: string;
+    animal_type?: string;
+    style?: string;
+    resolution?: string;
+    num_images?: number;
+    seed?: number;
+    negative_prompt?: string;
+    cultural_context?: Record<string, any>;
+  }): Promise<{ job_id: string; status: string }> {
+    return this.request<{ job_id: string; status: string }>("/api/v1/images/generate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getImageStatus(jobId: string): Promise<{
+    job_id: string;
+    status: string;
+    images?: Array<{ image_id: string; url: string; metadata?: any }>;
+    prompt?: string;
+    processing_time?: number;
+    error_message?: string;
+  }> {
+    return this.request(`/api/v1/images/status/${jobId}`);
+  }
+
+  async getImageOptions(): Promise<{
+    age_groups: any[];
+    genders: any[];
+    cultures: any[];
+    animals: any[];
+    body_types: any[];
+    dress_types: any[];
+    locations: any[];
+  }> {
+    const [ageGroups, genders, cultures, animals, bodyTypes, dressTypes, locations] = await Promise.all([
+      this.request<{ age_groups: any[] }>("/api/v1/images/options/age-groups"),
+      this.request<{ genders: any[] }>("/api/v1/images/options/genders"),
+      this.request<{ cultures: any[] }>("/api/v1/images/options/cultures"),
+      this.request<{ animals: any[] }>("/api/v1/images/options/animals"),
+      this.request<{ body_types: any[] }>("/api/v1/images/options/body-types"),
+      this.request<{ dress_types: any[] }>("/api/v1/images/options/dress-types"),
+      this.request<{ locations: any[] }>("/api/v1/images/options/locations")
+    ]);
+
+    return {
+      age_groups: ageGroups.age_groups,
+      genders: genders.genders,
+      cultures: cultures.cultures,
+      animals: animals.animals,
+      body_types: bodyTypes.body_types,
+      dress_types: dressTypes.dress_types,
+      locations: locations.locations
+    };
+  }
 }
 
 export const api = new APIClient();
