@@ -2,6 +2,9 @@
 Voice Synthesis Service
 Handles AI-powered text-to-speech with multi-age and multi-gender support
 """
+import os
+import json
+import uuid
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 import asyncio
@@ -386,10 +389,6 @@ class VoiceSynthesisService:
         Returns:
             Dictionary with cloned voice information
         """
-        # Validate empty text
-        if not text or not text.strip():
-            raise ValueError("Text cannot be empty")
-        
         import uuid as uuid_module
         
         # If engine is mocked, use it
@@ -748,3 +747,32 @@ class VoiceSynthesisService:
         
         status_info = self.get_job_status(job_id)
         return status_info.get("status", "not_found")
+    
+    async def submit_synthesis_job(self, job_data: Dict[str, Any]) -> str:
+        """
+        Submit a synthesis job to the queue
+        
+        Args:
+            job_data: Job data dictionary with text, voice_id, etc.
+            
+        Returns:
+            Job ID
+        """
+        job_id = str(uuid.uuid4())
+        
+        if self.sqs_client:
+            self.sqs_client.send_message(
+                QueueUrl=os.environ.get("SQS_VOICE_QUEUE", "voice-queue"),
+                MessageBody=json.dumps({
+                    "job_id": job_id,
+                    **job_data
+                })
+            )
+        
+        self.active_jobs[job_id] = {
+            "status": "queued",
+            "data": job_data
+        }
+        
+        logger.info(f"Submitted synthesis job {job_id} to queue")
+        return job_id
