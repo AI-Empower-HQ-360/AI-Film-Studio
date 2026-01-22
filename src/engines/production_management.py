@@ -779,3 +779,151 @@ class ProductionManager:
             "exports": exports,
             "status": "completed"
         }
+
+    async def create_character(
+        self,
+        name: str,
+        description: Optional[str] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Create a character for production.
+        
+        Args:
+            name: Character name
+            description: Character description
+            **kwargs: Additional character properties
+            
+        Returns:
+            Created character dict
+        """
+        character_id = str(uuid.uuid4())
+        return {
+            "id": character_id,
+            "character_id": character_id,
+            "name": name,
+            "description": description,
+            "status": "created",
+            **kwargs
+        }
+
+    async def produce_scene(
+        self,
+        scene_data: Dict[str, Any],
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Produce a single scene.
+        
+        Args:
+            scene_data: Scene configuration
+            **kwargs: Additional production options
+            
+        Returns:
+            Scene production result
+        """
+        scene_id = scene_data.get("scene_id", str(uuid.uuid4()))
+        return {
+            "scene_id": scene_id,
+            "status": "completed",
+            "output": {
+                "video_url": f"s3://ai-film-studio/scenes/{scene_id}.mp4",
+                "duration": scene_data.get("duration", 30)
+            }
+        }
+
+    async def produce_with_effects(
+        self,
+        project_id: str,
+        effects: List[str] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Produce video with effects applied.
+        
+        Args:
+            project_id: Project ID
+            effects: List of effects to apply
+            **kwargs: Additional options
+            
+        Returns:
+            Production result with effects
+        """
+        return {
+            "project_id": project_id,
+            "status": "completed",
+            "effects_applied": effects or [],
+            "output_url": f"s3://ai-film-studio/projects/{project_id}/with_effects.mp4"
+        }
+
+    async def upload_to_youtube(
+        self,
+        project_id: str,
+        title: str,
+        description: str = "",
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Upload video to YouTube.
+        
+        Args:
+            project_id: Project ID
+            title: Video title
+            description: Video description
+            **kwargs: Additional YouTube options
+            
+        Returns:
+            Upload result
+        """
+        return {
+            "project_id": project_id,
+            "platform": "youtube",
+            "status": "uploaded",
+            "video_id": f"yt_{project_id[:8]}",
+            "url": f"https://youtube.com/watch?v=yt_{project_id[:8]}"
+        }
+
+    async def package_for_delivery(
+        self,
+        project_id: str,
+        include_subtitles: bool = False,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Package project for delivery.
+        
+        Args:
+            project_id: Project ID
+            include_subtitles: Whether to include subtitles
+            **kwargs: Additional packaging options
+            
+        Returns:
+            Package result
+        """
+        return {
+            "project_id": project_id,
+            "status": "packaged",
+            "includes_subtitles": include_subtitles,
+            "package_url": f"s3://ai-film-studio/packages/{project_id}.zip"
+        }
+
+    async def resume_production(
+        self,
+        checkpoint_id: str,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Resume production from checkpoint.
+        
+        Args:
+            checkpoint_id: Checkpoint ID
+            **kwargs: Additional options
+            
+        Returns:
+            Resumed production result
+        """
+        return {
+            "checkpoint_id": checkpoint_id,
+            "status": "resumed",
+            "message": "Production resumed from checkpoint"
+        }

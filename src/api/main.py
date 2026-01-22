@@ -71,7 +71,14 @@ async def about_simple():
         "name": "AI Film Studio",
         "version": VERSION,
         "description": "Enterprise AI-native studio operating system",
-        "author": "AI Empower HQ 360"
+        "author": "AI Empower HQ 360",
+        "features": [
+            "AI Script Writing",
+            "Character Generation",
+            "Video Production",
+            "Voice Synthesis",
+            "Multi-platform Export"
+        ]
     }
 
 @app.get("/api/health")
