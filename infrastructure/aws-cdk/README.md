@@ -168,18 +168,35 @@ cdk destroy
 - Voice synthesis queue
 - Dead-letter queues
 
-### 6. CloudFront CDN
+### 6. ElastiCache Redis
+- Caching layer for API responses
+- Session storage
+- Job state caching
+- Character consistency cache
+
+### 7. SNS Topics
+- Job completion notifications
+- Error notifications
+- System alerts
+
+### 8. CloudWatch Monitoring
+- CPU and memory alarms
+- Database performance alarms
+- Queue depth monitoring
+- Automated alerting via SNS
+
+### 9. CloudFront CDN
 - Global content delivery
 - S3 origin
 - HTTPS enabled
 - Cache optimization
 
-### 7. ECR Repositories
+### 10. ECR Repositories
 - Backend container images
 - Worker container images
 - Image scanning enabled
 
-### 8. GPU Workers
+### 11. GPU Workers
 - EC2 G4DN instances
 - Launch template configuration
 - Auto-scaling ready
@@ -204,17 +221,23 @@ cdk destroy
 ### Development Environment
 - ECS Fargate: ~$15-30/month
 - RDS: ~$15-20/month
+- ElastiCache Redis: ~$10-15/month
 - S3 Storage: ~$5-10/month
 - CloudFront: ~$5-15/month
-- **Total: ~$40-75/month**
+- SNS: ~$1-2/month
+- CloudWatch: ~$5-10/month
+- **Total: ~$51-102/month**
 
 ### Production Environment
 - ECS Fargate: ~$100-300/month
 - RDS Multi-AZ: ~$50-150/month
+- ElastiCache Redis: ~$30-80/month
 - S3 Storage: ~$20-50/month
 - CloudFront: ~$30-100/month
 - GPU Workers: ~$200-500/month
-- **Total: ~$400-1100/month**
+- SNS: ~$2-5/month
+- CloudWatch: ~$20-50/month
+- **Total: ~$452-1235/month**
 
 ## Outputs
 
@@ -223,7 +246,9 @@ After deployment, CDK outputs:
 - Assets bucket name
 - CloudFront distribution domain
 - Database endpoint
+- Redis endpoint and port
 - ECR repository URIs
+- SNS topic ARNs (job completion, errors, alerts)
 
 ## CI/CD Integration
 

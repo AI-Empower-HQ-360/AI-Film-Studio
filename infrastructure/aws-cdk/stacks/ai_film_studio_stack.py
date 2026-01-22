@@ -9,6 +9,7 @@ from aws_cdk import (
     aws_rds as rds,
     aws_s3 as s3,
     aws_sqs as sqs,
+    aws_sns as sns,
     aws_ecr as ecr,
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
@@ -16,6 +17,9 @@ from aws_cdk import (
     aws_iam as iam,
     aws_logs as logs,
     aws_secretsmanager as secretsmanager,
+    aws_elasticache as elasticache,
+    aws_cloudwatch as cloudwatch,
+    aws_cloudwatch_actions as cw_actions,
     CfnOutput,
     Duration,
     RemovalPolicy,
@@ -210,6 +214,72 @@ class AIFilmStudioStack(Stack):
             retention_period=Duration.days(14)
         )
 
+        # ==================== ElastiCache Redis ====================
+        # Redis subnet group
+        redis_subnet_group = elasticache.CfnSubnetGroup(
+            self,
+            "RedisSubnetGroup",
+            description="Subnet group for ElastiCache Redis",
+            subnet_ids=[subnet.subnet_id for subnet in vpc.private_subnets],
+            cache_subnet_group_name=f"ai-film-studio-redis-{env_name}"
+        )
+
+        # Redis security group
+        redis_sg = ec2.SecurityGroup(
+            self,
+            "RedisSecurityGroup",
+            vpc=vpc,
+            description="Security group for ElastiCache Redis",
+            allow_all_outbound=False
+        )
+
+        # Redis cluster
+        redis_cluster = elasticache.CfnCacheCluster(
+            self,
+            "RedisCluster",
+            cache_node_type="cache.t3.micro" if env_name != "production" else "cache.t3.small",
+            engine="redis",
+            num_cache_nodes=1,
+            cache_subnet_group_name=redis_subnet_group.ref,
+            vpc_security_group_ids=[redis_sg.security_group_id],
+            engine_version="7.0",
+            preferred_maintenance_window="sun:05:00-sun:06:00",
+            snapshot_retention_limit=7 if env_name == "production" else 1,
+            automatic_failover_enabled=(env_name == "production")
+        )
+
+        # Allow backend access to Redis
+        redis_sg.add_ingress_rule(
+            backend_sg,
+            ec2.Port.tcp(6379),
+            "Allow Redis from backend"
+        )
+
+        # ==================== SNS Topics ====================
+        # Job completion notifications
+        job_completion_topic = sns.Topic(
+            self,
+            "JobCompletionTopic",
+            topic_name=f"ai-film-studio-job-completion-{env_name}",
+            display_name="AI Film Studio Job Completion"
+        )
+
+        # Error notifications
+        error_topic = sns.Topic(
+            self,
+            "ErrorTopic",
+            topic_name=f"ai-film-studio-errors-{env_name}",
+            display_name="AI Film Studio Errors"
+        )
+
+        # System alerts
+        system_alerts_topic = sns.Topic(
+            self,
+            "SystemAlertsTopic",
+            topic_name=f"ai-film-studio-system-alerts-{env_name}",
+            display_name="AI Film Studio System Alerts"
+        )
+
         # ==================== ECR Repositories ====================
         backend_repo = ecr.Repository(
             self,
@@ -267,6 +337,8 @@ class AIFilmStudioStack(Stack):
         video_generation_queue.grant_consume_messages(backend_task_role)
         voice_synthesis_queue.grant_consume_messages(backend_task_role)
         db_secret.grant_read(backend_task_role)
+        job_completion_topic.grant_publish(backend_task_role)
+        error_topic.grant_publish(backend_task_role)
 
         # Backend execution role
         backend_execution_role = iam.Role(
@@ -387,7 +459,11 @@ class AIFilmStudioStack(Stack):
                 "MARKETING_BUCKET": marketing_bucket.bucket_name,
                 "JOB_QUEUE_URL": job_queue.queue_url,
                 "VIDEO_QUEUE_URL": video_generation_queue.queue_url,
-                "VOICE_QUEUE_URL": voice_synthesis_queue.queue_url
+                "VOICE_QUEUE_URL": voice_synthesis_queue.queue_url,
+                "REDIS_ENDPOINT": redis_cluster.attr_redis_endpoint_address,
+                "REDIS_PORT": redis_cluster.attr_redis_endpoint_port,
+                "JOB_COMPLETION_TOPIC_ARN": job_completion_topic.topic_arn,
+                "ERROR_TOPIC_ARN": error_topic.topic_arn
             },
             secrets={
                 "DATABASE_URL": ecs.Secret.from_secrets_manager(db_secret, "password")
@@ -477,6 +553,8 @@ class AIFilmStudioStack(Stack):
         video_generation_queue.grant_consume_messages(worker_role)
         voice_synthesis_queue.grant_consume_messages(worker_role)
         job_queue.grant_consume_messages(worker_role)
+        job_completion_topic.grant_publish(worker_role)
+        error_topic.grant_publish(worker_role)
 
         # Worker instance profile
         worker_instance_profile = iam.CfnInstanceProfile(
@@ -562,7 +640,82 @@ class AIFilmStudioStack(Stack):
             description="ECR repository URI for worker"
         )
 
+        # ==================== CloudWatch Alarms ====================
+        # Backend CPU alarm
+        backend_cpu_alarm = cloudwatch.Alarm(
+            self,
+            "BackendCpuAlarm",
+            metric=backend_service.metric_cpu_utilization(),
+            threshold=80,
+            evaluation_periods=2,
+            alarm_description="Backend CPU utilization is high"
+        )
+        backend_cpu_alarm.add_alarm_action(cw_actions.SnsAction(system_alerts_topic))
+
+        # Backend memory alarm
+        backend_memory_alarm = cloudwatch.Alarm(
+            self,
+            "BackendMemoryAlarm",
+            metric=backend_service.metric_memory_utilization(),
+            threshold=85,
+            evaluation_periods=2,
+            alarm_description="Backend memory utilization is high"
+        )
+        backend_memory_alarm.add_alarm_action(cw_actions.SnsAction(system_alerts_topic))
+
+        # Database CPU alarm
+        db_cpu_alarm = cloudwatch.Alarm(
+            self,
+            "DatabaseCpuAlarm",
+            metric=database.metric_cpu_utilization(),
+            threshold=75,
+            evaluation_periods=2,
+            alarm_description="Database CPU utilization is high"
+        )
+        db_cpu_alarm.add_alarm_action(cw_actions.SnsAction(system_alerts_topic))
+
+        # Queue depth alarm
+        queue_depth_alarm = cloudwatch.Alarm(
+            self,
+            "QueueDepthAlarm",
+            metric=job_queue.metric_approximate_number_of_messages_visible(),
+            threshold=1000,
+            evaluation_periods=2,
+            alarm_description="Job queue depth is high"
+        )
+        queue_depth_alarm.add_alarm_action(cw_actions.SnsAction(system_alerts_topic))
+
+        # ==================== Additional Outputs ====================
+        CfnOutput(
+            self,
+            "RedisEndpoint",
+            value=redis_cluster.attr_redis_endpoint_address,
+            description="ElastiCache Redis endpoint"
+        )
+
+        CfnOutput(
+            self,
+            "RedisPort",
+            value=redis_cluster.attr_redis_endpoint_port,
+            description="ElastiCache Redis port"
+        )
+
+        CfnOutput(
+            self,
+            "JobCompletionTopicARN",
+            value=job_completion_topic.topic_arn,
+            description="SNS topic for job completion notifications"
+        )
+
+        CfnOutput(
+            self,
+            "ErrorTopicARN",
+            value=error_topic.topic_arn,
+            description="SNS topic for error notifications"
+        )
+
         # ==================== Tags ====================
         Tags.of(self).add("Project", "AI-Film-Studio")
         Tags.of(self).add("Environment", env_name)
         Tags.of(self).add("ManagedBy", "AWS-CDK")
+        Tags.of(self).add("Architecture", "8-Engine-Enterprise-Studio-OS")
