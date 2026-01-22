@@ -127,15 +127,20 @@ If you use the **static** site (`website/`):
 
 ## 9. Run E2E Tests Against Deployed Site
 
+**Prerequisites:** `cd frontend` then `npx playwright install` (installs Chromium; optional: Firefox/WebKit).
+
 ```powershell
 cd C:\Users\ctrpr\Projects\AI-Film-Studio\frontend
-$env:PLAYWRIGHT_TEST_BASE_URL="https://ai-empower-hq-360.github.io/AI-Film-Studio"
-npx playwright test --config=playwright.config.production.ts
+npx playwright install
+npm run test:e2e:production
 ```
 
-Or use the npm script (if added):
+This runs Playwright against [https://ai-empower-hq-360.github.io/AI-Film-Studio](https://ai-empower-hq-360.github.io/AI-Film-Studio) (home, static pages, nav).
+
+**Note:** GitHub Pages serves the **static** site (`website/`: index, features, docs, about). The **Next.js** app (dashboard, pricing, signin, etc.) is on **Amplify**. Use `PLAYWRIGHT_TEST_BASE_URL` to point at your Amplify URL if you want to E2E-test the full app.
 
 ```powershell
+$env:PLAYWRIGHT_TEST_BASE_URL="https://your-amplify-url.amplifyapp.com"
 npm run test:e2e:production
 ```
 

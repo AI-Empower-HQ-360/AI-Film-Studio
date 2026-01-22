@@ -66,3 +66,9 @@ out/
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Playwright
+playwright-report/
+playwright-report-production/
+test-results/
+.blob
