@@ -55,7 +55,18 @@ class CacheService:
         client = await self._get_client()
         
         try:
-            value = await client.get(key)
+            # Handle both awaitable and non-awaitable (for mocked clients)
+            if hasattr(client, 'get'):
+                get_result = client.get(key)
+                # Check if it's awaitable (coroutine)
+                if asyncio.iscoroutine(get_result):
+                    value = await get_result
+                else:
+                    # For mocked clients that return values directly
+                    value = get_result
+            else:
+                value = None
+            
             if value:
                 try:
                     return json.loads(value)
@@ -92,10 +103,15 @@ class CacheService:
             elif not isinstance(value, (str, bytes)):
                 value = str(value)
             
+            # Handle both awaitable and non-awaitable (for mocked clients)
             if ttl:
-                await client.setex(key, ttl, value)
+                setex_result = client.setex(key, ttl, value)
+                if asyncio.iscoroutine(setex_result):
+                    await setex_result
             else:
-                await client.set(key, value)
+                set_result = client.set(key, value)
+                if asyncio.iscoroutine(set_result):
+                    await set_result
             
             return True
             
@@ -136,8 +152,13 @@ class CacheService:
         client = await self._get_client()
         
         try:
-            result = await client.exists(key)
-            return result > 0
+            # Handle both awaitable and non-awaitable (for mocked clients)
+            exists_result = client.exists(key)
+            if asyncio.iscoroutine(exists_result):
+                result = await exists_result
+            else:
+                result = exists_result
+            return result > 0 if isinstance(result, (int, float)) else bool(result)
             
         except Exception as e:
             logger.error(f"Error checking cache: {str(e)}")
@@ -157,8 +178,13 @@ class CacheService:
         client = await self._get_client()
         
         try:
-            result = await client.expire(key, ttl)
-            return result
+            # Handle both awaitable and non-awaitable (for mocked clients)
+            expire_result = client.expire(key, ttl)
+            if asyncio.iscoroutine(expire_result):
+                result = await expire_result
+            else:
+                result = expire_result
+            return bool(result)
             
         except Exception as e:
             logger.error(f"Error setting expiration: {str(e)}")

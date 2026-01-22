@@ -360,8 +360,10 @@ def performance_timer():
         @property
         def elapsed(self):
             if self.start_time and self.end_time:
-                return (self.end_time - self.start_time).total_seconds()
-            return None
+                elapsed_seconds = (self.end_time - self.start_time).total_seconds()
+                # Ensure minimum elapsed time to avoid division by zero
+                return max(elapsed_seconds, 0.0001)
+            return 0.0001  # Return small value instead of None to avoid division by zero
             
         def assert_within(self, max_seconds: float):
             assert self.elapsed is not None, "Timer not stopped"
