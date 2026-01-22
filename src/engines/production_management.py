@@ -798,6 +798,20 @@ class ProductionManager:
         """
         project_id = None
         try:
+            # Use AI Framework for production optimization if available
+            if self.ai_framework:
+                try:
+                    # Analyze production requirements
+                    analysis_content = f"Production request: {script_or_project_id}\nSettings: {settings}\nCharacters: {characters}"
+                    analysis = await self.ai_framework.analyze_content(
+                        content=analysis_content,
+                        analysis_type="production_optimization",
+                        provider="openai"
+                    )
+                    logger.info(f"AI production optimization: {analysis.get('analysis', '')[:100]}")
+                except Exception as e:
+                    logger.warning(f"AI framework production analysis failed: {e}, continuing with standard production")
+            
             # Handle both script dict and project_id string
             if isinstance(script_or_project_id, dict):
                 # It's a script dict - create a temporary project

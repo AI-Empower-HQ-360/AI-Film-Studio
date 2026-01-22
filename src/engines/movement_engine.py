@@ -300,6 +300,7 @@ class MovementEngine:
         self,
         character_id: str,
         dialogue_text: str,
+        use_ai: bool = True,
         emotion: str = "neutral"
     ) -> AnimationSequence:
         """
@@ -326,6 +327,35 @@ class MovementEngine:
             "nervous": BodyLanguage.NERVOUS
         }
         body_language = body_language_map.get(emotion, BodyLanguage.CALM)
+        
+        # Use AI Framework to analyze dialogue and suggest movements if available
+        if use_ai and self.ai_framework:
+            try:
+                import asyncio
+                prompt = f"Analyze this dialogue and suggest appropriate character movements and gestures:\n\nDialogue: {dialogue_text}\nEmotion: {emotion}\n\nSuggest specific movements (walk, sit, stand, etc.) and gestures (point, wave, nod, etc.) that match the dialogue content and emotion."
+                
+                try:
+                    loop = asyncio.get_event_loop()
+                    if not loop.is_running():
+                        analysis = loop.run_until_complete(
+                            self.ai_framework.analyze_content(
+                                content=prompt,
+                                analysis_type="movement_planning",
+                                provider="openai"
+                            )
+                        )
+                        logger.info(f"AI movement analysis: {analysis.get('analysis', '')[:100]}")
+                except RuntimeError:
+                    analysis = asyncio.run(
+                        self.ai_framework.analyze_content(
+                            content=prompt,
+                            analysis_type="movement_planning",
+                            provider="openai"
+                        )
+                    )
+                    logger.info(f"AI movement analysis: {analysis.get('analysis', '')[:100]}")
+            except Exception as e:
+                logger.warning(f"AI framework movement planning failed: {e}, using rule-based fallback")
         
         # Add gestures based on dialogue content
         words = dialogue_text.lower().split()

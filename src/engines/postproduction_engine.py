@@ -124,7 +124,27 @@ class PostProductionEngine:
         # Build context-aware prompt
         voice_prompt = self._build_voice_prompt(request)
         
-        # Generate voice with emotion and context
+        # Use AI Framework for voice synthesis if available
+        if self.ai_framework:
+            try:
+                voice_result = await self.ai_framework.synthesize_voice(
+                    text=request.dialogue_text,
+                    voice_id="adult_male_1",  # Would come from character
+                    provider="elevenlabs",
+                    emotion=request.emotion or "neutral",
+                    language="en-US"
+                )
+                if isinstance(voice_result, dict):
+                    return {
+                        "audio_url": voice_result.get("audio_url", f"s3://{self.s3_bucket}/voices/{job_id}/output.mp3"),
+                        "duration": voice_result.get("duration", len(request.dialogue_text.split()) * 0.5),
+                        "character_id": request.character_id,
+                        "scene_id": request.scene_id
+                    }
+            except Exception as e:
+                logger.warning(f"AI framework voice synthesis failed: {e}, using voice service fallback")
+        
+        # Fallback to voice service
         voice_request = VoiceSynthesisRequest(
             text=request.dialogue_text,
             voice_id="adult_male_1",  # Would come from character
@@ -159,6 +179,19 @@ class PostProductionEngine:
         """
         # Build music prompt with scene context
         music_prompt = self._build_music_prompt(request)
+        
+        # Use AI Framework for music analysis if available
+        if self.ai_framework:
+            try:
+                # Analyze scene for music generation
+                analysis = await self.ai_framework.analyze_content(
+                    content=f"Scene: {request.scene_id}\nEmotion: {request.emotion}\nDuration: {request.duration}s\nGenerate appropriate cinematic music.",
+                    analysis_type="music_generation",
+                    provider="openai"
+                )
+                logger.info(f"AI music generation analysis: {analysis.get('analysis', '')[:100]}")
+            except Exception as e:
+                logger.warning(f"AI framework music analysis failed: {e}, using music service")
         
         # Generate music
         music_request = MusicGenerationRequest(
