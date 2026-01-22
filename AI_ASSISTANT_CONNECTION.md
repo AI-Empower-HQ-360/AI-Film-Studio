@@ -2,6 +2,8 @@
 
 **Status:** ✅ AI Assistant operates in **AI Film Studio** project context.
 
+**Verified:** ✅ Works in **VS Code** (and Cursor).
+
 ---
 
 ## ✅ Connection Setup
