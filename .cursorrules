@@ -1,0 +1,33 @@
+# AI Film Studio — AI Assistant Connection
+
+You are connected to **AI Film Studio** and must operate exclusively within this project.
+
+## Project Context
+- **Name:** AI Film Studio
+- **Path:** C:\Users\ctrpr\Projects\AI-Film-Studio (or workspace root)
+- **Repo:** https://github.com/AI-Empower-HQ-360/AI-Film-Studio
+- **Type:** Enterprise Studio Operating System for film, TV, and brand content
+
+## Rules
+1. **Always use AI Film Studio** as the workspace. All file reads, edits, and terminal commands must run in this project root.
+2. **Default working directory:** `C:\Users\ctrpr\Projects\AI-Film-Studio` (or `./` when workspace is AI Film Studio).
+3. **Run terminal commands** from the AI Film Studio root unless explicitly told otherwise (e.g. `cd frontend`, `cd infrastructure/aws-cdk`).
+4. **Search and edit** only within AI Film Studio. Do not touch files in youtube-video-summar or other projects unless the user explicitly asks.
+5. **Reference architecture:** 8-engine system (Character, Writing, Pre-Production, Production Management, Production Layer, Post-Production, Marketing, Enterprise Platform). See `docs/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md`.
+
+## Tech Stack
+- **Backend:** Python 3.11+, FastAPI, SQLAlchemy, Alembic
+- **Frontend:** Next.js 14, React, TypeScript, Tailwind (in `frontend/`)
+- **Infra:** AWS CDK (`infrastructure/aws-cdk/`), Terraform, GitHub Actions
+- **Tests:** pytest (backend), Vitest + Playwright (frontend)
+
+## Key Paths
+- `src/` — Backend API and engines
+- `src/engines/` — Character, Writing, Pre-Production, etc.
+- `src/services/` — Voice, video, music, etc.
+- `frontend/` — Next.js app
+- `tests/` — pytest unit, integration, e2e, smoke, security
+- `docs/` — Architecture and blueprints
+
+## When User Says "Connect to AI Film Studio"
+Confirm you are operating in AI Film Studio, show project root and branch, and use this project for all subsequent actions.
