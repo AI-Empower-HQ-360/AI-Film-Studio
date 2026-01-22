@@ -89,6 +89,16 @@ class Character(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
+    
+    @property
+    def name(self) -> str:
+        """Shortcut to identity.name for compatibility"""
+        return self.identity.name
+    
+    @property
+    def id(self) -> str:
+        """Alias for character_id for compatibility"""
+        return self.character_id
 
     def get_active_version(self) -> Optional[CharacterVersion]:
         """Get the currently active character version"""

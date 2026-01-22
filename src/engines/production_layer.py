@@ -32,7 +32,7 @@ class Shot(BaseModel):
     shot_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     scene_id: str
     shot_type: ShotType
-    source_type: str  # "uploaded" or "generated"
+    source_type: str = Field(default="generated")  # "uploaded" or "generated"
     video_url: Optional[str] = None
     s3_key: Optional[str] = None
     duration: Optional[float] = None
@@ -76,6 +76,11 @@ class ProductionLayer:
         self.s3_bucket = s3_bucket
         self.shots: Dict[str, Shot] = {}
         self.continuity_matches: Dict[str, ContinuityMatch] = {}
+        
+        # Service references for integration (tests expect these attributes)
+        self.video_service = None
+        self.audio_service = None
+        self.image_service = None
 
     def create_shot(
         self,
