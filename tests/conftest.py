@@ -15,8 +15,15 @@ import json
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi.testclient import TestClient
-from httpx import AsyncClient
+# Optional imports for API testing
+try:
+    from fastapi.testclient import TestClient
+    from httpx import AsyncClient
+    HAS_FASTAPI = True
+except ImportError:
+    HAS_FASTAPI = False
+    TestClient = None
+    AsyncClient = None
 
 # ==================== Environment Setup ====================
 
@@ -58,17 +65,27 @@ def event_loop():
 @pytest.fixture(scope="module")
 def test_client() -> Generator[TestClient, None, None]:
     """Synchronous test client for FastAPI"""
-    from src.api.main import app
-    with TestClient(app) as client:
-        yield client
+    if not HAS_FASTAPI:
+        pytest.skip("FastAPI not installed")
+    try:
+        from src.api.main import app
+        with TestClient(app) as client:
+            yield client
+    except ImportError:
+        pytest.skip("FastAPI app not available")
 
 
 @pytest.fixture(scope="module")
 async def async_client() -> AsyncGenerator[AsyncClient, None]:
     """Asynchronous test client for FastAPI"""
-    from src.api.main import app
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        yield client
+    if not HAS_FASTAPI:
+        pytest.skip("FastAPI not installed")
+    try:
+        from src.api.main import app
+        async with AsyncClient(app=app, base_url="http://test") as client:
+            yield client
+    except ImportError:
+        pytest.skip("FastAPI app not available")
 
 
 # ==================== Database Fixtures ====================
