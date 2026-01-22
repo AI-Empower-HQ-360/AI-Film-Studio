@@ -3,9 +3,19 @@ Lip-sync and Face Animation Service
 Handles AI-powered lip synchronization and face animation
 """
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
 import asyncio
 import logging
+
+# Handle optional pydantic import
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    class BaseModel:
+        def __init__(self, **kwargs):
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+    def Field(*args, **kwargs):
+        return None
 
 from ..config.ai_models import (
     get_lipsync_model,

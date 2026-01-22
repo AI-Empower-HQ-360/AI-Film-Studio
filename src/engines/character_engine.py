@@ -1002,13 +1002,13 @@ class CharacterEngine:
             return self.characters[character_id]
         
         # Try to load from database if available
-        if self.db:
+        if self.db is not None:
             try:
                 result = self.db.execute("SELECT * FROM characters WHERE id = %s", character_id)
                 row = result.fetchone() if result else None
                 if row:
                     # Create Character from db row
-                    return Character(
+                    character = Character(
                         character_id=row.get('id', character_id),
                         identity=CharacterIdentity(
                             character_id=row.get('id', character_id),
@@ -1018,6 +1018,9 @@ class CharacterEngine:
                         mode=CharacterMode.AVATAR,
                         character_type=CharacterType.PHOTOREALISTIC
                     )
+                    # Cache the loaded character
+                    self.characters[character_id] = character
+                    return character
             except Exception as e:
                 logger.warning(f"Database error loading character {character_id}: {e}")
         

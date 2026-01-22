@@ -3,10 +3,38 @@ Marketing & Distribution Engine
 Turn productions into revenue-ready assets
 """
 from typing import Optional, Dict, List, Any
-from pydantic import BaseModel, Field
 from datetime import datetime
 import uuid
 import logging
+
+# Handle optional pydantic import
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    # Fallback for testing environments without pydantic
+    class BaseModel:
+        def __init__(self, **kwargs):
+            annotations = getattr(self.__class__, '__annotations__', {})
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            for key, field_type in annotations.items():
+                if not hasattr(self, key):
+                    field_value = getattr(self.__class__, key, None)
+                    if callable(field_value):
+                        setattr(self, key, field_value())
+                    elif field_value is None and key in ['asset_id', 'campaign_id']:
+                        setattr(self, key, str(uuid.uuid4()))
+                    elif field_value is None and key in ['created_at', 'updated_at']:
+                        setattr(self, key, datetime.utcnow())
+                    elif field_value is None and key in ['metadata']:
+                        setattr(self, key, {})
+    
+    def Field(default=..., default_factory=None, **kwargs):
+        if default_factory is not None:
+            return default_factory
+        if default is not ...:
+            return default
+        return None
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +77,17 @@ class MarketingAsset(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+class Campaign(BaseModel):
+    """Marketing campaign"""
+    campaign_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    project_id: str
+    name: str
+    platforms: List[str] = Field(default_factory=list)
+    assets: List[str] = Field(default_factory=list)  # Asset IDs
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class MarketingEngine:
     """
     Marketing & Distribution Engine
@@ -64,6 +103,7 @@ class MarketingEngine:
     def __init__(self, s3_bucket: str = "ai-film-studio-marketing"):
         self.s3_bucket = s3_bucket
         self.assets: Dict[str, MarketingAsset] = {}
+        self.campaigns: Dict[str, Campaign] = {}
 
     def create_trailer(
         self,
@@ -106,6 +146,79 @@ class MarketingEngine:
         """
         import asyncio
         return asyncio.run(self.generate_poster(project_id, style, dimensions))
+    
+    def create_thumbnail(
+        self,
+        project_id: str,
+        timestamp: float = 0.0,
+        style: str = "engaging"
+    ) -> MarketingAsset:
+        """
+        Create thumbnail from video timestamp
+        
+        Args:
+            project_id: Project ID
+            timestamp: Video timestamp in seconds
+            style: Thumbnail style
+            
+        Returns:
+            Marketing asset
+        """
+        import asyncio
+        return asyncio.run(self.generate_thumbnail(project_id, timestamp, style))
+    
+    def create_social_cutdown(
+        self,
+        project_id: str,
+        platform: str,
+        duration: float = 15.0
+    ) -> MarketingAsset:
+        """
+        Create social media cutdown (synchronous wrapper)
+        
+        Args:
+            project_id: Project ID
+            platform: Target platform (instagram, tiktok, etc.)
+            duration: Cutdown duration in seconds
+            
+        Returns:
+            Marketing asset
+        """
+        import asyncio
+        source_video_id = f"video_{project_id}"  # Placeholder
+        return asyncio.run(self.generate_social_clip(project_id, source_video_id, platform, duration))
+    
+    def create_campaign(
+        self,
+        project_id: str,
+        name: str,
+        platforms: Optional[List[str]] = None,
+        assets: Optional[List[str]] = None
+    ) -> Campaign:
+        """
+        Create marketing campaign
+        
+        Args:
+            project_id: Project ID
+            name: Campaign name
+            platforms: List of target platforms
+            assets: List of asset IDs to include
+            
+        Returns:
+            Campaign object
+        """
+        campaign = Campaign(
+            project_id=project_id,
+            name=name,
+            platforms=platforms or [],
+            assets=assets or []
+        )
+        
+        self.campaigns[campaign.campaign_id] = campaign
+        
+        logger.info(f"Created campaign '{name}' for project {project_id}")
+        
+        return campaign
     
     async def generate_trailer(
         self,
@@ -278,36 +391,85 @@ class MarketingEngine:
         
         return asset
     
+    async def generate_thumbnail(
+        self,
+        project_id: str,
+        timestamp: float = 0.0,
+        style: str = "engaging"
+    ) -> MarketingAsset:
+        """
+        Generate thumbnail from video at specific timestamp
+        
+        Args:
+            project_id: Project ID
+            timestamp: Video timestamp in seconds
+            style: Thumbnail style (engaging, dramatic, etc.)
+            
+        Returns:
+            Marketing asset
+        """
+        # TODO: Implement thumbnail generation
+        # Would extract frame at timestamp and enhance it
+        
+        asset = MarketingAsset(
+            asset_type=MarketingAssetType.THUMBNAIL,
+            project_id=project_id,
+            dimensions={"width": 1280, "height": 720},
+            url=f"s3://{self.s3_bucket}/thumbnails/{project_id}/thumbnail_{int(timestamp)}.jpg",
+            metadata={"timestamp": timestamp, "style": style}
+        )
+        
+        self.assets[asset.asset_id] = asset
+        
+        logger.info(f"Generated thumbnail for project {project_id} at {timestamp}s")
+        
+        return asset
+    
     async def export_for_platform(
         self,
-        asset_id: str,
-        platform: str
+        project_id: str,
+        platform: str,
+        asset_id: Optional[str] = None
     ) -> MarketingAsset:
         """
         Export asset optimized for specific platform
         
-        Handles:
-        - Format conversion
-        - Resolution optimization
-        - Compression settings
-        - Metadata embedding
+        Args:
+            project_id: Project ID
+            platform: Target platform (youtube, vimeo, tiktok, instagram)
+            asset_id: Optional specific asset ID to export
+            
+        Returns:
+            Marketing asset optimized for platform
         """
-        if asset_id not in self.assets:
-            raise ValueError(f"Asset {asset_id} not found")
-        
-        source_asset = self.assets[asset_id]
+        # If asset_id provided, use it; otherwise find first asset for project
+        if asset_id and asset_id in self.assets:
+            source_asset = self.assets[asset_id]
+        else:
+            # Find first asset for project
+            project_assets = [a for a in self.assets.values() if a.project_id == project_id]
+            if not project_assets:
+                # Create a placeholder asset
+                source_video_id = f"video_{project_id}"
+                export_asset = await self.generate_social_clip(
+                    project_id,
+                    source_video_id,
+                    platform
+                )
+                return export_asset
+            source_asset = project_assets[0]
         
         # Generate platform-specific export
         export_asset = await self.generate_social_clip(
             source_asset.project_id,
-            source_asset.source_video_id or "",
+            source_asset.source_video_id or f"video_{project_id}",
             platform
         )
         
-        export_asset.metadata["source_asset_id"] = asset_id
+        export_asset.metadata["source_asset_id"] = source_asset.asset_id
         export_asset.metadata["export_platform"] = platform
         
-        logger.info(f"Exported asset {asset_id} for {platform}")
+        logger.info(f"Exported asset for project {project_id} to {platform}")
         
         return export_asset
     

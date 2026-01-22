@@ -44,10 +44,11 @@ class TestPostProductionEngine:
     async def test_generate_character_voice(self, postproduction_engine, sample_voice_request):
         """Test character voice generation"""
         with patch.object(postproduction_engine, 'voice_service') as mock_service:
-            mock_service.synthesize = AsyncMock(return_value={
-                "audio_url": "s3://audio.wav",
-                "duration": 5.0
-            })
+            mock_response = MagicMock()
+            mock_response.audio_url = "s3://audio.wav"
+            mock_response.duration = 5.0
+            mock_service.synthesize_speech = AsyncMock(return_value=mock_response)
+            mock_service.VoiceSynthesisRequest = MagicMock(return_value=MagicMock())
             
             result = await postproduction_engine.generate_character_voice(
                 request=sample_voice_request,
@@ -61,10 +62,11 @@ class TestPostProductionEngine:
     async def test_generate_scene_music(self, postproduction_engine, sample_music_request):
         """Test scene-aware music generation"""
         with patch.object(postproduction_engine, 'music_service') as mock_service:
-            mock_service.generate = AsyncMock(return_value={
-                "audio_url": "s3://music.wav",
-                "duration": 10.0
-            })
+            mock_response = MagicMock()
+            mock_response.audio_url = "s3://music.wav"
+            mock_response.duration = 10.0
+            mock_service.generate_music = AsyncMock(return_value=mock_response)
+            mock_service.MusicGenerationRequest = MagicMock(return_value=MagicMock())
             
             result = await postproduction_engine.generate_scene_music(
                 request=sample_music_request,
@@ -103,9 +105,9 @@ class TestPostProductionEngine:
     async def test_lipsync_generation(self, postproduction_engine):
         """Test lip-sync generation"""
         with patch.object(postproduction_engine, 'lipsync_service') as mock_service:
-            mock_service.generate = AsyncMock(return_value={
-                "output_url": "s3://lipsync.mp4"
-            })
+            mock_response = MagicMock()
+            mock_response.output_url = "s3://lipsync.mp4"
+            mock_service.generate_lipsync = AsyncMock(return_value=mock_response)
             
             result = await postproduction_engine.generate_lipsync(
                 video_id="video_001",
@@ -120,10 +122,12 @@ class TestPostProductionEngine:
     async def test_subtitle_generation(self, postproduction_engine):
         """Test subtitle generation"""
         with patch.object(postproduction_engine, 'subtitle_service') as mock_service:
-            mock_service.generate = AsyncMock(return_value=[
+            mock_response = MagicMock()
+            mock_response.subtitles = [
                 {"start": 0.0, "end": 2.0, "text": "Hello"},
                 {"start": 2.0, "end": 4.0, "text": "World"}
-            ])
+            ]
+            mock_service.generate_subtitles = AsyncMock(return_value=mock_response)
             
             result = await postproduction_engine.generate_subtitles(
                 video_id="video_001",
@@ -131,7 +135,7 @@ class TestPostProductionEngine:
                 job_id="job_001"
             )
             
-            assert result is not None or isinstance(result, list)
+            assert result is not None or isinstance(result, dict)
 
     @pytest.mark.asyncio
     async def test_multilingual_subtitles(self, postproduction_engine):
@@ -139,7 +143,9 @@ class TestPostProductionEngine:
         languages = ["en", "es", "fr", "de"]
         
         with patch.object(postproduction_engine, 'subtitle_service') as mock_service:
-            mock_service.generate = AsyncMock(return_value=[])
+            mock_response = MagicMock()
+            mock_response.subtitles = []
+            mock_service.generate_subtitles = AsyncMock(return_value=mock_response)
             
             for lang in languages:
                 result = await postproduction_engine.generate_subtitles(
@@ -148,7 +154,7 @@ class TestPostProductionEngine:
                     job_id=f"job_{lang}"
                 )
                 
-                assert result is not None or isinstance(result, list)
+                assert result is not None or isinstance(result, dict)
 
     @pytest.mark.asyncio
     async def test_music_dialogue_mixing(self, postproduction_engine):

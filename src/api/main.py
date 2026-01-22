@@ -18,6 +18,7 @@ from src.engines import (
     MarketingEngine,
     EnterprisePlatform
 )
+from src.engines.postproduction_engine import SceneAwareVoiceRequest, SceneAwareMusicRequest
 import os
 
 logger = setup_logger(__name__)
@@ -145,7 +146,19 @@ async def about():
 @app.post("/api/v1/scripts")
 async def create_script(script_data: dict):
     """Generate a new script"""
-    return await writing_engine.generate_script(**script_data)
+    # Map title/content to prompt for generate_script, or use create_script
+    if "prompt" in script_data:
+        return writing_engine.generate_script(**script_data)
+    elif "title" in script_data and "content" in script_data:
+        return writing_engine.create_script(
+            title=script_data.get("title"),
+            content=script_data.get("content"),
+            project_id=script_data.get("project_id")
+        )
+    else:
+        # Use title or content as prompt
+        prompt = script_data.get("title") or script_data.get("content") or "Default prompt"
+        return writing_engine.generate_script(prompt=prompt, **{k: v for k, v in script_data.items() if k not in ["title", "content"]})
 
 @app.get("/api/v1/scripts/{script_id}")
 async def get_script(script_id: str):
@@ -208,7 +221,7 @@ async def generate_shot(shot_data: dict):
 async def generate_voice(voice_data: dict):
     """Generate character-aware voice"""
     return await postproduction_engine.generate_character_voice(
-        postproduction_engine.SceneAwareVoiceRequest(**voice_data),
+        SceneAwareVoiceRequest(**voice_data),
         voice_data.get("job_id", "default")
     )
 
@@ -216,7 +229,7 @@ async def generate_voice(voice_data: dict):
 async def generate_music(music_data: dict):
     """Generate scene-aware music"""
     return await postproduction_engine.generate_scene_music(
-        postproduction_engine.SceneAwareMusicRequest(**music_data),
+        SceneAwareMusicRequest(**music_data),
         music_data.get("job_id", "default")
     )
 
@@ -235,7 +248,9 @@ async def generate_poster(poster_data: dict):
 @app.post("/api/v1/organizations")
 async def create_organization(org_data: dict):
     """Create organization"""
-    return await enterprise_platform.create_organization(**org_data)
+    # Use sync version for API compatibility
+    org = enterprise_platform.create_organization_sync(**org_data)
+    return {"organization_id": org.organization_id, "name": org.name}
 
 @app.post("/api/v1/usage")
 async def record_usage(usage_data: dict):

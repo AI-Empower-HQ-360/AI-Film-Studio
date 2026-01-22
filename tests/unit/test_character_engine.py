@@ -249,13 +249,17 @@ class TestCharacterEngine:
     @pytest.mark.unit
     def test_load_character(self, character_engine, mock_database):
         """Test loading character from database"""
-        mock_database.execute.return_value.fetchone.return_value = {
+        # Create a sync mock for the load operation
+        mock_result = MagicMock()
+        mock_result.fetchone.return_value = {
             "id": "char_001",
             "name": "Test Character",
             "description": "A test character"
         }
+        sync_db = MagicMock()
+        sync_db.execute.return_value = mock_result
         
-        with patch.object(character_engine, 'db', mock_database):
+        with patch.object(character_engine, 'db', sync_db):
             character = character_engine.load("char_001")
             
             assert character is not None
