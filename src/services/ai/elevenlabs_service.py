@@ -168,16 +168,29 @@ class ElevenLabsService:
         
         voice = self.client.voices.get(voice_id=voice_id)
         
-        # Handle both dict and object responses
-        if isinstance(voice, dict):
+        # If voice already has voice_id attribute (object or MagicMock), return as-is
+        if hasattr(voice, "voice_id"):
             return voice
+        
+        # Handle dict responses - convert to object-like structure
+        if isinstance(voice, dict):
+            # Create a simple object with attributes for test compatibility
+            class VoiceObject:
+                def __init__(self, data):
+                    self.voice_id = data.get("voice_id", voice_id)
+                    self.name = data.get("name", "Unknown")
+                    self.labels = data.get("labels", {}) or {}
+                    self.description = data.get("description", None)
+            return VoiceObject(voice)
         else:
-            return {
-                "voice_id": getattr(voice, "voice_id", voice_id),
-                "name": getattr(voice, "name", "Unknown"),
-                "labels": getattr(voice, "labels", {}) or {},
-                "description": getattr(voice, "description", None)
-            }
+            # Create object from attributes
+            class VoiceObject:
+                def __init__(self, voice_obj, vid):
+                    self.voice_id = getattr(voice_obj, "voice_id", vid)
+                    self.name = getattr(voice_obj, "name", "Unknown")
+                    self.labels = getattr(voice_obj, "labels", {}) or {}
+                    self.description = getattr(voice_obj, "description", None)
+            return VoiceObject(voice, voice_id)
     
     async def clone_voice(
         self,
@@ -208,14 +221,23 @@ class ElevenLabsService:
             **kwargs
         )
         
-        # Handle both dict and object responses
-        if isinstance(voice, dict):
+        # If voice already has voice_id attribute (object or MagicMock), return as-is
+        if hasattr(voice, "voice_id"):
             return voice
+        
+        # Handle dict responses - convert to object-like structure
+        if isinstance(voice, dict):
+            class VoiceObject:
+                def __init__(self, data):
+                    self.voice_id = data.get("voice_id", "cloned_voice")
+                    self.name = data.get("name", name)
+            return VoiceObject(voice)
         else:
-            return {
-                "voice_id": getattr(voice, "voice_id", "cloned_voice"),
-                "name": getattr(voice, "name", name)
-            }
+            class VoiceObject:
+                def __init__(self, voice_obj, vname):
+                    self.voice_id = getattr(voice_obj, "voice_id", "cloned_voice")
+                    self.name = getattr(voice_obj, "name", vname)
+            return VoiceObject(voice, name)
     
     async def instant_clone(
         self,
@@ -251,14 +273,23 @@ class ElevenLabsService:
                 **kwargs
             )
         
-        # Handle both dict and object responses
-        if isinstance(voice, dict):
+        # If voice already has voice_id attribute (object or MagicMock), return as-is
+        if hasattr(voice, "voice_id"):
             return voice
+        
+        # Handle dict responses - convert to object-like structure
+        if isinstance(voice, dict):
+            class VoiceObject:
+                def __init__(self, data):
+                    self.voice_id = data.get("voice_id", "instant_cloned_voice")
+                    self.name = data.get("name", name)
+            return VoiceObject(voice)
         else:
-            return {
-                "voice_id": getattr(voice, "voice_id", "instant_cloned_voice"),
-                "name": getattr(voice, "name", name)
-            }
+            class VoiceObject:
+                def __init__(self, voice_obj, vname):
+                    self.voice_id = getattr(voice_obj, "voice_id", "instant_cloned_voice")
+                    self.name = getattr(voice_obj, "name", vname)
+            return VoiceObject(voice, name)
     
     async def isolate_voice(
         self,

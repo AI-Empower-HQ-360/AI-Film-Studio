@@ -77,6 +77,10 @@ class OpenAIService:
                 max_tokens=max_tokens,
                 **kwargs
             )
+            # Handle case where mock returns a coroutine (AsyncMock)
+            import asyncio
+            if asyncio.iscoroutine(response):
+                response = await response
         
         if not response.choices or not response.choices[0].message:
             raise ValueError("No response from OpenAI")

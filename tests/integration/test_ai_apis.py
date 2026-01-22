@@ -157,7 +157,11 @@ class TestOpenAIIntegration:
     @pytest.mark.integration
     async def test_rate_limit_handling(self, openai_service, mock_openai_client):
         """Test handling of rate limit errors"""
-        from openai import RateLimitError
+        try:
+            from openai import RateLimitError
+        except ImportError:
+            # Skip test if openai module not installed
+            pytest.skip("openai module not installed")
         
         call_count = 0
         def rate_limit_side_effect(*args, **kwargs):
