@@ -28,6 +28,26 @@ Environment variables should be defined in:
 - **Kubernetes**: ConfigMaps and Secrets in cluster
 - **AWS**: Secrets Manager or Parameter Store
 
+> ⚠️ **Important:** The Python services read configuration from `os.environ`. They do **not** automatically load `.env.{environment}` files. When running locally, you must explicitly load the appropriate `.env` file so that its values are present in the environment.
+>
+> Common options:
+>
+> - Using Uvicorn directly:
+>   ```bash
+>   uvicorn src.api.main:app --reload --env-file .env.dev
+>   ```
+> - Using `python-dotenv` CLI:
+>   ```bash
+>   dotenv -f .env.dev run -- uvicorn src.api.main:app --reload
+>   ```
+> - Using your shell to export variables:
+>   ```bash
+>   set -a
+>   source .env.dev
+>   set +a
+>   uvicorn src.api.main:app --reload
+>   ```
+
 ### Environment Key
 
 - **Dev** = Development environment

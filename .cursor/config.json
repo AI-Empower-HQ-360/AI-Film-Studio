@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "projectName": "AI Film Studio",
+  "description": "End-to-end AI-powered film production platform",
+  "rules": {
+    "file": ".cursorrules"
+  },
+  "context": {
+    "include": [
+      "src/**/*.py",
+      "frontend/src/**/*.tsx",
+      "frontend/src/**/*.ts",
+      "docs/**/*.md",
+      "tests/**/*.py",
+      "*.md",
+      "*.json",
+      "*.yaml",
+      "*.yml"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "__pycache__/**",
+      ".next/**",
+      "htmlcov/**",
+      "*.pyc",
+      ".git/**",
+      "*.lock"
+    ]
+  },
+  "documentation": {
+    "primary": [
+      "docs/requirements/MASTER-WORKFLOW-ROADMAP.md",
+      "docs/architecture/system-design.md",
+      "docs/INVESTOR_DEVELOPER_MASTER_BLUEPRINT.md",
+      "README.md"
+    ],
+    "api": [
+      "docs/api/API_IMPLEMENTATION.md",
+      "docs/api/QUICK_START.md"
+    ]
+  },
+  "codebase": {
+    "languages": ["python", "typescript", "javascript"],
+    "frameworks": {
+      "backend": ["fastapi", "pydantic", "sqlalchemy", "pytorch"],
+      "frontend": ["nextjs", "react", "tailwindcss", "typescript"]
+    }
+  },
+  "ai": {
+    "models": [
+      "stable-diffusion-xl",
+      "stable-video-diffusion",
+      "wav2lip",
+      "sadtalker",
+      "whisper",
+      "elevenlabs"
+    ],
+    "services": [
+      "video_generation",
+      "voice_synthesis",
+      "lipsync_animation",
+      "music_audio",
+      "subtitle_multilang",
+      "podcast_video"
+    ]
+  },
+  "testing": {
+    "framework": "pytest",
+    "markers": ["unit", "integration", "e2e", "gpu", "slow"],
+    "coverage": {
+      "minimum": 70,
+      "report": "htmlcov/"
+    }
+  },
+  "deployment": {
+    "environments": ["dev", "sandbox", "staging", "main"],
+    "cicd": "github-actions",
+    "hosting": "github-pages"
+  }
+}

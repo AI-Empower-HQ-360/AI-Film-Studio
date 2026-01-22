@@ -57,3 +57,72 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Node.js / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+out/
+.cache/
+coverage/
+.nyc_output/
+
+# Test artifacts
+*.test.js.snap
+junit.xml
+test-results/
+
+# Build artifacts
+*.zip
+*.tar.gz
+*.tgz
+
+# Secrets and credentials
+*.pem
+*.key
+*.crt
+credentials
+secrets.yml
+secrets.json
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover

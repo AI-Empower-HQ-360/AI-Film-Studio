@@ -47,19 +47,31 @@ nano .env.dev  # or use your preferred editor
 
 ### Step 2: Start Local Services with Docker (3 minutes)
 
+> **Note:** The repository currently uses standalone Docker containers for local development.
+> A `docker-compose.yml` file can be created using the template in [FILE_STRUCTURE_TEMPLATE.md](./FILE_STRUCTURE_TEMPLATE.md).
+
 ```bash
-# Start PostgreSQL and Redis
-docker-compose up -d postgres redis
+# Start PostgreSQL
+docker run --name ai-film-studio-postgres \
+  -e POSTGRES_USER=aifilm \
+  -e POSTGRES_PASSWORD="$(openssl rand -base64 24)" \
+  -e POSTGRES_DB=aifilmstudio_dev \
+  -p 5432:5432 \
+  -d postgres:15
+
+# Start Redis
+docker run --name ai-film-studio-redis \
+  -p 6379:6379 \
+  -d redis:7-alpine
 
 # Verify services are running
-docker-compose ps
+docker ps
 ```
 
 ### Step 3: Setup Backend (5 minutes)
 
 ```bash
-cd backend
-
+# From the repository root (not a backend/ subdirectory)
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
@@ -67,22 +79,25 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Run database migrations
-alembic upgrade head
+# Run database migrations (if alembic is configured)
+# alembic upgrade head
 
-# Seed test data (optional)
-python scripts/seed_data.py
-
-# Start backend server
-uvicorn src.main:app --reload
+# Start backend server with environment file
+uvicorn src.api.main:app --reload --env-file .env.dev
 ```
+
+> **Loading Environment Variables:** The Python services read from `os.environ`.
+> Use `--env-file` with uvicorn, or `source .env.dev` before running.
 
 Backend should now be running at `http://localhost:8000`
 
 ### Step 4: Setup Frontend (5 minutes)
 
+> **Note:** The Next.js frontend lives in the `frontend/` directory.
+> Verify it exists before proceeding.
+
 ```bash
-# In a new terminal
+# In a new terminal, from the repository root
 cd frontend
 
 # Install dependencies
@@ -100,10 +115,14 @@ npm run dev
 
 Frontend should now be running at `http://localhost:3000`
 
-### Step 5: Setup Worker (Optional - 10 minutes)
+### Step 5: Setup Worker (Optional - GPU Service)
+
+> **Note:** The dedicated GPU worker service for heavy AI generation jobs may be
+> deployed separately or integrated with the main backend. Follow the worker
+> service's own setup guide if available.
 
 ```bash
-# In a new terminal
+# If a worker/ directory exists:
 cd worker
 
 # Create virtual environment
@@ -207,10 +226,7 @@ Follow the detailed guide in the [Environment Setup Master Checklist](./ENVIRONM
 
 ### Backend Tests
 
-```bash
-cd backend
-pytest tests/ -v
-```
+```bash\n# Run from repository root\npytest tests/ -v\n```
 
 ### Frontend Tests
 
@@ -222,22 +238,20 @@ npm test
 ### Integration Tests
 
 ```bash
-cd tests
-pytest e2e/ -v
+# From repository root
+pytest tests/ -v
 ```
 
 ### Manual Testing
 
 1. **API Health Check**
    ```bash
-   curl http://localhost:8000/health
+   curl http://localhost:8000/api/v1/health
    ```
 
-2. **User Registration**
+2. **API Root Status**
    ```bash
-   curl -X POST http://localhost:8000/api/v1/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{"email":"test@example.com","password":"TestPass123!","name":"Test User"}'
+   curl http://localhost:8000/
    ```
 
 3. **Create Project**

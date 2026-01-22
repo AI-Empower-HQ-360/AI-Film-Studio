@@ -164,7 +164,7 @@ YouTube_Integration__c
 | **OAuth 2.0 Credentials** | Create OAuth 2.0 Client ID (Web application) | ☐ |
 | **Authorized Redirect URIs** | Add callback URLs for each environment | ☐ |
 | **OAuth Consent Screen** | Configure consent screen with app info and scopes | ☐ |
-| **API Scopes** | Request scopes: `youtube.upload`, `youtube.readonly`, `youtube.force-ssl` | ☐ |
+| **API Scopes** | Request scopes: `youtube.upload`, `youtube.readonly` | ☐ |
 | **API Key** | Generate API key for read-only operations (optional) | ☐ |
 | **Quota Management** | Monitor and request quota increase if needed (default: 10,000 units/day) | ☐ |
 | **Service Account** | Create service account for backend automation (optional) | ☐ |
@@ -173,7 +173,6 @@ YouTube_Integration__c
 ```
 https://www.googleapis.com/auth/youtube.upload
 https://www.googleapis.com/auth/youtube.readonly
-https://www.googleapis.com/auth/youtube.force-ssl
 ```
 
 ### Redirect URIs by Environment
@@ -461,20 +460,24 @@ graph LR
    terraform apply
    ```
 
-5. **Set Up Database**
+5. **Set Up Backend & Database**
    ```bash
-   cd ../../../../backend
+   # From infrastructure/terraform/environments/dev, return to repo root
+   cd ../../../..
    python -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
-   alembic upgrade head
+   # Run any project-specific database initialization as documented
    ```
 
 ### Day 2: Services Setup
 
 6. **Start Backend Services**
    ```bash
+   # Option 1: If docker-compose.yml exists at repo root
    docker-compose up -d
+   
+   # Option 2: Start services individually (see Step 2 in QUICK_START_GUIDE.md)
    ```
 
 7. **Set Up Frontend**
@@ -484,10 +487,11 @@ graph LR
    npm run dev
    ```
 
-8. **Download AI Models**
+8. **Download / Configure AI Models (If applicable)**
    ```bash
-   cd worker
-   python scripts/download_models.py
+   # If a worker service with model download scripts exists:
+   # cd worker && python scripts/download_models.py
+   # Otherwise, models are downloaded on first use or from S3
    ```
 
 ### Day 3: Integrations
@@ -513,9 +517,9 @@ graph LR
 
 - [Complete File Structure Template](./FILE_STRUCTURE_TEMPLATE.md)
 - [Environment Variables Reference](./ENV_VARIABLES_REFERENCE.md)
-- [AWS Setup Detailed Guide](./AWS_SETUP_GUIDE.md)
-- [Salesforce Integration Guide](./SALESFORCE_INTEGRATION_GUIDE.md)
-- [AI Models Configuration](./AI_MODELS_CONFIGURATION.md)
+- [System Architecture Design](../architecture/system-design.md)
+- [Branching Strategy & Salesforce Integration](../BRANCHING_STRATEGY.md)
+- [AI/ML Stack Documentation](../ai-ml-stack.md)
 
 ---
 

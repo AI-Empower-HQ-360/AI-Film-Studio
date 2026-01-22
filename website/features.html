@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Film Studio Features - Explore our AI-powered film generation capabilities">
+    <title>Features - AI Film Studio</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">AI Film Studio</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="features.html" class="active">Features</a></li>
+                <li><a href="docs.html">Documentation</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-hero">
+            <h1>Platform Features</h1>
+            <p>Discover the powerful capabilities of AI Film Studio</p>
+        </section>
+
+        <section class="features-detail">
+            <div class="feature-detail-card">
+                <div class="feature-detail-icon">🎬</div>
+                <div class="feature-detail-content">
+                    <h2>End-to-End Film Generation</h2>
+                    <p>Transform your text scripts into fully rendered cinematic short films. Our AI pipeline handles everything from script analysis to final video composition.</p>
+                    <ul>
+                        <li>Script → Scene Graph → Shot Generation → Video Composition</li>
+                        <li>30-90 second high-quality films</li>
+                        <li>1080p MP4 output with H.264 codec</li>
+                        <li>Multiple style options: cinematic, anime, documentary</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-detail-card">
+                <div class="feature-detail-icon">🤖</div>
+                <div class="feature-detail-content">
+                    <h2>GPU-Accelerated AI</h2>
+                    <p>Powered by state-of-the-art AI models running on dedicated GPU infrastructure for fast, high-quality visual generation.</p>
+                    <ul>
+                        <li>Stable Diffusion XL (SDXL) for image generation</li>
+                        <li>Custom AI models for video generation</li>
+                        <li>FFmpeg for professional video composition</li>
+                        <li>Intelligent scene understanding and composition</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-detail-card">
+                <div class="feature-detail-icon">☁️</div>
+                <div class="feature-detail-content">
+                    <h2>Cloud-Native Architecture</h2>
+                    <p>Built on AWS with enterprise-grade scalability, security, and reliability to support thousands of concurrent users.</p>
+                    <ul>
+                        <li>VPC, EC2, ECS/EKS for compute</li>
+                        <li>RDS PostgreSQL for data persistence</li>
+                        <li>S3 for asset storage with CloudFront CDN</li>
+                        <li>SQS for asynchronous job processing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-detail-card">
+                <div class="feature-detail-icon">🔐</div>
+                <div class="feature-detail-content">
+                    <h2>Enterprise Security</h2>
+                    <p>Production-ready security measures to protect your content and data at every layer.</p>
+                    <ul>
+                        <li>JWT-based authentication</li>
+                        <li>HTTPS everywhere with TLS encryption</li>
+                        <li>Encrypted storage at rest</li>
+                        <li>GDPR and CCPA compliant</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-detail-card">
+                <div class="feature-detail-icon">⚡</div>
+                <div class="feature-detail-content">
+                    <h2>Fast API Backend</h2>
+                    <p>High-performance FastAPI backend designed for speed and developer experience.</p>
+                    <ul>
+                        <li>Python 3.11+ with async support</li>
+                        <li>API response time &lt;200ms (p95)</li>
+                        <li>RESTful API design</li>
+                        <li>Comprehensive API documentation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-detail-card">
+                <div class="feature-detail-icon">📊</div>
+                <div class="feature-detail-content">
+                    <h2>Monitoring &amp; Observability</h2>
+                    <p>Full visibility into system health, performance, and usage metrics.</p>
+                    <ul>
+                        <li>CloudWatch logs, metrics, and alarms</li>
+                        <li>Optional Prometheus + Grafana integration</li>
+                        <li>X-Ray distributed tracing</li>
+                        <li>Real-time alerting</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing-preview">
+            <h2>Flexible Pricing Tiers</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">$0<span>/month</span></div>
+                    <ul>
+                        <li>3 films per month</li>
+                        <li>Watermarked output</li>
+                        <li>Standard queue</li>
+                    </ul>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>Pro</h3>
+                    <div class="price">$29<span>/month</span></div>
+                    <ul>
+                        <li>30 films per month</li>
+                        <li>No watermark</li>
+                        <li>Priority queue</li>
+                    </ul>
+                </div>
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">$299<span>/month</span></div>
+                    <ul>
+                        <li>Unlimited films</li>
+                        <li>No watermark</li>
+                        <li>Priority queue</li>
+                        <li>Dedicated support</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Ready to Get Started?</h2>
+            <p>Check out our documentation to set up your own AI Film Studio instance</p>
+            <a href="docs.html" class="btn btn-primary btn-large">View Documentation</a>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">AI Film Studio</span>
+                <p>AI-powered film generation platform</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="features.html">Features</a></li>
+                        <li><a href="docs.html">Documentation</a></li>
+                        <li><a href="about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://github.com/AI-Empower-HQ-360/AI-Film-Studio">GitHub Repository</a></li>
+                        <li><a href="docs.html#api">API Reference</a></li>
+                        <li><a href="docs.html#getting-started">Getting Started</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 AI Film Studio. Licensed under MIT License.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

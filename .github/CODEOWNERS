@@ -1,0 +1,59 @@
+# CODEOWNERS file for AI Film Studio
+#
+# This file defines individuals or teams that are responsible for code in this repository.
+# Code owners are automatically requested for review when someone opens a pull request
+# that modifies code that they own.
+#
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+# These owners will be the default owners for everything unless a later match takes precedence
+* @AI-Empower-HQ-360/engineering-team
+
+# Infrastructure and DevOps
+/infrastructure/ @AI-Empower-HQ-360/devops-team
+/infrastructure/terraform/ @AI-Empower-HQ-360/devops-team
+/infrastructure/kubernetes/ @AI-Empower-HQ-360/devops-team
+
+# CI/CD Workflows
+/.github/workflows/ @AI-Empower-HQ-360/devops-team
+/.github/actions/ @AI-Empower-HQ-360/devops-team
+
+# Backend
+/backend/ @AI-Empower-HQ-360/backend-team
+/src/ @AI-Empower-HQ-360/backend-team
+
+# Worker/AI Pipeline
+/worker/ @AI-Empower-HQ-360/ml-team
+/py/ @AI-Empower-HQ-360/ml-team
+
+# Frontend (if added in the future)
+# /frontend/ @AI-Empower-HQ-360/frontend-team
+
+# Documentation
+/docs/ @AI-Empower-HQ-360/tech-writers
+/docs/BRANCHING_STRATEGY.md @AI-Empower-HQ-360/devops-team
+/docs/environments/ @AI-Empower-HQ-360/devops-team
+README.md @AI-Empower-HQ-360/tech-writers
+
+# Tests
+/tests/ @AI-Empower-HQ-360/qa-team
+
+# Security-sensitive files
+*.yml @AI-Empower-HQ-360/security-team @AI-Empower-HQ-360/devops-team
+*.yaml @AI-Empower-HQ-360/security-team @AI-Empower-HQ-360/devops-team
+Dockerfile @AI-Empower-HQ-360/security-team @AI-Empower-HQ-360/devops-team
+docker-compose.yml @AI-Empower-HQ-360/security-team @AI-Empower-HQ-360/devops-team
+.env.example @AI-Empower-HQ-360/security-team
+
+# Configuration files
+*.json @AI-Empower-HQ-360/devops-team
+*.toml @AI-Empower-HQ-360/devops-team
+requirements.txt @AI-Empower-HQ-360/backend-team
+setup.py @AI-Empower-HQ-360/backend-team
+
+# Database
+/migrations/ @AI-Empower-HQ-360/backend-team @AI-Empower-HQ-360/database-team
+
+# Scripts
+/scripts/ @AI-Empower-HQ-360/devops-team

@@ -246,7 +246,7 @@ cp .env.prod.template .env.prod
 1. **NEVER commit secrets to version control**
    - `.env` files are gitignored
    - Only `.env.*.template` files are committed
-   - Templates contain placeholders, not actual secrets
+   - Templates contain placeholders (e.g., `{{YOUR_SECRET}}`) or clearly non-sensitive sample values, not real secrets
 
 2. **Use AWS Secrets Manager for production**
    ```bash
@@ -332,7 +332,7 @@ Found an issue or want to improve documentation?
 
 1. Create an issue describing the problem
 2. Submit a pull request with improvements
-3. Follow the [Contributing Guidelines](../../CONTRIBUTING.md)
+3. Review the repository's contribution guidelines (see repository README or `.github/` folder)
 
 ---
 

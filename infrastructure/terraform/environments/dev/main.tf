@@ -48,6 +48,7 @@ locals {
   common_tags = {
     Environment = "dev"
     Project     = "AI-Film-Studio"
+    Version     = "0.1.0"
     ManagedBy   = "Terraform"
     Owner       = "AI-Empower-HQ-360"
     CreatedDate = "2025-12-27"

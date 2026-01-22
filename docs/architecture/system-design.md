@@ -1,7 +1,7 @@
 # System Design Document - AI Film Studio
 
-**Version:** 1.0  
-**Last Updated:** 2025-12-27  
+**Version:** 1.1  
+**Last Updated:** 2025-12-31  
 **Document Owner:** AI-Empower-HQ-360
 
 ---
@@ -259,34 +259,89 @@ Text Generation (Scripts):
   - Model: GPT-3.5-turbo / Claude API
   - Fallback: Local LLaMA 2
 
-Image Generation (Storyboards):
-  - Model: Stable Diffusion XL
-  - LoRA: Custom film production LoRA
-  - Steps: 30-50
-  - Resolution: 1024x1024
+Image Generation (Story-Driven & Cultural Context):
+  Base Model:
+    - Model: Stable Diffusion XL (SDXL)
+    - LoRA: Custom film production LoRA
+    - Steps: 30-50
+    - Resolution: 1024x1024
+  
+  Character Generation:
+    - Model: SDXL + Custom LoRA
+    - Face consistency: IP-Adapter + InstantID
+    - Expression control: ControlNet (OpenPose, facial landmarks)
+    - Cultural adaptation: Custom embeddings per region
+    - Clothing generation: Region-specific LoRA models
+  
+  Scene Generation:
+    - Model: SDXL + Architectural LoRA
+    - Layout control: ControlNet (depth, canny edge)
+    - Cultural elements: Custom trained embeddings
+    - Props & decorations: Context-aware generation
+  
+  Cultural Context Models:
+    - South Indian: Custom LoRA (temples, traditional attire, festivals)
+    - Western: Standard SDXL with architectural control
+    - East Asian: Region-specific LoRA models
+    - Custom: Fantasy and historical period models
 
 Video Generation:
   - Model: Stable Video Diffusion
   - Frame Rate: 24 fps
   - Duration: 2-5 seconds per clip
   - Resolution: 1024x576
+  - Animation: AnimateDiff for smooth motion
+  - Lip-sync: Wav2Lip / SadTalker
 
 Audio Generation:
   - Model: AudioCraft / MusicGen
   - Format: WAV, MP3
+  - Cultural music: Region-specific sample libraries
+  - Voice: ElevenLabs API / Coqui TTS
 ```
 
 **Job Processing Flow:**
 ```python
 1. Poll SQS queue
 2. Retrieve job metadata from RDS
-3. Load AI model (if not cached)
-4. Execute generation task
-5. Upload results to S3
-6. Update job status in RDS
-7. Send notification (optional)
-8. Delete SQS message
+3. Load script and analyze context
+   3a. Extract scenes, characters, dialogue
+   3b. Detect cultural context from script
+   3c. Identify story setting and time period
+4. Load AI models (cached when possible)
+5. Execute image generation pipeline:
+   5a. Generate character images with cultural adaptation
+   5b. Generate scene backgrounds with cultural elements
+   5c. Compose characters into scenes
+6. Execute video synthesis:
+   6a. Convert static images to video sequences
+   6b. Apply animations and lip-sync
+   6c. Integrate cultural audio (dialogue, music, slokas)
+7. Upload results to S3
+8. Update job status in RDS with detailed progress
+9. Send notification (optional)
+10. Delete SQS message
 ```
+
+**Image Generation Dependency Hierarchy:**
+```
+User Script
+    ↓
+Script Analysis (context extraction)
+    ↓
+Cultural Context Detection
+    ↓
+    ├→ Character Generation (with cultural attire)
+    ├→ Scene Generation (with cultural elements)
+    └→ Props & Assets (culturally appropriate)
+    ↓
+Image Composition
+    ↓
+Video Synthesis (with cultural audio)
+    ↓
+Final Video Output
+```
+
 
 ---
 
@@ -616,6 +671,184 @@ sequenceDiagram
     Redis->>Backend: 11. Notify Subscriber
     Backend->>Frontend: 12. Job Complete Message
     Frontend-->>User: 13. Show Result
+```
+
+### Image Generation Workflow (Story & Cultural Context)
+
+The AI Film Studio implements a sophisticated image generation pipeline that is **fully dependent on script content and cultural context**. This ensures dynamic, contextually-aware visual content that respects cultural authenticity.
+
+```mermaid
+sequenceDiagram
+    participant Worker
+    participant ScriptAnalyzer
+    participant CulturalEngine
+    participant CharacterGen
+    participant SceneGen
+    participant Compositor
+    participant VideoSynth
+    participant S3
+
+    Worker->>ScriptAnalyzer: 1. Parse user script
+    ScriptAnalyzer->>ScriptAnalyzer: 2. Extract scenes
+    ScriptAnalyzer->>ScriptAnalyzer: 3. Identify characters
+    ScriptAnalyzer->>ScriptAnalyzer: 4. Extract dialogue
+    ScriptAnalyzer->>CulturalEngine: 5. Detect cultural context
+    
+    CulturalEngine->>CulturalEngine: 6. Analyze names, festivals, traditions
+    CulturalEngine->>CulturalEngine: 7. Infer geographical/cultural setting
+    CulturalEngine->>CulturalEngine: 8. Select cultural templates
+    CulturalEngine->>Worker: 9. Return cultural context data
+    
+    Worker->>CharacterGen: 10. Generate characters
+    Note over CharacterGen: Apply cultural adaptation:<br/>- Traditional/modern attire<br/>- Cultural accessories<br/>- Appropriate expressions<br/>- Age/gender context
+    CharacterGen->>S3: 11. Upload character images
+    
+    Worker->>SceneGen: 12. Generate scene backgrounds
+    Note over SceneGen: Include cultural elements:<br/>- Architecture style<br/>- Cultural decorations<br/>- Props and artifacts<br/>- Lighting atmosphere
+    SceneGen->>S3: 13. Upload scene images
+    
+    Worker->>Compositor: 14. Compose images
+    Compositor->>Compositor: 15. Merge characters + scenes
+    Compositor->>Compositor: 16. Apply depth, shadows
+    Compositor->>S3: 17. Upload composed frames
+    
+    Worker->>VideoSynth: 18. Synthesize video
+    VideoSynth->>VideoSynth: 19. Animate frames
+    VideoSynth->>VideoSynth: 20. Apply lip-sync
+    VideoSynth->>VideoSynth: 21. Add cultural audio
+    VideoSynth->>S3: 22. Upload final video
+    VideoSynth->>Worker: 23. Generation complete
+```
+
+**Key Workflow Characteristics:**
+
+```yaml
+Dynamic Generation:
+  - Same characters + different scripts = unique videos
+  - Context-aware expression and pose generation
+  - Story-driven costume and prop selection
+
+Cultural Adaptation:
+  Supported Contexts:
+    - South Indian (Tamil, Telugu, Malayalam, Kannada)
+    - North Indian (Hindi, Punjabi, Bengali)
+    - East Asian (Chinese, Japanese, Korean)
+    - Western (American, European)
+    - Middle Eastern
+    - African cultures
+    - Fantasy/Custom settings
+  
+  Adaptation Elements:
+    - Traditional vs modern attire
+    - Cultural accessories (jewelry, props)
+    - Architectural styles
+    - Ceremonial elements
+    - Color palettes
+    - Musical styles
+
+Dependency Hierarchy:
+  Script → Story Context → Cultural Detection →
+  Character Images → Scene Backgrounds →
+  Image Composition → Video Synthesis → Final Output
+
+Processing Steps:
+  1. Script Analysis (5% progress)
+     - Scene extraction
+     - Character identification
+     - Dialogue parsing
+     - Cultural indicator detection
+  
+  2. Character Generation (20% progress)
+     - Reference image processing (if provided)
+     - Cultural attire selection
+     - Expression adaptation
+     - Pose generation
+  
+  3. Scene Generation (35% progress)
+     - Background creation with cultural elements
+     - Props and decorations
+     - Lighting and atmosphere
+  
+  4. Image Composition (50% progress)
+     - Character-scene integration
+     - Depth and perspective
+     - Shadow and lighting effects
+  
+  5. Video Synthesis (70% progress)
+     - Static to motion conversion
+     - Animation application
+     - Camera movements
+  
+  6. Audio Integration (85% progress)
+     - Dialogue with cultural accents
+     - Traditional music
+     - Cultural sounds (bells, chants, etc.)
+     - Multi-language subtitles
+  
+  7. Final Rendering (100% progress)
+     - Video encoding
+     - Quality optimization
+     - Upload to S3
+
+Example: South Indian Wedding Scene
+  Script Input: "Lakshmi arrives at temple in silk saree for wedding"
+  
+  Cultural Detection:
+    - Region: South Indian
+    - Event: Wedding ceremony
+    - Location: Temple
+    - Character: Female (Lakshmi)
+  
+  Generated Elements:
+    Character:
+      - Traditional silk saree (bright colors)
+      - Jasmine flowers in hair
+      - Gold temple jewelry
+      - Joyful expression
+      - Cultural makeup (bindi, kumkum)
+    
+    Scene:
+      - Dravidian temple architecture
+      - Wedding mandap decorations
+      - Marigold flower garlands
+      - Oil lamps (diyas)
+      - Other guests in traditional attire
+    
+    Audio:
+      - Dialogue in Tamil/Telugu
+      - Traditional wedding music
+      - Temple bell sounds
+      - Subtitle in English
+```
+
+**Technical Implementation:**
+
+```yaml
+AI Models Used:
+  Character Generation:
+    - Base: Stable Diffusion XL
+    - Face Consistency: IP-Adapter + InstantID
+    - Cultural Adaptation: Region-specific LoRA models
+    - Expression Control: ControlNet (facial landmarks)
+  
+  Scene Generation:
+    - Base: SDXL + Architectural LoRA
+    - Cultural Elements: Custom embeddings
+    - Layout: ControlNet (depth, edge detection)
+  
+  Animation:
+    - Motion: AnimateDiff
+    - Lip-sync: Wav2Lip / SadTalker
+    - Video: Stable Video Diffusion
+
+Processing Time (per 5-second clip):
+  - Script analysis: 2-5 seconds
+  - Character generation: 15-30 seconds
+  - Scene generation: 15-30 seconds
+  - Image composition: 10-15 seconds
+  - Video synthesis: 60-120 seconds
+  - Audio integration: 10-20 seconds
+  Total: 3-5 minutes
 ```
 
 ---
@@ -1493,6 +1726,8 @@ Margin: 85% at 1,000 users, 91% at 10,000 users
 
 ### Frontend Stack
 
+> 📘 **For comprehensive frontend tech stack details, see:** [`frontend-tech-stack.md`](./frontend-tech-stack.md)
+
 ```yaml
 Core Framework:
   - Next.js: 14.x
@@ -1560,24 +1795,55 @@ Core Frameworks:
   - Diffusers: 0.25+ (Stable Diffusion)
   - CUDA: 12.1 (GPU acceleration)
 
-Models:
-  Text Generation:
-    - gpt-3.5-turbo (OpenAI API)
-    - claude-3-sonnet (Anthropic API)
-    - Mistral-7B (local fallback)
+Video Generation:
+  - Stable Diffusion Video (SD-V)
+  - RunwayML Gen-2
+  - CogVideo
+  - AnimateDiff
+  - LTX-2, Dream Machine
+
+Voice Synthesis (Multi-age & Multi-gender):
+  - ElevenLabs API (Baby to Mature 45+)
+  - Coqui TTS (self-hosted)
+  - OpenAI TTS
+  - Azure Speech Services
+  Age Groups: Baby, Toddler, Child, Pre-teen, Teen, Young Adult, Adult, Mature
+
+Lip-sync & Animation:
+  - Wav2Lip
+  - First Order Motion Model (FOMM)
+  - SadTalker (3D-aware)
+  - MediaPipe Face Mesh
   
-  Image Generation:
-    - Stable Diffusion XL
-    - ControlNet (pose, depth)
-    - Custom LoRA models
+Music & Audio:
+  - MusicGen (Meta)
+  - AudioCraft
+  - OpenAI Jukebox
+  - MIDI generation
+  - Indian Classical Music support
+  - Slokas, Sahasranamas, Devotional content
   
-  Video Generation:
-    - Stable Video Diffusion
-    - AnimateDiff
+Podcast-Style Videos:
+  - Dual/multi-character overlay
+  - Split-screen layouts (50/50, 60/40, 70/30)
+  - Picture-in-picture
+  - Round table (4-person)
   
-  Audio:
-    - AudioCraft
-    - MusicGen
+Subtitles & Translation:
+  - OpenAI Whisper (ASR)
+  - Google Cloud Speech-to-Text
+  - Google Translate API
+  - DeepL API
+  - 20+ languages support
+  - SRT, VTT, ASS formats
+  
+Job Management:
+  - AWS SQS (primary queue)
+  - BullMQ (Redis-based)
+  - RabbitMQ (alternative)
+  - Celery (Python tasks)
+  - Priority queuing system
+  - Auto-scaling GPU workers
 
 Optimization:
   - xformers: 0.0.23 (memory efficient attention)
@@ -1585,6 +1851,8 @@ Optimization:
   - torch.compile: Native PyTorch 2.0
   - Flash Attention: 2.x
 ```
+
+📖 **[Complete AI/ML Stack Documentation](../../ai-ml-stack.md)**
 
 ### Infrastructure Stack
 
@@ -1728,12 +1996,13 @@ Vendor Support:
 | Version | Date       | Author                 | Changes                          |
 |---------|------------|------------------------|----------------------------------|
 | 1.0     | 2025-12-27 | AI-Empower-HQ-360      | Initial system design document   |
+| 1.1     | 2025-12-31 | AI-Empower-HQ-360      | Added detailed image generation workflow, cultural context integration, and processing pipeline |
 
 ---
 
 ## Approval Signatures
 
-This document represents the approved system architecture for the AI Film Studio platform as of 2025-12-27.
+This document represents the approved system architecture for the AI Film Studio platform as of 2025-12-31.
 
 **Approved by:**
 - Engineering Lead: _________________ Date: _______
@@ -1743,3 +2012,4 @@ This document represents the approved system architecture for the AI Film Studio
 ---
 
 **End of Document**
+

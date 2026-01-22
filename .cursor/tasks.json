@@ -1,0 +1,90 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🐍 Run Backend Server",
+      "type": "shell",
+      "command": "uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "⚛️ Run Frontend Dev Server",
+      "type": "shell",
+      "command": "cd frontend && npm run dev",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "🧪 Run Python Tests",
+      "type": "shell",
+      "command": "pytest tests/ -v --cov=src --cov-report=term-missing",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "🔍 Lint Python",
+      "type": "shell",
+      "command": "black --check src/ tests/ && flake8 src/ tests/ && mypy src/",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "🔍 Lint Frontend",
+      "type": "shell",
+      "command": "cd frontend && npm run lint",
+      "group": "test",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "🏗️ Build Frontend",
+      "type": "shell",
+      "command": "cd frontend && npm run build",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "🐳 Docker Compose Up",
+      "type": "shell",
+      "command": "docker-compose up -d",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "🐳 Docker Compose Down",
+      "type": "shell",
+      "command": "docker-compose down",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "📦 Install Dependencies",
+      "type": "shell",
+      "command": "pip install -r requirements.txt && cd frontend && npm install",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "🗃️ Database Migrate",
+      "type": "shell",
+      "command": "alembic upgrade head",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

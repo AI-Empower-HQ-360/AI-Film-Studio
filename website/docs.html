@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Film Studio Documentation - API Reference, Getting Started Guide, and Developer Resources">
+    <title>Documentation - AI Film Studio</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">AI Film Studio</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="features.html">Features</a></li>
+                <li><a href="docs.html" class="active">Documentation</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="docs-layout">
+        <aside class="docs-sidebar">
+            <nav class="docs-nav">
+                <h3>Documentation</h3>
+                <ul>
+                    <li><a href="#getting-started">Getting Started</a></li>
+                    <li><a href="#prerequisites">Prerequisites</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#api">API Reference</a></li>
+                    <li><a href="#endpoints">API Endpoints</a></li>
+                    <li><a href="#infrastructure">Infrastructure</a></li>
+                    <li><a href="#environments">Environments</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="docs-content">
+            <section class="page-hero docs-hero">
+                <h1>Documentation</h1>
+                <p>Everything you need to set up and use AI Film Studio</p>
+            </section>
+
+            <section id="getting-started" class="docs-section">
+                <h2>Getting Started</h2>
+                <p>AI Film Studio is a cloud-native platform that transforms text scripts into cinematic short films using AI-powered image/video generation. This guide will help you set up your own instance.</p>
+            </section>
+
+            <section id="prerequisites" class="docs-section">
+                <h2>Prerequisites</h2>
+                <div class="prereq-grid">
+                    <div class="prereq-card">
+                        <h4>Cloud &amp; Infrastructure</h4>
+                        <ul>
+                            <li>AWS Account with appropriate permissions</li>
+                            <li>Terraform &gt;= 1.5</li>
+                            <li>Docker Desktop</li>
+                            <li>kubectl (for EKS)</li>
+                        </ul>
+                    </div>
+                    <div class="prereq-card">
+                        <h4>Development</h4>
+                        <ul>
+                            <li>Node.js &gt;= 18</li>
+                            <li>Python &gt;= 3.11</li>
+                            <li>GitHub account for CI/CD</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="installation" class="docs-section">
+                <h2>Installation</h2>
+                
+                <h3>1. Clone the Repository</h3>
+                <div class="code-block">
+                    <pre><code>git clone https://github.com/AI-Empower-HQ-360/AI-Film-Studio.git
+cd AI-Film-Studio</code></pre>
+                </div>
+
+                <h3>2. Set Up Backend</h3>
+                <div class="code-block">
+                    <pre><code>cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env  # Configure your environment variables
+uvicorn src.main:app --reload</code></pre>
+                </div>
+
+                <h3>3. Set Up Worker</h3>
+                <div class="code-block">
+                    <pre><code>cd worker
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python src/main.py</code></pre>
+                </div>
+
+                <h3>4. Set Up Frontend</h3>
+                <div class="code-block">
+                    <pre><code>cd frontend
+npm install
+cp .env.example .env.local
+npm run dev</code></pre>
+                </div>
+            </section>
+
+            <section id="api" class="docs-section">
+                <h2>API Reference</h2>
+                <p>The AI Film Studio API is built with FastAPI and provides RESTful endpoints for all platform functionality.</p>
+                
+                <div class="api-info">
+                    <div class="api-info-item">
+                        <strong>Base URL:</strong> <code>https://api.your-domain.com/api/v1</code>
+                    </div>
+                    <div class="api-info-item">
+                        <strong>Authentication:</strong> Bearer Token (JWT)
+                    </div>
+                    <div class="api-info-item">
+                        <strong>Content-Type:</strong> <code>application/json</code>
+                    </div>
+                </div>
+            </section>
+
+            <section id="endpoints" class="docs-section">
+                <h2>API Endpoints</h2>
+                
+                <h3>Authentication</h3>
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <code>/auth/register</code>
+                    </div>
+                    <p>Register a new user account</p>
+                    <div class="code-block">
+                        <pre><code>{
+  "email": "user@example.com",
+  "password": "SecurePass123"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <code>/auth/login</code>
+                    </div>
+                    <p>Authenticate and receive JWT tokens</p>
+                    <div class="code-block">
+                        <pre><code>{
+  "email": "user@example.com",
+  "password": "SecurePass123"
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>Projects</h3>
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <code>/projects</code>
+                    </div>
+                    <p>Create a new film project</p>
+                    <div class="code-block">
+                        <pre><code>{
+  "title": "My First Film",
+  "script": "A hero embarks on an epic journey..."
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <code>/projects</code>
+                    </div>
+                    <p>List all user projects with pagination</p>
+                </div>
+
+                <h3>Film Generation</h3>
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <code>/projects/{projectId}/generate</code>
+                    </div>
+                    <p>Submit a film generation job</p>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <code>/jobs/{jobId}</code>
+                    </div>
+                    <p>Track job progress and status</p>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <code>/jobs/{jobId}/download</code>
+                    </div>
+                    <p>Get download URL for completed film</p>
+                </div>
+
+                <h3>Health Check</h3>
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <code>/health</code>
+                    </div>
+                    <p>Check API health status</p>
+                    <div class="code-block">
+                        <pre><code>// Response
+{
+  "status": "healthy",
+  "version": "0.1.0",
+  "service": "AI Film Studio"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="infrastructure" class="docs-section">
+                <h2>Infrastructure Deployment</h2>
+                
+                <h3>Initialize Terraform</h3>
+                <div class="code-block">
+                    <pre><code>cd infrastructure/terraform/environments/dev
+terraform init</code></pre>
+                </div>
+
+                <h3>Plan Infrastructure</h3>
+                <div class="code-block">
+                    <pre><code>terraform plan -out=tfplan</code></pre>
+                </div>
+
+                <h3>Apply Infrastructure</h3>
+                <div class="code-block">
+                    <pre><code>terraform apply tfplan</code></pre>
+                </div>
+            </section>
+
+            <section id="environments" class="docs-section">
+                <h2>Environments</h2>
+                <div class="env-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Environment</th>
+                                <th>Purpose</th>
+                                <th>Infrastructure</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dev</strong></td>
+                                <td>Rapid development and testing</td>
+                                <td>Small instances, single AZ</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Test/QA</strong></td>
+                                <td>Integration and performance testing</td>
+                                <td>Mirrors prod, scaled down</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Staging</strong></td>
+                                <td>Pre-production validation</td>
+                                <td>Prod-like, blue-green ready</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Production</strong></td>
+                                <td>Live user traffic</td>
+                                <td>Multi-AZ, auto-scaling, HA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">AI Film Studio</span>
+                <p>AI-powered film generation platform</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="features.html">Features</a></li>
+                        <li><a href="docs.html">Documentation</a></li>
+                        <li><a href="about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://github.com/AI-Empower-HQ-360/AI-Film-Studio">GitHub Repository</a></li>
+                        <li><a href="#api">API Reference</a></li>
+                        <li><a href="#getting-started">Getting Started</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 AI Film Studio. Licensed under MIT License.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

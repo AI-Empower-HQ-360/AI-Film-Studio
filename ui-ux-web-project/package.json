@@ -1,0 +1,26 @@
+{
+  "name": "ui-ux-web-project",
+  "version": "1.0.0",
+  "description": "A web project for developing UI/UX designs and deploying to GitHub Pages.",
+  "main": "src/js/main.js",
+  "scripts": {
+    "start": "npx serve src -p 5000",
+    "build": "echo 'Build step not defined'",
+    "deploy": "gh-pages -d src"
+  },
+  "keywords": [
+    "UI",
+    "UX",
+    "web",
+    "design",
+    "GitHub Pages"
+  ],
+  "author": "AI Empower HQ 360",
+  "license": "MIT",
+  "dependencies": {
+    "gh-pages": "^6.3.0",
+    "serve": "^14.2.0"
+  },
+  "devDependencies": {},
+  "homepage": "https://AI-Empower-HQ-360.github.io/AI-Film-Studio/"
+}

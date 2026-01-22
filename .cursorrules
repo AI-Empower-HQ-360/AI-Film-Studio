@@ -1,0 +1,131 @@
+# Cursor AI Rules for AI Film Studio
+
+You are an expert AI programming assistant working on AI Film Studio - an end-to-end platform that transforms text scripts into cinematic short films (30-90 seconds) using a 7-stage AI pipeline.
+
+## Project Overview
+
+**Architecture**: Decoupled frontend (Next.js 14) + backend microservices (FastAPI Python) + GPU AI workers + AWS cloud infrastructure (S3, SQS, RDS, ECS/EKS).
+
+**AI Pipeline Stages**:
+1. Script Analysis → 2. Image Generation → 3. Voice Synthesis → 4. Lip-sync Animation → 5. Music/Audio → 6. Podcast Mode → 7. Multilingual Subtitles
+
+## Code Style & Patterns
+
+### Python Backend (FastAPI)
+- Use **async/await** for all I/O operations
+- All AI services inherit from `BaseService` pattern
+- Use **Pydantic models** for all API inputs/outputs with `Field()` descriptors
+- Follow this structure for AI services:
+  ```python
+  class ServiceRequest(BaseModel):
+      field: str = Field(..., description="Description")
+  
+  class ServiceResponse(BaseModel):
+      job_id: str
+      status: str
+      result: Optional[Any] = None
+  
+  class AIService:
+      async def generate(self, request: ServiceRequest) -> ServiceResponse:
+          ...
+  ```
+- Error handling: Wrap model inference in try/except, return error in response model
+- S3 patterns: `{bucket}/{job_id}/{asset_type}/{filename}`
+
+### TypeScript/React Frontend (Next.js 14)
+- Use **TypeScript** with strict mode
+- Components use functional components with hooks
+- State management: Local `useState` (no Redux/Zustand)
+- All styling via **Tailwind CSS** classes (no inline styles)
+- Type definitions in `frontend/src/types/`
+- API calls use the `api.ts` client in `frontend/src/lib/`
+
+### File Organization
+```
+src/
+├── api/           # FastAPI routes and schemas
+├── config/        # Settings and AI model configs
+├── services/      # AI service implementations
+├── database/      # SQLAlchemy models
+├── models/        # Pydantic data models
+└── utils/         # Helpers (auth, logger)
+
+frontend/src/
+├── app/           # Next.js App Router pages
+├── components/    # React components
+├── lib/           # Utilities and API client
+├── types/         # TypeScript interfaces
+└── hooks/         # Custom React hooks
+```
+
+## AI Service Dependencies
+
+⚠️ **CRITICAL**: AI services follow a hierarchical dependency chain:
+1. Script → Character images (SDXL + cultural context)
+2. Character images → Video frames (stable-video-diffusion)
+3. Video + Audio → Lip-synced animation (wav2lip/sadtalker)
+
+Never skip steps in the pipeline.
+
+## Environment Configuration
+
+**ALWAYS** use environment variables for:
+- Model paths: `WAV2LIP_MODEL_PATH`, `FOMM_MODEL_PATH`, `SADTALKER_MODEL_PATH`
+- API keys: `STABILITY_AI_API_KEY`, `ELEVENLABS_API_KEY`, `OPENAI_API_KEY`
+- GPU settings: `GPU_DEVICE_ID`, `ENABLE_MIXED_PRECISION`
+
+Reference `.env.example` for all available variables.
+
+## Testing
+
+```bash
+# Backend tests
+pytest tests/ -v --cov=src
+
+# Frontend
+cd frontend && npm run lint && npm run build
+```
+
+Mark GPU-dependent tests with `@pytest.mark.gpu`.
+
+## Git Workflow
+
+**4-branch strategy**: `dev` → `sandbox` → `staging` → `main`
+
+Never commit directly to `main`. Always use PRs.
+
+## Key Files to Reference
+
+- `src/services/video_generation.py` - Video generation patterns
+- `src/services/lipsync_animation.py` - Animation pipeline
+- `src/api/main.py` - FastAPI app structure
+- `frontend/src/app/page.tsx` - Main landing page
+- `docs/requirements/MASTER-WORKFLOW-ROADMAP.md` - Full pipeline docs
+
+## Response Guidelines
+
+1. **Be concise** - Show code, not explanations
+2. **Follow existing patterns** - Check similar files first
+3. **Type everything** - No `any` types in TypeScript
+4. **Async by default** - Use `async def` for Python, `async/await` for JS
+5. **Security first** - Never hardcode secrets, use env vars
+6. **Test-friendly** - Write testable code with dependency injection
+
+## Common Tasks
+
+### Adding a new AI service:
+1. Create `src/services/new_service.py`
+2. Add Pydantic models in `src/api/schemas/`
+3. Create API route in `src/api/routes/`
+4. Add to `src/api/routes/__init__.py`
+5. Write tests in `tests/test_new_service.py`
+
+### Adding a new frontend page:
+1. Create `frontend/src/app/pagename/page.tsx`
+2. Add types in `frontend/src/types/`
+3. Use existing components from `frontend/src/app/components/`
+
+### Adding environment variables:
+1. Add to `.env.example` with description
+2. Add to `src/config/settings.py`
+3. Document in relevant README

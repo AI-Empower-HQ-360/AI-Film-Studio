@@ -1,8 +1,8 @@
 # Functional Requirements Document (FRD)
 ## AI Film Studio
 
-**Document Version:** 1.0  
-**Date:** 2025-12-27  
+**Document Version:** 1.1  
+**Date:** 2025-12-31  
 **Author:** AI-Empower-HQ-360  
 **Status:** Approved
 
@@ -27,7 +27,7 @@ Covers all user-facing features, APIs, data models, workflows, and acceptance cr
 
 ### 2.1 User Roles
 | Role | Description | Capabilities |
-|------|-------------|--------------||
+|------|-------------|--------------|
 | **Guest** | Unauthenticated visitor | View landing page, signup |
 | **Free User** | Registered, free tier | 3 films/month, watermarked |
 | **Pro User** | Paid subscriber ($29/mo) | 30 films/month, no watermark |
@@ -253,6 +253,202 @@ Response: { "jobId": "uuid", "status": "queued" }
 
 ---
 
+### FR-024: Script-Based Image Generation [P0]
+**Description**: System analyzes user scripts to generate contextually appropriate images for characters and scenes.
+
+**Acceptance Criteria**:
+- [ ] Parse script text to extract scene descriptions
+- [ ] Identify character names, roles, and attributes
+- [ ] Detect dialogue and emotional context
+- [ ] Infer story setting (modern, traditional, fantasy, etc.)
+- [ ] Extract cultural indicators from script content
+- [ ] Generate structured context data for image generation
+
+**API Endpoint**:
+```
+POST /api/v1/internal/script-analysis
+Body: { "script": "string", "projectId": "uuid" }
+Response: {
+  "scenes": [...],
+  "characters": [...],
+  "cultural_context": {...},
+  "story_setting": "string"
+}
+```
+
+---
+
+### FR-025: Cultural Context-Aware Character Generation [P0]
+**Description**: Generate character images that adapt to cultural context and story requirements.
+
+**Acceptance Criteria**:
+- [ ] Accept character reference images (optional)
+- [ ] Generate characters based on script descriptions
+- [ ] Adapt facial expressions based on scene emotions
+- [ ] Apply culturally appropriate clothing and attire
+- [ ] Include cultural accessories (jewelry, props)
+- [ ] Maintain character consistency across scenes
+- [ ] Support multiple cultural contexts (South Indian, Western, East Asian, etc.)
+
+**Cultural Adaptation Examples**:
+```yaml
+South Indian Traditional:
+  - Traditional attire (sarees, dhotis)
+  - Jasmine flowers, bindis, traditional jewelry
+  - Cultural hairstyles
+  - Appropriate skin tones and features
+
+Western Modern:
+  - Contemporary clothing
+  - Modern accessories
+  - Professional or casual attire
+  - Diverse ethnic representations
+```
+
+**API Endpoint**:
+```
+POST /api/v1/internal/generate-character
+Body: {
+  "character_name": "string",
+  "script_context": {...},
+  "cultural_context": "string",
+  "reference_image_url": "string" (optional)
+}
+Response: { "character_images": [...], "character_id": "uuid" }
+```
+
+---
+
+### FR-026: Scene & Background Generation [P0]
+**Description**: Generate scene backgrounds and environments based on story context and cultural setting.
+
+**Acceptance Criteria**:
+- [ ] Generate backgrounds matching story setting
+- [ ] Include culturally appropriate architectural elements
+- [ ] Add environmental props and decorations
+- [ ] Apply correct lighting based on time of day
+- [ ] Include cultural-specific elements (temples, kolam patterns, etc.)
+- [ ] Ensure scene consistency across related shots
+- [ ] Support various location types (indoor, outdoor, sacred, public)
+
+**Cultural Scene Templates**:
+```yaml
+South Indian Contexts:
+  - Temple courtyards with gopurams
+  - Traditional homes with kolam
+  - Festival decorations (Pongal, Diwali)
+  - Village squares
+  - Wedding mandaps
+
+Western Contexts:
+  - Modern offices
+  - Contemporary homes
+  - Urban streets
+  - Historical buildings
+```
+
+**API Endpoint**:
+```
+POST /api/v1/internal/generate-scene
+Body: {
+  "scene_description": "string",
+  "cultural_context": "string",
+  "time_of_day": "string",
+  "location_type": "string"
+}
+Response: { "scene_images": [...], "scene_id": "uuid" }
+```
+
+---
+
+### FR-027: Dynamic Cultural Adaptation [P0]
+**Description**: System dynamically adapts all visual elements based on detected or specified cultural context.
+
+**Acceptance Criteria**:
+- [ ] Auto-detect cultural context from script content
+- [ ] Allow manual cultural preference selection
+- [ ] Ensure all visual elements align with cultural context
+- [ ] Apply culturally appropriate color palettes
+- [ ] Use culturally accurate props and accessories
+- [ ] Validate cultural sensitivity and accuracy
+- [ ] Support multiple simultaneous cultural contexts in different scenes
+
+**Supported Cultural Contexts**:
+- South Indian (Tamil, Telugu, Malayalam, Kannada)
+- North Indian (Hindi, Punjabi, Bengali)
+- East Asian (Chinese, Japanese, Korean)
+- Western (American, European)
+- Middle Eastern
+- African cultures
+- Fantasy/Custom settings
+
+**API Endpoint**:
+```
+POST /api/v1/projects/{projectId}/cultural-preferences
+Body: {
+  "primary_culture": "string",
+  "secondary_culture": "string" (optional),
+  "style_preferences": {...}
+}
+Response: { "updated": true }
+```
+
+---
+
+### FR-028: Character Upload & Reference Images [P1]
+**Description**: Users can upload reference images for character generation.
+
+**Acceptance Criteria**:
+- [ ] Accept image uploads (JPEG, PNG)
+- [ ] Validate image format and size (max 10MB)
+- [ ] Store reference images in S3
+- [ ] Link reference images to characters
+- [ ] Use reference for facial features in generation
+- [ ] Support multiple reference images per character
+
+**API Endpoint**:
+```
+POST /api/v1/projects/{projectId}/characters/{characterId}/reference
+Headers: { "Content-Type": "multipart/form-data" }
+Body: { "image": file }
+Response: { "reference_url": "string", "character_id": "uuid" }
+```
+
+---
+
+### FR-029: Video Pipeline Integration [P0]
+**Description**: Generated images are seamlessly integrated into the video synthesis pipeline.
+
+**Acceptance Criteria**:
+- [ ] Compose characters into scene backgrounds
+- [ ] Apply depth and perspective corrections
+- [ ] Generate smooth animations between frames
+- [ ] Apply lip-sync to character dialogue
+- [ ] Integrate cultural audio elements (music, slokas)
+- [ ] Generate multi-language subtitles
+- [ ] Apply culturally appropriate transitions
+
+**Pipeline Stages**:
+1. Image composition (characters + scenes)
+2. Video synthesis (static to motion)
+3. Lip-sync and animation
+4. Audio integration (dialogue, music, effects)
+5. Subtitle generation
+6. Final rendering
+
+**Processing Steps Tracked**:
+```
+- script_analysis (5%)
+- character_generation (20%)
+- scene_generation (35%)
+- image_composition (50%)
+- video_synthesis (70%)
+- audio_integration (85%)
+- final_rendering (100%)
+```
+
+---
+
 ## 3.4 Credit System
 
 ### FR-030: View Credit Balance [P0]
@@ -399,6 +595,88 @@ Response: { "users": [...] }
 }
 ```
 
+### 4.5 Character
+```json
+{
+  "characterId": "uuid",
+  "projectId": "uuid (FK)",
+  "name": "string",
+  "description": "text",
+  "attributes": {
+    "age": "string",
+    "gender": "string",
+    "role": "string",
+    "culturalContext": "string"
+  },
+  "referenceImageUrls": ["string"],
+  "generatedImageUrls": ["string"],
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+```
+
+### 4.6 Scene
+```json
+{
+  "sceneId": "uuid",
+  "projectId": "uuid (FK)",
+  "sceneNumber": "integer",
+  "description": "text",
+  "location": "string",
+  "timeOfDay": "string",
+  "culturalContext": "string",
+  "backgroundImageUrls": ["string"],
+  "characters": ["uuid (FK to Character)"],
+  "props": ["string"],
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+```
+
+### 4.7 CulturalPreferences
+```json
+{
+  "preferencesId": "uuid",
+  "projectId": "uuid (FK)",
+  "primaryCulture": "string",
+  "secondaryCulture": "string",
+  "stylePreferences": {
+    "colorPalette": "string",
+    "architecture": "string",
+    "clothing": "string",
+    "musicStyle": "string"
+  },
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+```
+
+### 4.8 ScriptAnalysis
+```json
+{
+  "analysisId": "uuid",
+  "projectId": "uuid (FK)",
+  "extractedData": {
+    "scenes": [{
+      "number": "integer",
+      "description": "string",
+      "characters": ["string"],
+      "dialogue": ["string"]
+    }],
+    "characters": [{
+      "name": "string",
+      "attributes": "object",
+      "relationships": ["string"]
+    }],
+    "culturalIndicators": ["string"],
+    "storySetting": "string",
+    "genre": "string",
+    "timePeriod": "string"
+  },
+  "createdAt": "timestamp"
+}
+```
+
 ---
 
 ## 5. Workflows
@@ -424,9 +702,21 @@ sequenceDiagram
     Worker->>SQS: Poll for jobs
     SQS->>Worker: Job message
     Worker->>Backend: Update status: "processing"
-    Worker->>Worker: Run AI pipeline
+    Worker->>Worker: Step 1: Analyze script
+    Worker->>Backend: Update progress: 5% (script_analysis)
+    Worker->>Worker: Step 2: Generate characters
+    Worker->>Backend: Update progress: 20% (character_generation)
+    Worker->>Worker: Step 3: Generate scenes
+    Worker->>Backend: Update progress: 35% (scene_generation)
+    Worker->>Worker: Step 4: Compose images
+    Worker->>Backend: Update progress: 50% (image_composition)
+    Worker->>Worker: Step 5: Synthesize video
+    Worker->>Backend: Update progress: 70% (video_synthesis)
+    Worker->>Worker: Step 6: Integrate audio
+    Worker->>Backend: Update progress: 85% (audio_integration)
+    Worker->>Worker: Step 7: Final rendering
     Worker->>S3: Upload final MP4
-    Worker->>Backend: Update status: "completed"
+    Worker->>Backend: Update status: "completed", progress: 100%
     
     Frontend->>Backend: GET /jobs/{id} (polling)
     Backend->>Frontend: Status: "completed"
@@ -435,6 +725,44 @@ sequenceDiagram
     Frontend->>Backend: GET /jobs/{id}/download
     Backend->>Frontend: Signed S3 URL
     Frontend->>S3: Download MP4
+```
+
+### 5.2 Image Generation Sub-Workflow
+
+```mermaid
+sequenceDiagram
+    participant Worker
+    participant ScriptAnalyzer
+    participant CharGen as Character Generator
+    participant SceneGen as Scene Generator
+    participant Compositor
+    participant S3
+
+    Worker->>ScriptAnalyzer: Parse script
+    ScriptAnalyzer->>ScriptAnalyzer: Extract scenes
+    ScriptAnalyzer->>ScriptAnalyzer: Identify characters
+    ScriptAnalyzer->>ScriptAnalyzer: Detect cultural context
+    ScriptAnalyzer->>Worker: Return analysis data
+    
+    Worker->>CharGen: Generate character images
+    CharGen->>CharGen: Apply cultural adaptation
+    CharGen->>CharGen: Set expressions per scene
+    CharGen->>CharGen: Apply appropriate attire
+    CharGen->>S3: Upload character images
+    CharGen->>Worker: Return character URLs
+    
+    Worker->>SceneGen: Generate scene backgrounds
+    SceneGen->>SceneGen: Apply cultural elements
+    SceneGen->>SceneGen: Add props and decorations
+    SceneGen->>SceneGen: Set lighting and atmosphere
+    SceneGen->>S3: Upload scene images
+    SceneGen->>Worker: Return scene URLs
+    
+    Worker->>Compositor: Compose characters + scenes
+    Compositor->>Compositor: Apply depth and perspective
+    Compositor->>Compositor: Add shadows and effects
+    Compositor->>S3: Upload composed frames
+    Compositor->>Worker: Ready for video synthesis
 ```
 
 ---
@@ -471,6 +799,18 @@ For each feature:
 
 ---
 
+---
+
+## 9. Related Documents
+
+- [Master Workflow Implementation Roadmap](./MASTER-WORKFLOW-ROADMAP.md) - Complete end-to-end implementation blueprint including all advanced features
+- [Non-Functional Requirements (NFR)](./NFR.md) - System quality attributes and operational requirements
+- [System Design Document](../architecture/system-design.md) - Technical architecture and infrastructure details
+
+---
+
 **Document Control**  
 - **Next Review Date**: 2026-01-27  
-- **Change History**: Version 1.0 - Initial release
+- **Change History**: 
+  - Version 1.0 (2025-12-27) - Initial release
+  - Version 1.1 (2025-12-31) - Added image generation workflow requirements (FR-024 to FR-029), updated data models, added cultural context integration

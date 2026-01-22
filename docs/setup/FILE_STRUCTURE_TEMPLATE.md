@@ -658,7 +658,8 @@ services:
     environment:
       POSTGRES_DB: aifilmstudio_dev
       POSTGRES_USER: aifilm
-      POSTGRES_PASSWORD: devpassword
+      # Use environment variable - set POSTGRES_PASSWORD in your .env file
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -676,7 +677,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://aifilm:devpassword@postgres:5432/aifilmstudio_dev
+      - DATABASE_URL=postgresql://aifilm:${POSTGRES_PASSWORD}@postgres:5432/aifilmstudio_dev
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - postgres
@@ -687,7 +688,7 @@ services:
   worker:
     build: ./worker
     environment:
-      - DATABASE_URL=postgresql://aifilm:devpassword@postgres:5432/aifilmstudio_dev
+      - DATABASE_URL=postgresql://aifilm:${POSTGRES_PASSWORD}@postgres:5432/aifilmstudio_dev
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - postgres

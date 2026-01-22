@@ -1,0 +1,99 @@
+# AI Film Studio - Cursor MCP Configuration
+# Model Context Protocol settings for enhanced AI assistance
+
+version: "1.0"
+
+# Project context for AI conversations
+project:
+  name: "AI Film Studio"
+  type: "full-stack-ai"
+  description: |
+    End-to-end AI-powered film production platform that transforms 
+    text scripts into cinematic short films using a 7-stage pipeline.
+
+# Primary documentation to include in context
+docs:
+  - path: ".cursorrules"
+    priority: 1
+    always_include: true
+  - path: "docs/requirements/MASTER-WORKFLOW-ROADMAP.md"
+    priority: 2
+  - path: "docs/architecture/system-design.md"
+    priority: 3
+  - path: "README.md"
+    priority: 4
+
+# Code patterns to learn from
+patterns:
+  python:
+    - path: "src/services/video_generation.py"
+      description: "AI service pattern with Pydantic models"
+    - path: "src/api/routes/project.py"
+      description: "FastAPI route pattern"
+    - path: "src/database/models/user.py"
+      description: "SQLAlchemy model pattern"
+  
+  typescript:
+    - path: "frontend/src/app/page.tsx"
+      description: "Next.js page component pattern"
+    - path: "frontend/src/lib/api.ts"
+      description: "API client pattern"
+
+# Symbols and terminology
+glossary:
+  - term: "Script Analysis"
+    definition: "Stage 1: Parse and analyze text scripts for scenes, characters, emotions"
+  - term: "Image Generation"
+    definition: "Stage 2: Generate character and scene images using SDXL with cultural context"
+  - term: "Voice Synthesis"
+    definition: "Stage 3: Generate voice audio using ElevenLabs, OpenAI TTS, or Azure Speech"
+  - term: "Lip-sync Animation"
+    definition: "Stage 4: Animate faces to match audio using Wav2Lip, SadTalker, or FOMM"
+  - term: "Music/Audio"
+    definition: "Stage 5: Generate background music and sound effects"
+  - term: "Podcast Mode"
+    definition: "Stage 6: Create podcast-style video format"
+  - term: "Multilingual Subtitles"
+    definition: "Stage 7: Generate subtitles in multiple languages using Whisper"
+
+# Custom prompts for common tasks
+prompts:
+  new_service:
+    description: "Create a new AI service"
+    template: |
+      Create a new AI service called {name} that:
+      1. Follows the BaseService pattern from src/services/
+      2. Has Pydantic request/response models
+      3. Uses async/await for all operations
+      4. Includes proper error handling
+      5. Stores results in S3 with job_id prefix
+  
+  new_route:
+    description: "Create a new API route"
+    template: |
+      Create a new FastAPI route for {resource} that:
+      1. Follows existing patterns in src/api/routes/
+      2. Uses Pydantic schemas from src/api/schemas/
+      3. Includes proper validation and error handling
+      4. Has OpenAPI documentation
+  
+  new_component:
+    description: "Create a new React component"
+    template: |
+      Create a new React component called {name} that:
+      1. Uses TypeScript with proper typing
+      2. Uses Tailwind CSS for styling
+      3. Follows existing component patterns
+      4. Is accessible and responsive
+
+# File associations for better context
+associations:
+  "*.py":
+    language: "python"
+    framework: "fastapi"
+  "*.tsx":
+    language: "typescript"
+    framework: "nextjs"
+  "*.ts":
+    language: "typescript"
+    framework: "nextjs"
