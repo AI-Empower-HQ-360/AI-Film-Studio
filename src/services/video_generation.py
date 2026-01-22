@@ -775,3 +775,36 @@ class VideoGenerationService:
                 pass
         
         return self.get_job_status(job_id)
+
+    async def submit_job(
+        self,
+        request: VideoGenerationRequest,
+        priority: int = 1
+    ) -> str:
+        """
+        Submit video generation job to queue (alias for submit_to_queue)
+        
+        Args:
+            request: Video generation request
+            priority: Job priority (1-10)
+            
+        Returns:
+            Job ID
+        """
+        return await self.submit_to_queue(request, priority)
+
+    async def cancel_job(self, job_id: str) -> bool:
+        """
+        Cancel a video generation job
+        
+        Args:
+            job_id: Job identifier
+            
+        Returns:
+            True if cancelled successfully
+        """
+        if job_id in self.active_jobs:
+            self.active_jobs[job_id]["status"] = "cancelled"
+            logger.info(f"Cancelled job {job_id}")
+            return True
+        return False

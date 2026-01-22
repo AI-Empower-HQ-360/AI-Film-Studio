@@ -692,3 +692,58 @@ class VoiceSynthesisService:
             results.append(result)
         
         return results
+    async def submit_job(
+        self,
+        request: VoiceSynthesisRequest,
+        priority: int = 1
+    ) -> str:
+        """
+        Submit voice synthesis job to queue
+        
+        Args:
+            request: Voice synthesis request
+            priority: Job priority (1-10)
+            
+        Returns:
+            Job ID
+        """
+        import uuid
+        import json
+        import os
+        
+        job_id = str(uuid.uuid4())
+        
+        # Handle both Pydantic models and regular objects
+        try:
+            request_data = request.dict() if hasattr(request, 'dict') else request.model_dump() if hasattr(request, 'model_dump') else {"text": getattr(request, 'text', ''), "voice_id": getattr(request, 'voice_id', '')}
+        except Exception:
+            request_data = {"text": str(request)}
+        
+        self.active_jobs[job_id] = {
+            "status": "queued",
+            "priority": priority,
+            "request": request_data,
+            "submitted_at": asyncio.get_event_loop().time()
+        }
+        
+        logger.info(f"Submitted voice synthesis job {job_id} with priority {priority}")
+        return job_id
+
+    async def get_job_status(self, job_id: str) -> Dict[str, Any]:
+        """
+        Get status of a voice synthesis job
+        
+        Args:
+            job_id: Job identifier
+            
+        Returns:
+            Job status dictionary
+        """
+        if job_id in self.active_jobs:
+            return self.active_jobs[job_id]
+        
+        return {
+            "job_id": job_id,
+            "status": "not_found",
+            "error": f"Job {job_id} not found"
+        }
