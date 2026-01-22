@@ -320,6 +320,13 @@ class ImageCreationEngine:
     def __init__(self):
         self.generated_images: Dict[str, GeneratedImage] = {}
         self.active_jobs: Dict[str, Any] = {}
+        # Initialize AI Framework (already uses StabilityService and OpenAIService, but use unified framework)
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
     
     def _build_enhanced_prompt(self, request: ImageGenerationRequest) -> str:
         """

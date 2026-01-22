@@ -118,6 +118,13 @@ class VoiceModulationEngine:
         self.active_jobs: Dict[str, Any] = {}
         self.voice_models: Dict[str, Dict[str, Any]] = {}
         self._initialize_voice_models()
+        # Initialize AI Framework
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
     
     def _initialize_voice_models(self):
         """Initialize default voice models for different age groups and genders"""

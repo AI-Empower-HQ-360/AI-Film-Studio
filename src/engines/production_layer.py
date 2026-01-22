@@ -130,6 +130,13 @@ class ProductionLayer:
         self.video_service = None
         self.audio_service = None
         self.image_service = None
+        # Initialize AI Framework
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
 
     def create_shot(
         self,

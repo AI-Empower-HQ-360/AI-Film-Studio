@@ -146,6 +146,13 @@ class DirectorEngine:
         self.scenes: Dict[str, SceneDirection] = {}
         self.shots: Dict[str, ShotComposition] = {}
         self.active_projects: Dict[str, Any] = {}
+        # Initialize AI Framework
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
     
     def create_shot(
         self,

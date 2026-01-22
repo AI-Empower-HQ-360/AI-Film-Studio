@@ -97,6 +97,13 @@ class PostProductionEngine:
         self.video_service = VideoGenerationService(s3_bucket)
         self.lipsync_service = LipsyncAnimationService(s3_bucket)
         self.subtitle_service = SubtitleMultilangService(s3_bucket)
+        # Initialize AI Framework
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
     
     async def generate_character_voice(
         self,

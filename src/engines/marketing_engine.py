@@ -104,6 +104,13 @@ class MarketingEngine:
         self.s3_bucket = s3_bucket
         self.assets: Dict[str, MarketingAsset] = {}
         self.campaigns: Dict[str, Campaign] = {}
+        # Initialize AI Framework
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
 
     def create_trailer(
         self,

@@ -104,6 +104,13 @@ class ScreenplayEngine:
     def __init__(self):
         self.screenplays: Dict[str, Screenplay] = {}
         self.scenes: Dict[str, Scene] = {}
+        # Initialize AI Framework
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
     
     def create_screenplay(
         self,

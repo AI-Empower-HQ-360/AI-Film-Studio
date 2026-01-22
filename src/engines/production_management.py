@@ -227,6 +227,13 @@ class ProductionManager:
         self.image_service = None
         self.audio_service = None
         self.subtitle_service = None
+        # Initialize AI Framework
+        try:
+            from src.services.ai_framework import get_ai_framework
+            self.ai_framework = get_ai_framework()
+        except ImportError:
+            self.ai_framework = None
+            logger.warning("AI Framework not available, using fallback")
         self.character_engine = None
         self.music_service = None
         self.preproduction_engine = None
