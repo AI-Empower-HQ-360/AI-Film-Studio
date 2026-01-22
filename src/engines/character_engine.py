@@ -402,3 +402,96 @@ class CharacterEngine:
             version.scene_assignments.append(scene_id)
             character.updated_at = datetime.utcnow()
             logger.info(f"Assigned character {character_id} version {version_id} to scene {scene_id}")
+    
+    async def delete_character(self, character_id: str) -> bool:
+        """
+        Delete a character
+        
+        Args:
+            character_id: ID of character to delete
+            
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        if character_id not in self.characters:
+            logger.warning(f"Character {character_id} not found for deletion")
+            return False
+        
+        del self.characters[character_id]
+        logger.info(f"Deleted character {character_id}")
+        return True
+    
+    async def clone_character(
+        self,
+        character_id: str,
+        new_name: Optional[str] = None
+    ) -> Character:
+        """
+        Clone a character with a new ID
+        
+        Args:
+            character_id: ID of character to clone
+            new_name: Optional new name for the clone
+            
+        Returns:
+            Cloned Character object
+        """
+        if character_id not in self.characters:
+            raise ValueError(f"Character {character_id} not found")
+        
+        original = self.characters[character_id]
+        
+        # Create new character ID
+        new_character_id = str(uuid.uuid4())
+        
+        # Clone identity
+        new_identity = CharacterIdentity(
+            character_id=new_character_id,
+            name=new_name or f"{original.identity.name} (Clone)",
+            description=original.identity.description,
+            physical_attributes=original.identity.physical_attributes.copy(),
+            personality_traits=original.identity.personality_traits.copy(),
+            cultural_context=original.identity.cultural_context,
+            voice_id=original.identity.voice_id
+        )
+        
+        # Create cloned character
+        cloned_character = Character(
+            character_id=new_character_id,
+            identity=new_identity,
+            mode=original.mode,
+            character_type=original.character_type,
+            brand_id=original.brand_id,
+            project_id=original.project_id,
+            consistency_lock=original.consistency_lock
+        )
+        
+        # Clone versions
+        for version in original.versions:
+            cloned_version = CharacterVersion(
+                version_id=str(uuid.uuid4()),
+                character_id=new_character_id,
+                version_type=version.version_type,
+                visual=CharacterVisual(
+                    image_url=version.visual.image_url,
+                    s3_key=version.visual.s3_key,
+                    version=version.visual.version,
+                    pose=version.visual.pose,
+                    lighting=version.visual.lighting,
+                    emotion=version.visual.emotion,
+                    wardrobe=version.visual.wardrobe,
+                    makeup=version.visual.makeup,
+                    aging=version.visual.aging,
+                    metadata=version.visual.metadata.copy()
+                ),
+                scene_assignments=version.scene_assignments.copy(),
+                created_by=version.created_by,
+                notes=f"Cloned from {character_id}",
+                is_active=version.is_active
+            )
+            cloned_character.add_version(cloned_version)
+        
+        self.characters[new_character_id] = cloned_character
+        logger.info(f"Cloned character {character_id} to {new_character_id}")
+        
+        return cloned_character

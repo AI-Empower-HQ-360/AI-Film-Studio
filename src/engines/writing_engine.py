@@ -301,3 +301,131 @@ class WritingEngine:
         logger.info(f"Created version {new_script.version} of script {script_id}")
         
         return new_script
+    
+    def analyze_scene(self, scene: Scene) -> Dict[str, Any]:
+        """
+        Analyze scene content for sentiment, mood, and structure
+        
+        Args:
+            scene: Scene object to analyze
+            
+        Returns:
+            Dictionary with analysis results (sentiment, mood, etc.)
+        """
+        # TODO: Integrate with LLM for scene analysis
+        # Would analyze dialogue, action, and structure
+        
+        analysis = {
+            "scene_id": scene.scene_id,
+            "scene_number": scene.scene_number,
+            "sentiment": "neutral",  # Would be determined by LLM
+            "mood": scene.scene_type.value,
+            "character_count": len(scene.characters),
+            "dialogue_count": len(scene.dialogues),
+            "estimated_duration": scene.duration_estimate or 0.0,
+            "location": scene.location,
+            "time_of_day": scene.time_of_day
+        }
+        
+        logger.info(f"Analyzed scene {scene.scene_id}")
+        return analysis
+    
+    def export_to_fountain(self, script: Script) -> str:
+        """
+        Export script to Fountain screenplay format
+        
+        Args:
+            script: Script object to export
+            
+        Returns:
+            Fountain format string
+        """
+        fountain_lines = []
+        
+        # Title page
+        fountain_lines.append(f"Title: {script.title}")
+        if script.logline:
+            fountain_lines.append(f"Logline: {script.logline}")
+        fountain_lines.append("")
+        
+        # Scenes
+        for scene in script.scenes:
+            # Scene heading
+            scene_type = "INT" if scene.scene_type == SceneType.INT else "EXT"
+            fountain_lines.append(f"{scene_type}. {scene.location}")
+            if scene.time_of_day:
+                fountain_lines[-1] += f" - {scene.time_of_day}"
+            fountain_lines.append("")
+            
+            # Action/Description
+            fountain_lines.append(scene.description)
+            fountain_lines.append("")
+            
+            # Dialogue
+            for dialogue in scene.dialogues:
+                # Character name (would need to look up from character_id)
+                fountain_lines.append("CHARACTER NAME")
+                fountain_lines.append(dialogue.text)
+                fountain_lines.append("")
+        
+        return "\n".join(fountain_lines)
+    
+    def export_to_json(self, script: Script) -> str:
+        """
+        Export script to JSON format
+        
+        Args:
+            script: Script object to export
+            
+        Returns:
+            JSON string representation
+        """
+        import json
+        
+        script_dict = {
+            "script_id": script.script_id,
+            "title": script.title,
+            "script_type": script.script_type.value,
+            "genre": script.genre,
+            "logline": script.logline,
+            "version": script.version,
+            "created_at": script.created_at.isoformat(),
+            "updated_at": script.updated_at.isoformat(),
+            "scenes": [
+                {
+                    "scene_id": scene.scene_id,
+                    "scene_number": scene.scene_number,
+                    "scene_type": scene.scene_type.value,
+                    "location": scene.location,
+                    "time_of_day": scene.time_of_day,
+                    "description": scene.description,
+                    "characters": scene.characters,
+                    "dialogues": [
+                        {
+                            "dialogue_id": d.dialogue_id,
+                            "character_id": d.character_id,
+                            "text": d.text,
+                            "emotion": d.emotion,
+                            "tone": d.tone,
+                            "line_number": d.line_number
+                        }
+                        for d in scene.dialogues
+                    ]
+                }
+                for scene in script.scenes
+            ],
+            "beats": [
+                {
+                    "beat_id": beat.beat_id,
+                    "title": beat.title,
+                    "description": beat.description,
+                    "scene_ids": beat.scene_ids,
+                    "order": beat.order
+                }
+                for beat in script.beats
+            ],
+            "characters": script.characters,
+            "metadata": script.metadata
+        }
+        
+        return json.dumps(script_dict, indent=2)

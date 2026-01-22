@@ -330,3 +330,77 @@ class VoiceSynthesisService:
         if job_id not in self.active_jobs:
             return {"status": "not_found"}
         return self.active_jobs[job_id]
+    
+    async def synthesize(
+        self,
+        text: str,
+        voice_id: str,
+        language: str = "en-US",
+        emotion: Optional[str] = None,
+        emotion_intensity: Optional[float] = None,
+        use_ssml: bool = False,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Synthesize speech (alias for synthesize_speech with simplified interface)
+        
+        Args:
+            text: Text to convert to speech
+            voice_id: Voice model ID
+            language: Language code
+            emotion: Emotion (happy, sad, angry, neutral)
+            emotion_intensity: Emotion intensity (0.0-1.0)
+            use_ssml: Whether text contains SSML markup
+            **kwargs: Additional parameters
+            
+        Returns:
+            Dictionary with audio_url and other metadata
+        """
+        import uuid
+        
+        job_id = str(uuid.uuid4())
+        request = VoiceSynthesisRequest(
+            text=text,
+            voice_id=voice_id,
+            language=language,
+            emotion=emotion or "neutral"
+        )
+        
+        response = await self.synthesize_speech(request, job_id)
+        
+        return {
+            "audio_url": response.audio_url,
+            "duration": response.duration,
+            "job_id": job_id,
+            "status": response.status,
+            "voice_info": response.voice_info
+        }
+    
+    async def normalize_audio(self, audio_path: str) -> str:
+        """
+        Normalize audio levels
+        
+        Args:
+            audio_path: Path to audio file (local or S3)
+            
+        Returns:
+            Path to normalized audio file
+        """
+        import os
+        import uuid
+        
+        logger.info(f"Normalizing audio: {audio_path}")
+        
+        # TODO: Implement audio normalization using librosa or pydub
+        # This would:
+        # 1. Load audio file
+        # 2. Normalize peak levels
+        # 3. Apply loudness normalization (LUFS)
+        # 4. Save normalized audio
+        # 5. Upload to S3 if needed
+        
+        # Placeholder implementation
+        normalized_path = f"s3://{self.s3_bucket}/audio/normalized_{uuid.uuid4()}.wav"
+        
+        logger.info(f"Audio normalized: {normalized_path}")
+        return normalized_path

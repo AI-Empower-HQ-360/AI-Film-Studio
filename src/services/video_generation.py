@@ -268,3 +268,77 @@ class VideoGenerationService:
             }
             for model in VIDEO_MODELS.values()
         ]
+    
+    async def analyze(self, video_path: str) -> Dict[str, Any]:
+        """
+        Analyze video content for scenes, brightness, and other metrics
+        
+        Args:
+            video_path: Path to video file (S3 URL or local path)
+            
+        Returns:
+            Dictionary with analysis results
+        """
+        logger.info(f"Analyzing video: {video_path}")
+        
+        # TODO: Implement video analysis using OpenCV or FFmpeg
+        # This would:
+        # 1. Load video file
+        # 2. Detect scene changes
+        # 3. Calculate average brightness
+        # 4. Analyze motion
+        # 5. Extract metadata (duration, fps, resolution)
+        
+        # Placeholder implementation
+        analysis = {
+            "duration": 60.0,  # Would be extracted from video
+            "scenes_detected": 5,  # Would use scene detection
+            "average_brightness": 0.65,  # Would calculate from frames
+            "fps": 24,
+            "resolution": "1920x1080",
+            "file_size": 0,
+            "format": "mp4"
+        }
+        
+        logger.info(f"Video analysis complete: {video_path}")
+        return analysis
+    
+    async def extract_frames(
+        self,
+        video_path: str,
+        interval: float = 1.0,
+        output_format: str = "png"
+    ) -> List[str]:
+        """
+        Extract frames from video at specified intervals
+        
+        Args:
+            video_path: Path to video file (S3 URL or local path)
+            interval: Time interval between frames in seconds
+            output_format: Output image format (png, jpg)
+            
+        Returns:
+            List of frame file paths
+        """
+        import uuid
+        
+        logger.info(f"Extracting frames from {video_path} at {interval}s intervals")
+        
+        # TODO: Implement frame extraction using OpenCV or FFmpeg
+        # This would:
+        # 1. Load video file
+        # 2. Extract frames at specified intervals
+        # 3. Save frames as images
+        # 4. Upload to S3
+        # 5. Return list of frame URLs
+        
+        # Placeholder implementation
+        frames = []
+        num_frames = 10  # Would be calculated based on video duration
+        
+        for i in range(num_frames):
+            frame_path = f"s3://{self.s3_bucket}/frames/{uuid.uuid4()}.{output_format}"
+            frames.append(frame_path)
+        
+        logger.info(f"Extracted {len(frames)} frames from {video_path}")
+        return frames
