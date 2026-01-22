@@ -78,7 +78,14 @@ const eslintConfig = [
 
 ### Run ESLint:
 ```bash
+# Use ESLint directly (recommended for ESLint 9.x)
 npm run lint
+
+# Auto-fix issues
+npm run lint:fix
+
+# Use Next.js lint (may have compatibility issues with ESLint 9.x)
+npm run lint:next
 ```
 
 ### ESLint will:
@@ -87,9 +94,10 @@ npm run lint
 3. Use `.eslintignore` for ignore patterns
 
 ### Next.js Integration:
-- Next.js detects `.eslintrc.json` for its ESLint setup
-- Uses Next.js ESLint plugin automatically
-- Works with `next lint` command
+- **Note:** Next.js 14's `next lint` has compatibility issues with ESLint 9.x
+- Use `npm run lint` (ESLint directly) instead of `npm run lint:next`
+- ESLint is disabled during builds (configured in `next.config.mjs`)
+- `.eslintrc.json` is kept for Next.js detection but ESLint CLI uses flat config
 
 ---
 
