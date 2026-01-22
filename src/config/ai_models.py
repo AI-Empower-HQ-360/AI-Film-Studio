@@ -3,8 +3,21 @@ AI Model Configuration Module
 Defines configurations for all AI/ML models used in AI Film Studio
 """
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Field
 from enum import Enum
+
+try:
+    from pydantic import BaseModel, Field
+    HAS_PYDANTIC = True
+except ImportError:
+    # Fallback for testing without pydantic
+    HAS_PYDANTIC = False
+    class BaseModel:
+        def __init__(self, **kwargs):
+            for k, v in kwargs.items():
+                setattr(self, k, v)
+    
+    def Field(*args, **kwargs):
+        return None
 
 
 class ModelProvider(str, Enum):

@@ -3,7 +3,19 @@ Video Generation Service
 Handles AI-powered video generation using various models
 """
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+try:
+    from pydantic import BaseModel, Field
+    HAS_PYDANTIC = True
+except ImportError:
+    # Fallback for testing without pydantic
+    HAS_PYDANTIC = False
+    class BaseModel:
+        def __init__(self, **kwargs):
+            for k, v in kwargs.items():
+                setattr(self, k, v)
+    
+    def Field(*args, **kwargs):
+        return None
 import asyncio
 import logging
 import os

@@ -17,11 +17,23 @@ except ImportError:
     HAS_PYDANTIC = False
     class BaseModel:
         def __init__(self, **kwargs):
+            annotations = getattr(self.__class__, '__annotations__', {})
+            for key, value in annotations.items():
+                default = getattr(self.__class__, key, None)
+                if default is not None and not callable(default):
+                    setattr(self, key, default)
+                else:
+                    setattr(self, key, None)
             for k, v in kwargs.items():
                 setattr(self, k, v)
     
-    def Field(*args, **kwargs):
-        return None
+    class Field:
+        def __init__(self, default=..., description=None, ge=None, le=None, **kwargs):
+            self.default = default
+            self.description = description
+            self.ge = ge
+            self.le = le
+            self._kwargs = kwargs
 
 try:
     from ..config.ai_models import (
@@ -477,3 +489,4 @@ class AIJobManager:
                 for job_type in [jt.value for jt in JobType]
             }
         }
+
