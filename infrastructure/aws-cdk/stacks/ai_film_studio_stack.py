@@ -460,8 +460,9 @@ class AIFilmStudioStack(Stack):
                 "JOB_QUEUE_URL": job_queue.queue_url,
                 "VIDEO_QUEUE_URL": video_generation_queue.queue_url,
                 "VOICE_QUEUE_URL": voice_synthesis_queue.queue_url,
-                "REDIS_ENDPOINT": redis_cluster.attr_redis_endpoint_address,
-                "REDIS_PORT": redis_cluster.attr_redis_endpoint_port,
+                # Redis endpoint will be available via service discovery or environment injection
+                # Using cluster ID for runtime resolution
+                "REDIS_CLUSTER_ID": redis_cluster.ref,
                 "JOB_COMPLETION_TOPIC_ARN": job_completion_topic.topic_arn,
                 "ERROR_TOPIC_ARN": error_topic.topic_arn
             },
@@ -688,16 +689,16 @@ class AIFilmStudioStack(Stack):
         # ==================== Additional Outputs ====================
         CfnOutput(
             self,
-            "RedisEndpoint",
-            value=redis_cluster.attr_redis_endpoint_address,
-            description="ElastiCache Redis endpoint"
+            "RedisClusterId",
+            value=redis_cluster.ref,
+            description="ElastiCache Redis cluster ID (endpoint available via AWS SDK)"
         )
 
         CfnOutput(
             self,
-            "RedisPort",
-            value=redis_cluster.attr_redis_endpoint_port,
-            description="ElastiCache Redis port"
+            "RedisConfigurationEndpoint",
+            value=f"{redis_cluster.ref}.cache.amazonaws.com",
+            description="ElastiCache Redis configuration endpoint (port 6379)"
         )
 
         CfnOutput(
