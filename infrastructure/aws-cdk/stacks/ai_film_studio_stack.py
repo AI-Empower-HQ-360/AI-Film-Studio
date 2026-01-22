@@ -154,12 +154,12 @@ class AIFilmStudioStack(Stack):
         )
 
         # RDS PostgreSQL instance
-        # Use VER_16_1 or latest stable version (15.3 is not available in all regions)
+        # Use VER_16_3 - the earliest available PostgreSQL 16.x version
         database = rds.DatabaseInstance(
             self,
             "Database",
             engine=rds.DatabaseInstanceEngine.postgres(
-                version=rds.PostgresEngineVersion.VER_16_1  # Updated to widely available version
+                version=rds.PostgresEngineVersion.VER_16_3  # Updated to earliest available 16.x version
             ),
             instance_type=ec2.InstanceType.of(
                 ec2.InstanceClass.T3,
