@@ -1,104 +1,94 @@
-name: Deploy AWS CDK Infrastructure
+name: AWS CDK Deploy
 
 on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'infrastructure/aws-cdk/**'
+      - '.github/workflows/aws-cdk-deploy.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'infrastructure/aws-cdk/**'
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to deploy to'
+        description: 'Environment to deploy'
         required: true
+        default: 'dev'
         type: choice
         options:
           - dev
           - staging
           - production
-      deploy_images:
-        description: 'Build and push Docker images'
-        required: false
-        type: boolean
-        default: false
-  push:
-    branches:
-      - main
-    paths:
-      - 'infrastructure/aws-cdk/**'
-      - 'src/**'
-      - 'requirements.txt'
+      action:
+        description: 'CDK action to perform'
+        required: true
+        default: 'deploy'
+        type: choice
+        options:
+          - synth
+          - diff
+          - deploy
+          - destroy
 
 env:
   AWS_REGION: us-east-1
-  PYTHON_VERSION: '3.11'
-  NODE_VERSION: '18'
-
-permissions:
-  id-token: write
-  contents: read
+  PYTHON_VERSION: '3.12'
 
 jobs:
-  deploy:
-    name: Deploy AWS CDK Infrastructure
+  test:
+    name: Test Infrastructure
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'dev' }}
+    defaults:
+      run:
+        working-directory: infrastructure/aws-cdk
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
 
-      - name: Install AWS CDK
-        run: npm install -g aws-cdk@latest
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Install CDK dependencies
-        working-directory: infrastructure/aws-cdk
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m venv .venv
+          source .venv/bin/activate
           pip install -r requirements.txt
+          pip install -r requirements-test.txt
 
-      - name: CDK Bootstrap
-        working-directory: infrastructure/aws-cdk
+      - name: Run infrastructure tests
         run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          cdk bootstrap aws://$ACCOUNT_ID/${{ env.AWS_REGION }} || echo "Bootstrap already done"
+          source .venv/bin/activate
+          pytest tests/ -v --tb=short
 
-      - name: CDK Synth
-        working-directory: infrastructure/aws-cdk
+      - name: Synthesize CDK stack
         run: |
-          cdk synth \
-            --context environment=${{ github.event.inputs.environment || 'dev' }} \
-            --context region=${{ env.AWS_REGION }} \
-            --context account=$(aws sts get-caller-identity --query Account --output text)
+          source .venv/bin/activate
+          cdk synth --quiet
 
-      - name: CDK Deploy
-        working-directory: infrastructure/aws-cdk
-        run: |
-          cdk deploy \
-            --context environment=${{ github.event.inputs.environment || 'dev' }} \
-            --context region=${{ env.AWS_REGION }} \
-            --context account=$(aws sts get-caller-identity --query Account --output text) \
-            --require-approval never \
-            --all
-
-  build-and-push-images:
-    name: Build and Push Docker Images
+  deploy-dev:
+    name: Deploy to Development
+    needs: test
     runs-on: ubuntu-latest
-    needs: deploy
-    if: ${{ github.event.inputs.deploy_images == 'true' }}
-    environment: ${{ github.event.inputs.environment || 'dev' }}
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+    environment:
+      name: development
+      url: https://dev.aifilmstudio.com
+    defaults:
+      run:
+        working-directory: infrastructure/aws-cdk
     
     steps:
       - name: Checkout code
@@ -111,41 +101,164 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
 
-      - name: Get ECR repository URIs
-        id: get-repos
+      - name: Install dependencies
         run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          ENV=${{ github.event.inputs.environment || 'dev' }}
-          echo "backend_repo=$ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/ai-film-studio-backend-$ENV" >> $GITHUB_OUTPUT
-          echo "worker_repo=$ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/ai-film-studio-worker-$ENV" >> $GITHUB_OUTPUT
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
 
-      - name: Build and push backend image
-        working-directory: .
+      - name: Bootstrap CDK (if needed)
         run: |
-          docker build -f infrastructure/aws-cdk/Dockerfile.backend -t ${{ steps.get-repos.outputs.backend_repo }}:latest .
-          docker push ${{ steps.get-repos.outputs.backend_repo }}:latest
+          source .venv/bin/activate
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ env.AWS_REGION }} || true
 
-      - name: Build and push worker image
-        working-directory: .
+      - name: CDK Diff
         run: |
-          docker build -f infrastructure/aws-cdk/Dockerfile.worker -t ${{ steps.get-repos.outputs.worker_repo }}:latest .
-          docker push ${{ steps.get-repos.outputs.worker_repo }}:latest
+          source .venv/bin/activate
+          cdk diff || true
 
-      - name: Update ECS services
+      - name: CDK Deploy
         run: |
-          ENV=${{ github.event.inputs.environment || 'dev' }}
-          CLUSTER_NAME="ai-film-studio-$ENV"
-          
-          # Force new deployment to pick up new image
-          aws ecs update-service \
-            --cluster $CLUSTER_NAME \
-            --service backend-service \
-            --force-new-deployment \
-            --region ${{ env.AWS_REGION }} || echo "Service update skipped"
+          source .venv/bin/activate
+          cdk deploy --require-approval never --all
+
+      - name: Get stack outputs
+        run: |
+          source .venv/bin/activate
+          aws cloudformation describe-stacks \
+            --stack-name AIFilmStudio \
+            --query 'Stacks[0].Outputs' \
+            --output table || true
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+      url: https://staging.aifilmstudio.com
+    defaults:
+      run:
+        working-directory: infrastructure/aws-cdk
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Bootstrap CDK (if needed)
+        run: |
+          source .venv/bin/activate
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID_STAGING }}/${{ env.AWS_REGION }} || true
+
+      - name: CDK Deploy
+        run: |
+          source .venv/bin/activate
+          cdk deploy --require-approval never --all
+
+  deploy-production:
+    name: Deploy to Production
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    environment:
+      name: production
+      url: https://aifilmstudio.com
+    defaults:
+      run:
+        working-directory: infrastructure/aws-cdk
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Bootstrap CDK (if needed)
+        run: |
+          source .venv/bin/activate
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID_PROD }}/${{ env.AWS_REGION }} || true
+
+      - name: CDK Diff
+        run: |
+          source .venv/bin/activate
+          cdk diff || true
+
+      - name: CDK Deploy (Production)
+        run: |
+          source .venv/bin/activate
+          cdk deploy --require-approval never --all
+
+      - name: Get stack outputs
+        run: |
+          source .venv/bin/activate
+          aws cloudformation describe-stacks \
+            --stack-name AIFilmStudio \
+            --query 'Stacks[0].Outputs' \
+            --output table || true
+
+  notify:
+    name: Notify Deployment Status
+    needs: [test, deploy-dev, deploy-staging, deploy-production]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Test: ${{ needs.test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Dev: ${{ needs.deploy-dev.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Staging: ${{ needs.deploy-staging.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Production: ${{ needs.deploy-production.result }}" >> $GITHUB_STEP_SUMMARY

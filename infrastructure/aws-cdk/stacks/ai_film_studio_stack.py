@@ -154,11 +154,12 @@ class AIFilmStudioStack(Stack):
         )
 
         # RDS PostgreSQL instance
+        # Use VER_16_1 or latest stable version (15.3 is not available in all regions)
         database = rds.DatabaseInstance(
             self,
             "Database",
             engine=rds.DatabaseInstanceEngine.postgres(
-                version=rds.PostgresEngineVersion.VER_15_4
+                version=rds.PostgresEngineVersion.VER_16_1  # Updated to widely available version
             ),
             instance_type=ec2.InstanceType.of(
                 ec2.InstanceClass.T3,
@@ -324,7 +325,8 @@ class AIFilmStudioStack(Stack):
             "Cluster",
             vpc=vpc,
             cluster_name=f"ai-film-studio-{env_name}",
-            container_insights=True
+            enable_fargate_capacity_providers=True,
+            container_insights=True  # Enable Container Insights
         )
 
         # ==================== IAM Roles ====================
@@ -515,7 +517,7 @@ class AIFilmStudioStack(Stack):
             self,
             "AssetsDistribution",
             default_behavior=cloudfront.BehaviorOptions(
-                origin=origins.S3Origin(assets_bucket),
+                origin=origins.S3BucketOrigin(assets_bucket),
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
                 cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
@@ -523,12 +525,12 @@ class AIFilmStudioStack(Stack):
             ),
             additional_behaviors={
                 "/characters/*": cloudfront.BehaviorOptions(
-                    origin=origins.S3Origin(characters_bucket),
+                    origin=origins.S3BucketOrigin(characters_bucket),
                     viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                     cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED
                 ),
                 "/marketing/*": cloudfront.BehaviorOptions(
-                    origin=origins.S3Origin(marketing_bucket),
+                    origin=origins.S3BucketOrigin(marketing_bucket),
                     viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                     cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED
                 )

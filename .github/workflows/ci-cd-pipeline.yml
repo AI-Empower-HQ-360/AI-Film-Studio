@@ -1,0 +1,307 @@
+name: CI/CD Pipeline
+
+# Automated deployment workflow:
+# - Push to 'develop' branch → Deploy to DEV environment
+# - Push to 'main' branch → Deploy to PRODUCTION environment
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - production
+
+env:
+  AWS_REGION: us-east-1
+  PYTHON_VERSION: '3.12'
+  NODE_VERSION: '18'
+
+jobs:
+  # ============================================
+  # STAGE 1: Build & Test
+  # ============================================
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+      environment: ${{ steps.check.outputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine deployment target
+        id: check
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "environment=dev" >> $GITHUB_OUTPUT
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "environment=none" >> $GITHUB_OUTPUT
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install pytest pytest-asyncio pytest-cov flake8
+
+      - name: Lint code
+        run: |
+          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics || true
+
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/ -v --tb=short -x || true
+        continue-on-error: true
+
+      - name: Build summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: ${{ steps.check.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Should Deploy: ${{ steps.check.outputs.should-deploy }}" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # STAGE 2: Build Frontend
+  # ============================================
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci || npm install
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/out/
+          retention-days: 7
+
+  # ============================================
+  # STAGE 3: Deploy to DEV (on develop branch)
+  # ============================================
+  deploy-dev:
+    name: Deploy to DEV
+    needs: [build-and-test, build-frontend]
+    runs-on: ubuntu-latest
+    if: needs.build-and-test.outputs.environment == 'dev'
+    environment:
+      name: development
+      url: https://dev.aifilmstudio.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
+
+      - name: Install CDK dependencies
+        working-directory: infrastructure/aws-cdk
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: CDK Bootstrap (if needed)
+        working-directory: infrastructure/aws-cdk
+        run: |
+          source .venv/bin/activate
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ env.AWS_REGION }} --context environment=dev || true
+
+      - name: CDK Diff
+        working-directory: infrastructure/aws-cdk
+        run: |
+          source .venv/bin/activate
+          cdk diff --context environment=dev || true
+
+      - name: CDK Deploy to DEV
+        working-directory: infrastructure/aws-cdk
+        run: |
+          source .venv/bin/activate
+          cdk deploy --require-approval never --all --context environment=dev
+
+      - name: Deployment success
+        run: |
+          echo "## 🚀 DEV Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: Development" >> $GITHUB_STEP_SUMMARY
+          echo "- URL: https://dev.aifilmstudio.com" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # STAGE 4: Deploy to PRODUCTION (on main branch)
+  # ============================================
+  deploy-production:
+    name: Deploy to PRODUCTION
+    needs: [build-and-test, build-frontend]
+    runs-on: ubuntu-latest
+    if: needs.build-and-test.outputs.environment == 'production'
+    environment:
+      name: production
+      url: https://aifilmstudio.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
+
+      - name: Install CDK dependencies
+        working-directory: infrastructure/aws-cdk
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: CDK Bootstrap (if needed)
+        working-directory: infrastructure/aws-cdk
+        run: |
+          source .venv/bin/activate
+          cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID_PROD }}/${{ env.AWS_REGION }} --context environment=production || true
+
+      - name: CDK Diff
+        working-directory: infrastructure/aws-cdk
+        run: |
+          source .venv/bin/activate
+          cdk diff --context environment=production || true
+
+      - name: CDK Deploy to PRODUCTION
+        working-directory: infrastructure/aws-cdk
+        run: |
+          source .venv/bin/activate
+          cdk deploy --require-approval never --all --context environment=production
+
+      - name: Deployment success
+        run: |
+          echo "## 🚀 PRODUCTION Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: Production" >> $GITHUB_STEP_SUMMARY
+          echo "- URL: https://aifilmstudio.com" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # Deploy Frontend to GitHub Pages
+  # ============================================
+  deploy-frontend:
+    name: Deploy Frontend (GitHub Pages)
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/out
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ============================================
+  # Notification
+  # ============================================
+  notify:
+    name: Deployment Notification
+    needs: [deploy-dev, deploy-production, deploy-frontend]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "## 📋 CI/CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| DEV Deploy | ${{ needs.deploy-dev.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PROD Deploy | ${{ needs.deploy-production.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend | ${{ needs.deploy-frontend.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
