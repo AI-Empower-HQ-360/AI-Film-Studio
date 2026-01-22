@@ -267,7 +267,7 @@ class ProductionManager:
             metadata=metadata
         ))
     
-    async def create_milestone(
+    def create_milestone(
         self,
         project_id: str,
         name: str,
@@ -277,7 +277,7 @@ class ProductionManager:
         assigned_to: Optional[str] = None,
         status: Optional[MilestoneStatus] = None
     ) -> Milestone:
-        """Create milestone in project timeline"""
+        """Create milestone in project timeline (synchronous)"""
         if project_id not in self.timelines:
             raise ValueError(f"Timeline for project {project_id} not found")
         
@@ -297,6 +297,27 @@ class ProductionManager:
         logger.info(f"Created milestone {milestone.milestone_id} for project {project_id}")
         
         return milestone
+    
+    async def _create_milestone_async(
+        self,
+        project_id: str,
+        name: str,
+        description: Optional[str] = None,
+        due_date: Optional[datetime] = None,
+        target_date: Optional[datetime] = None,
+        assigned_to: Optional[str] = None,
+        status: Optional[MilestoneStatus] = None
+    ) -> Milestone:
+        """Create milestone in project timeline (async version)"""
+        return self.create_milestone(
+            project_id=project_id,
+            name=name,
+            description=description,
+            due_date=due_date,
+            target_date=target_date,
+            assigned_to=assigned_to,
+            status=status
+        )
     
     async def request_approval(
         self,

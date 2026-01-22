@@ -150,7 +150,7 @@ class EnterprisePlatform:
     # Make sync version the default
     create_organization = create_organization_sync
     
-    async def record_usage(
+    async def _record_usage_async(
         self,
         organization_id: str,
         metric: UsageMetric,
@@ -160,7 +160,35 @@ class EnterprisePlatform:
         metadata: Optional[Dict[str, Any]] = None,
         billable: bool = False
     ) -> UsageRecord:
-        """Record usage for billing"""
+        """Record usage for billing (async implementation)"""
+        if organization_id not in self.organizations:
+            raise ValueError(f"Organization {organization_id} not found")
+        
+        record = UsageRecord(
+            organization_id=organization_id,
+            metric=metric,
+            quantity=value or quantity or 0.0,
+            project_id=project_id,
+            metadata=metadata or {}
+        )
+        
+        self.usage_records.append(record)
+        
+        logger.info(f"Recorded {quantity} {metric.value} for organization {organization_id}")
+        
+        return record
+    
+    def record_usage(
+        self,
+        organization_id: str,
+        metric: UsageMetric,
+        value: Optional[float] = None,
+        quantity: Optional[float] = None,
+        project_id: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        billable: bool = False
+    ) -> UsageRecord:
+        """Record usage for billing (synchronous wrapper)"""
         if organization_id not in self.organizations:
             raise ValueError(f"Organization {organization_id} not found")
         

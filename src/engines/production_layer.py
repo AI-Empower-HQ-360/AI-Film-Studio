@@ -108,7 +108,7 @@ class ProductionLayer:
         logger.info(f"Created shot {shot.shot_id} for scene {scene_id}")
         return shot
     
-    async def upload_real_footage(
+    def upload_real_footage(
         self,
         scene_id: str,
         file_path: Optional[str] = None,
@@ -117,7 +117,7 @@ class ProductionLayer:
         metadata: Optional[Dict[str, Any]] = None
     ) -> Shot:
         """
-        Upload real camera footage
+        Upload real camera footage (synchronous)
         
         Supports traditional filmmaking workflow
         """
@@ -136,6 +136,23 @@ class ProductionLayer:
         logger.info(f"Uploaded real footage shot {shot.shot_id} for scene {scene_id}")
         
         return shot
+    
+    async def _upload_real_footage_async(
+        self,
+        scene_id: str,
+        file_path: Optional[str] = None,
+        s3_key: Optional[str] = None,
+        duration: float = 0.0,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> Shot:
+        """Upload real camera footage (async version)"""
+        return self.upload_real_footage(
+            scene_id=scene_id,
+            file_path=file_path,
+            s3_key=s3_key,
+            duration=duration,
+            metadata=metadata
+        )
     
     async def generate_ai_shot(
         self,

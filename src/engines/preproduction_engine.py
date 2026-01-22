@@ -172,6 +172,46 @@ class PreProductionEngine:
         
         return breakdown
     
+    def create_breakdown(
+        self,
+        script_id: str,
+        script_data: Optional[Dict[str, Any]] = None
+    ) -> ScriptBreakdown:
+        """
+        Create script breakdown (synchronous wrapper)
+        
+        Args:
+            script_id: ID of the script
+            script_data: Optional script data dictionary
+        """
+        breakdown = ScriptBreakdown(script_id=script_id)
+        
+        # If script_data provided, extract basic information
+        if script_data:
+            scenes = script_data.get("scenes", [])
+            for scene in scenes:
+                # Extract characters
+                characters = scene.get("characters", [])
+                for char_id in characters:
+                    breakdown.cast.append(BreakdownItem(
+                        item_type="cast",
+                        name=f"Character {char_id}",
+                        scene_ids=[scene.get("scene_id", "")]
+                    ))
+                
+                # Extract locations
+                location = scene.get("location", "")
+                if location:
+                    breakdown.locations.append(BreakdownItem(
+                        item_type="location",
+                        name=location,
+                        scene_ids=[scene.get("scene_id", "")]
+                    ))
+        
+        logger.info(f"Created breakdown {breakdown.breakdown_id} for script {script_id}")
+        
+        return breakdown
+    
     async def generate_shooting_schedule(
         self,
         script_id: str,
@@ -197,6 +237,40 @@ class PreProductionEngine:
         # Would optimize for:
         # - Location efficiency
         # - Cast continuity
+    
+    def create_schedule(
+        self,
+        script_id: str,
+        start_date: date,
+        days_per_week: int = 5
+    ) -> ShootingSchedule:
+        """
+        Create shooting schedule (synchronous wrapper)
+        
+        Args:
+            script_id: ID of the script
+            start_date: Start date for shooting
+            days_per_week: Number of shooting days per week
+        """
+        schedule = ShootingSchedule(
+            script_id=script_id,
+            start_date=start_date
+        )
+        
+        # Create at least one shooting day
+        from datetime import timedelta
+        schedule.shooting_days.append(ShootingDay(
+            day_number=1,
+            date=start_date,
+            location="TBD",
+            call_time=time(8, 0)
+        ))
+        
+        schedule.total_days = 1
+        
+        logger.info(f"Created schedule {schedule.schedule_id} for script {script_id}")
+        
+        return schedule
         # - Equipment logistics
         
         logger.info(f"Generated shooting schedule for script {script_id}")
