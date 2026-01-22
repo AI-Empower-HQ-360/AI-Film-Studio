@@ -64,6 +64,48 @@ class MarketingEngine:
     def __init__(self, s3_bucket: str = "ai-film-studio-marketing"):
         self.s3_bucket = s3_bucket
         self.assets: Dict[str, MarketingAsset] = {}
+
+    def create_trailer(
+        self,
+        project_id: str,
+        duration: float = 30.0,
+        style: str = "cinematic"
+    ) -> MarketingAsset:
+        """
+        Create trailer (synchronous wrapper)
+        
+        Args:
+            project_id: Project ID
+            duration: Trailer duration in seconds
+            style: Trailer style
+            
+        Returns:
+            Marketing asset
+        """
+        import asyncio
+        # Need source_video_id - would get from project
+        source_video_id = f"video_{project_id}"  # Placeholder
+        return asyncio.run(self.generate_trailer(project_id, source_video_id, duration, style))
+
+    def create_poster(
+        self,
+        project_id: str,
+        style: str = "dramatic",
+        dimensions: Optional[Dict[str, int]] = None
+    ) -> MarketingAsset:
+        """
+        Create poster (synchronous wrapper)
+        
+        Args:
+            project_id: Project ID
+            style: Poster style
+            dimensions: Optional dimensions dict with width/height
+            
+        Returns:
+            Marketing asset
+        """
+        import asyncio
+        return asyncio.run(self.generate_poster(project_id, style, dimensions))
     
     async def generate_trailer(
         self,

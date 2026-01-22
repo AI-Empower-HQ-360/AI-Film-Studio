@@ -71,13 +71,44 @@ class ProductionLayer:
         self.s3_bucket = s3_bucket
         self.shots: Dict[str, Shot] = {}
         self.continuity_matches: Dict[str, ContinuityMatch] = {}
+
+    def create_shot(
+        self,
+        scene_id: str,
+        shot_type: str,
+        description: str,
+        style: Optional[str] = None
+    ) -> Shot:
+        """
+        Create a shot
+        
+        Args:
+            scene_id: Scene ID
+            shot_type: Type of shot (real_footage, ai_generated, hybrid)
+            description: Shot description
+            style: Optional style
+            
+        Returns:
+            Created shot
+        """
+        shot_type_enum = ShotType(shot_type) if isinstance(shot_type, str) else shot_type
+        
+        shot = Shot(
+            scene_id=scene_id,
+            shot_type=shot_type_enum,
+            metadata={"description": description, "style": style}
+        )
+        
+        self.shots[shot.shot_id] = shot
+        logger.info(f"Created shot {shot.shot_id} for scene {scene_id}")
+        return shot
     
     async def upload_real_footage(
         self,
         scene_id: str,
-        video_url: str,
-        s3_key: str,
-        duration: float,
+        file_path: Optional[str] = None,
+        s3_key: Optional[str] = None,
+        duration: float = 0.0,
         metadata: Optional[Dict[str, Any]] = None
     ) -> Shot:
         """
@@ -89,8 +120,8 @@ class ProductionLayer:
             scene_id=scene_id,
             shot_type=ShotType.REAL_FOOTAGE,
             source_type="uploaded",
-            video_url=video_url,
-            s3_key=s3_key,
+            video_url=file_path or f"s3://{self.s3_bucket}/footage/{scene_id}/video.mp4",
+            s3_key=s3_key or f"footage/{scene_id}/video.mp4",
             duration=duration,
             metadata=metadata or {}
         )
@@ -205,6 +236,34 @@ class ProductionLayer:
         
         return match
     
+    
+    def create_previsualization(
+        self,
+        scene_id: str,
+        shot_list: List[str],
+        style: str = "storyboard"
+    ) -> Dict[str, Any]:
+        """
+        Create pre-visualization
+        
+        Args:
+            scene_id: Scene ID
+            shot_list: List of shot IDs
+            style: Visualization style
+            
+        Returns:
+            Pre-visualization data
+        """
+        previz = {
+            "scene_id": scene_id,
+            "shot_list": shot_list,
+            "style": style,
+            "created_at": datetime.utcnow().isoformat()
+        }
+        
+        logger.info(f"Created pre-visualization for scene {scene_id}")
+        return previz
+
     async def fill_gaps_with_ai(
         self,
         scene_id: str,
@@ -238,6 +297,30 @@ class ProductionLayer:
         logger.info(f"Filled {len(shots)} gaps in scene {scene_id} with AI")
         
         return shots
+    
+    def fill_gap(
+        self,
+        scene_id: str,
+        start_shot: str,
+        end_shot: str,
+        duration: float
+    ) -> Dict[str, Any]:
+        """
+        Fill gap between shots (synchronous wrapper)
+        
+        Args:
+            scene_id: Scene ID
+            start_shot: Start shot ID
+            end_shot: End shot ID
+            duration: Gap duration in seconds
+            
+        Returns:
+            Gap fill result
+        """
+        import asyncio
+        gaps = [(0.0, duration)]  # Simplified - would calculate actual gap
+        result = asyncio.run(self.fill_gaps_with_ai(scene_id, gaps, f"Gap between {start_shot} and {end_shot}"))
+        return result[0].dict() if result and len(result) > 0 else {}
     
     async def compose_hybrid_scene(
         self,

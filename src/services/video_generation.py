@@ -6,6 +6,8 @@ from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 import asyncio
 import logging
+import os
+import json
 
 from ..config.ai_models import (
     get_video_model,
@@ -84,6 +86,7 @@ class VideoGenerationService:
         self.s3_bucket = s3_bucket
         self.active_jobs: Dict[str, Any] = {}
         self.processor = VideoProcessor()  # Mockable processor
+        self.sqs_client = None  # Will be set if SQS is configured
     
     async def generate_video(
         self,
@@ -266,6 +269,14 @@ class VideoGenerationService:
     
     async def cancel_job(self, job_id: str) -> bool:
         """Cancel an active video generation job"""
+        
+        if self.sqs_client:
+            try:
+                # Cancel job in SQS
+                pass  # In real implementation, would cancel job in queue
+            except Exception:
+                pass
+        
         if job_id in self.active_jobs:
             self.active_jobs[job_id]["status"] = "cancelled"
             logger.info(f"Cancelled job {job_id}")
@@ -317,6 +328,10 @@ class VideoGenerationService:
             Dictionary with analysis results
         """
         logger.info(f"Analyzing video: {video_path}")
+        
+        # Validate video path
+        if not video_path or (not video_path.startswith("s3://") and not os.path.exists(video_path)):
+            raise FileNotFoundError(f"Video file not found: {video_path}")
         
         # TODO: Implement video analysis using OpenCV or FFmpeg
         # This would:
@@ -657,7 +672,7 @@ class VideoGenerationService:
     async def export(
         self,
         video_path: str,
-        format: str = "mp4",
+        format: str = "mp4", compression_level: Optional[int] = None,
         compression: Optional[str] = None,
         output_path: Optional[str] = None
     ) -> str:
@@ -727,4 +742,12 @@ class VideoGenerationService:
         Returns:
             Job status dictionary
         """
+        
+        if self.sqs_client:
+            try:
+                # Query SQS for job status
+                pass  # In real implementation, would query job status
+            except Exception:
+                pass
+        
         return self.get_job_status(job_id)
