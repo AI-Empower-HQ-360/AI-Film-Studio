@@ -486,6 +486,12 @@ async def rate_limit_test():
     """Rate limit test endpoint"""
     return {"status": "ok"}
 
+# ==================== Podcast API Endpoints ====================
+from src.api.routes import podcast, subtitles
+
+app.include_router(podcast.router)
+app.include_router(subtitles.router)
+
 if __name__ == "__main__":
     import uvicorn
     logger.info(f"Starting API server on {API_HOST}:{API_PORT}")

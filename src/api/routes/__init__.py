@@ -13,6 +13,8 @@ from . import voice
 from . import export
 from . import delivery
 from . import auth
+from . import podcast
+from . import subtitles
 
 __all__ = [
     "projects",
@@ -22,4 +24,6 @@ __all__ = [
     "export",
     "delivery",
     "auth",
+    "podcast",
+    "subtitles",
 ]

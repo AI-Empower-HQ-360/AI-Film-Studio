@@ -194,6 +194,124 @@ class APIClient {
   async healthCheck(): Promise<{ status: string; version: string }> {
     return this.request<{ status: string; version: string }>("/api/v1/health");
   }
+
+  // Podcast endpoints
+  async generatePodcast(data: {
+    title: string;
+    characters: Array<{
+      character_id: string;
+      image_url: string;
+      voice_id: string;
+      name: string;
+      role?: string;
+    }>;
+    dialogue: Array<{
+      character_id: string;
+      text: string;
+      emotion?: string;
+      timestamp?: number;
+    }>;
+    layout?: string;
+    background_style?: string;
+    add_lower_thirds?: boolean;
+    add_background_music?: boolean;
+    duration?: number;
+  }): Promise<{ job_id: string; status: string }> {
+    return this.request<{ job_id: string; status: string }>("/api/v1/podcast/generate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getPodcastStatus(jobId: string): Promise<{
+    job_id: string;
+    status: string;
+    video_url?: string;
+    thumbnail_url?: string;
+    duration?: number;
+    error_message?: string;
+  }> {
+    return this.request(`/api/v1/podcast/status/${jobId}`);
+  }
+
+  async getPodcastLayouts(): Promise<{
+    layouts: Array<{
+      layout: string;
+      name: string;
+      description: string;
+      max_characters: number;
+    }>;
+  }> {
+    return this.request("/api/v1/podcast/layouts");
+  }
+
+  // Subtitle endpoints
+  async generateSubtitles(data: {
+    audio_url: string;
+    model_name?: string;
+    source_language?: string;
+    output_format?: string;
+    speaker_diarization?: boolean;
+    max_line_length?: number;
+    languages?: string[];
+  }): Promise<{ job_id: string; status: string }> {
+    return this.request<{ job_id: string; status: string }>("/api/v1/subtitles/generate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async translateSubtitles(data: {
+    subtitle_url: string;
+    target_languages: string[];
+    translation_service?: string;
+    preserve_timing?: boolean;
+  }): Promise<{ job_id: string; status: string }> {
+    return this.request<{ job_id: string; status: string }>("/api/v1/subtitles/translate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async burnSubtitles(data: {
+    video_url: string;
+    subtitle_url: string;
+    font_name?: string;
+    font_size?: number;
+    font_color?: string;
+    background_color?: string;
+    position?: string;
+  }): Promise<{ job_id: string; status: string }> {
+    return this.request<{ job_id: string; status: string }>("/api/v1/subtitles/burn", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getSubtitleStatus(jobId: string): Promise<{
+    job_id: string;
+    status: string;
+    subtitle_urls?: Record<string, string>;
+    video_url?: string;
+    languages?: string[];
+    processing_time?: number;
+    error_message?: string;
+  }> {
+    return this.request(`/api/v1/subtitles/status/${jobId}`);
+  }
+
+  async getSupportedLanguages(modelName?: string): Promise<{ languages: string[] }> {
+    const params = modelName ? `?model_name=${modelName}` : "";
+    return this.request(`/api/v1/subtitles/languages${params}`);
+  }
+
+  async getSupportedFormats(): Promise<{ formats: string[] }> {
+    return this.request("/api/v1/subtitles/formats");
+  }
+
+  async getTranslationServices(): Promise<{ services: any[] }> {
+    return this.request("/api/v1/subtitles/translation-services");
+  }
 }
 
 export const api = new APIClient();

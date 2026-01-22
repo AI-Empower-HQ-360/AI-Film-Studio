@@ -1,0 +1,91 @@
+# AI Film Studio - GPU Worker Dockerfile
+# NVIDIA CUDA-enabled container for AI model inference
+
+# ==================== Base Stage with CUDA ====================
+FROM nvidia/cuda:12.1-cudnn8-runtime-ubuntu22.04 as base
+
+# Metadata
+LABEL maintainer="AI-Empower-HQ-360 <contact@ai-empower-hq.com>"
+LABEL version="0.2.0"
+LABEL description="AI Film Studio - GPU AI Worker"
+
+# Environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    CUDA_HOME=/usr/local/cuda \
+    PATH=/usr/local/cuda/bin:$PATH \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+WORKDIR /app
+
+# Install Python and system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 \
+    python3.11-venv \
+    python3-pip \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libglib2.0-0 \
+    libgl1-mesa-glx \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Set Python 3.11 as default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+
+# ==================== Dependencies Stage ====================
+FROM base as dependencies
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies with CUDA support
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ==================== Production GPU Worker ====================
+FROM base as production
+
+# Create non-root user
+RUN groupadd -r aiworker && useradd -r -g aiworker aiworker
+
+# Copy dependencies from build stage
+COPY --from=dependencies /usr/local/lib/python3.11/dist-packages /usr/local/lib/python3.11/dist-packages
+COPY --from=dependencies /usr/local/bin /usr/local/bin
+
+# Copy application code
+COPY --chown=aiworker:aiworker src/ ./src/
+COPY --chown=aiworker:aiworker requirements.txt .
+
+# Create directories for models and media
+RUN mkdir -p /app/models /app/media /app/cache /app/logs && \
+    chown -R aiworker:aiworker /app
+
+# Model cache directory
+ENV HF_HOME=/app/cache \
+    TRANSFORMERS_CACHE=/app/cache \
+    TORCH_HOME=/app/cache
+
+# Switch to non-root user
+USER aiworker
+
+# Health check
+HEALTHCHECK --interval=60s --timeout=30s --start-period=120s --retries=3 \
+    CMD python -c "import torch; assert torch.cuda.is_available(), 'CUDA not available'" || exit 1
+
+# Run the AI worker
+CMD ["python", "-m", "src.workers.ai_job_worker"]
