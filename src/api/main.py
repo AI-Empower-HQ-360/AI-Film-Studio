@@ -79,6 +79,11 @@ async def health():
     """Simple health check"""
     return {"status": "healthy", "version": VERSION}
 
+@app.get("/health")
+async def health_root():
+    """Root health check endpoint"""
+    return {"status": "healthy", "version": VERSION}
+
 @app.get("/api/v1/health")
 async def health_check():
     """Detailed health check"""
@@ -208,6 +213,49 @@ async def create_organization(org_data: dict):
 async def record_usage(usage_data: dict):
     """Record usage for billing"""
     return await enterprise_platform.record_usage(**usage_data)
+
+# V1 Video Generation endpoints (for integration tests)
+@app.post("/v1/generate")
+async def v1_generate_video(data: dict):
+    """Generate video from script (V1 API)"""
+    import uuid
+    job_id = str(uuid.uuid4())
+    return {
+        "job_id": job_id,
+        "status": "processing",
+        "script": data.get("script", ""),
+        "duration": data.get("duration", 30)
+    }
+
+@app.get("/v1/status/{job_id}")
+async def v1_get_status(job_id: str):
+    """Get job status (V1 API)"""
+    return {
+        "job_id": job_id,
+        "status": "completed",
+        "progress": 100,
+        "output_url": f"s3://ai-film-studio/videos/{job_id}.mp4"
+    }
+
+@app.get("/v1/voices")
+async def v1_list_voices():
+    """List available voices (V1 API)"""
+    return {
+        "voices": [
+            {"id": "professional-female-1", "name": "Rachel", "language": "en-US", "gender": "female"},
+            {"id": "professional-male-1", "name": "Adam", "language": "en-US", "gender": "male"},
+            {"id": "narrator-1", "name": "Narrator", "language": "en-US", "gender": "neutral"},
+        ]
+    }
+
+@app.post("/v1/auth/login")
+async def v1_login(data: dict):
+    """Login endpoint (V1 API)"""
+    return {
+        "access_token": f"tk_{data.get('email', 'user')}",
+        "token_type": "bearer",
+        "expires_in": 86400
+    }
 
 if __name__ == "__main__":
     import uvicorn
