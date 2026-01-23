@@ -192,9 +192,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
-    environment:
-      name: production
-      url: https://aifilmstudio.com
     defaults:
       run:
         working-directory: infrastructure/aws-cdk
