@@ -21,13 +21,13 @@ def test_health_check():
 
 def test_about():
     """Test about endpoint"""
-    response = client.get("/about")
+    response = client.get("/api/v1/about")
     assert response.status_code == 200
     data = response.json()
     assert data["name"] == "AI Film Studio"
     assert data["version"] == "0.1.0"
     assert "description" in data
     assert "author" in data
-    assert "features" in data
-    assert isinstance(data["features"], list)
-    assert len(data["features"]) > 0
+    assert "capabilities" in data
+    assert isinstance(data["capabilities"], list)
+    assert len(data["capabilities"]) > 0
